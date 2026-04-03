@@ -182,7 +182,7 @@ function Login() {
             onChange={handleChange}
             className={`form-control ${errors.role ? "is-invalid" : ""}`}
           >
-            <option value="">Select Role here</option>
+            <option value="">Select Role </option>
             <option value="candidate">Candidate</option>
             <option value="recruiter">Recruiter</option>
           </select>
