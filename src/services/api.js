@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-    baseURL: "https://server.budes.online/public_html/api"
+    baseURL: "https://server.budes.online/index.php/api"
 });
 
 // 🔥 ADD THIS INTERCEPTOR
