@@ -1,30 +1,51 @@
 import { useEffect, useState } from "react";
-import JobCard from "./JobHeader";
 import API from "../services/api";
+import Swal from "sweetalert2";
 
 function JobListSection() {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("featured");
 
   useEffect(() => {
-    fetchJobs(activeTab);
-  }, [activeTab]);
+    fetchJobs();
+  }, []);
 
-  const fetchJobs = (type) => {
-    setLoading(true);
-
-    API.get("/jobs", {
-      params: { type },
-    })
+  const fetchJobs = () => {
+    API.get("/jobs")
       .then((res) => {
         setJobs(res.data.data || []);
-        console.log("JOBS:", res.data.data);
         setLoading(false);
       })
       .catch(() => {
         setLoading(false);
       });
+  };
+
+  // ✅ APPLY JOB
+  const applyJob = async (jobId, applied) => {
+    if (applied) return;
+
+    try {
+      const res = await API.post("/apply-job", {
+        job_id: jobId,
+      });
+
+      Swal.fire({
+        icon: "success",
+        title: "Success",
+        text: res.data.message,
+      });
+
+      // 🔥 refresh jobs to update applied status
+      fetchJobs();
+
+    } catch (err) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: err.response?.data?.message || "Something went wrong",
+      });
+    }
   };
 
   return (
@@ -33,49 +54,56 @@ function JobListSection() {
 
         <h1 className="text-center mb-5">Job Listing</h1>
 
-        {/* 🔥 Tabs */}
-        <ul className="nav nav-pills d-inline-flex justify-content-center border-bottom mb-5">
+        {loading && <p className="text-center">Loading...</p>}
 
-          <li className="nav-item">
-            <button
-              className={`nav-link ${activeTab === "featured" ? "active" : ""}`}
-              onClick={() => setActiveTab("featured")}
-            >
-              Featured
-            </button>
-          </li>
-
-          <li className="nav-item">
-            <button
-              className={`nav-link ${activeTab === "Full Time" ? "active" : ""}`}
-              onClick={() => setActiveTab("Full Time")}
-            >
-              Full Time
-            </button>
-          </li>
-
-          <li className="nav-item">
-            <button
-              className={`nav-link ${activeTab === "Part Time" ? "active" : ""}`}
-              onClick={() => setActiveTab("Part Time")}
-            >
-              Part Time
-            </button>
-          </li>
-
-        </ul>
-
-        {/* 🔄 Loading */}
-        {loading && <div className="text-center">Loading jobs...</div>}
-
-        {/* 📦 Jobs */}
-        {!loading && jobs.length > 0 ? (
-          jobs.map((job) => (
-            <JobCard key={job.id} job={job} />
-          ))
-        ) : (
-          !loading && <div className="text-center">No jobs found</div>
+        {!loading && jobs.length === 0 && (
+          <p className="text-center">No jobs found</p>
         )}
+
+        {!loading &&
+          jobs.map((job) => (
+            <div className="job-item p-4 mb-4 shadow-sm rounded" key={job.id}>
+              <div className="row g-4">
+
+                {/* LEFT */}
+                <div className="col-md-8 d-flex align-items-center">
+                  <img
+                    className="img-fluid border rounded"
+                    src={
+                      job.logo
+                        ? `https://server.budes.online/storage/${job.logo}`
+                        : "/assets/img/default.png"
+                    }
+                    style={{ width: "80px", height: "80px", objectFit: "cover" }}
+                  />
+
+                  <div className="ps-4">
+                    <h5>{job.job_title}</h5>
+
+                    <span>{job.location || "N/A"}</span> |{" "}
+                    <span>{job.employment_type || "Full Time"}</span> |{" "}
+                    <span>{job.salary_range || "Not Disclosed"}</span>
+                  </div>
+                </div>
+
+                {/* RIGHT */}
+                <div className="col-md-4 text-end">
+
+                  <button
+                    className={`btn ${
+                      job.applied ? "btn-success" : "btn-primary"
+                    }`}
+                    disabled={job.applied}
+                    onClick={() => applyJob(job.id, job.applied)}
+                  >
+                    {job.applied ? "Applied" : "Apply"}
+                  </button>
+
+                </div>
+
+              </div>
+            </div>
+          ))}
 
       </div>
     </div>
