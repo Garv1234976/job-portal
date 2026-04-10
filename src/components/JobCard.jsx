@@ -1,5 +1,6 @@
 import Swal from "sweetalert2";
 import API from "../services/api";
+import { useState } from "react";
 
 function JobCard({ job }) {
   const [loading, setLoading] = useState(false);
