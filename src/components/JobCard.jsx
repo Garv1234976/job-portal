@@ -6,10 +6,8 @@ function JobCard({ job }) {
   const [applied, setApplied] = useState(job.applied || false);
 
   const applyJob = async () => {
-    // 🚫 Prevent duplicate calls
     if (loading || applied) return;
 
-    // 🚫 Validate job_id
     if (!job?.id) {
       Swal.fire({
         icon: "error",
@@ -26,7 +24,6 @@ function JobCard({ job }) {
         job_id: job.id,
       });
 
-      // ✅ Success
       setApplied(true);
 
       Swal.fire({
