@@ -87,7 +87,7 @@ function JobCard({ job }) {
             <button className="btn btn-light btn-square me-3">
               <i className="far fa-heart text-primary"></i>
             </button>
-            return (
+
             <button
               className="btn btn-primary"
               onClick={applyJob}
@@ -95,12 +95,11 @@ function JobCard({ job }) {
             >
               {loading ? "Applying..." : applied ? "Applied" : "Apply Now"}
             </button> 
-            );
           </div>
 
           <small className="text-truncate">
             <i className="far fa-calendar-alt text-primary me-2"></i>
-                DeadLine this is :{" "}
+                DeadLine:{" "}
             {job.apply_deadline
               ? new Date(job.apply_deadline).toLocaleDateString()
               : "N/A"}
