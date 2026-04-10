@@ -99,7 +99,7 @@ function JobCard({ job }) {
 
           <small className="text-truncate">
             <i className="far fa-calendar-alt text-primary me-2"></i>
-            Deadline11:{" "}
+                DeadLine this is :{" "}
             {job.apply_deadline
               ? new Date(job.apply_deadline).toLocaleDateString()
               : "N/A"}
