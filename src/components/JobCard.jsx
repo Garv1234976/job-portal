@@ -96,7 +96,7 @@ function JobCard({ job }) {
               disabled={loading || applied}
             >
               {loading ? "Applying..." : applied ? "Applied" : "Apply Now"}
-            </button>
+            </button> 
             );
           </div>
 
