@@ -1,10 +1,10 @@
 import Swal from "sweetalert2";
 import API from "../services/api";
-import { useState } from "react";
+import React, { useState } from "react";
 
 function JobCard({ job }) {
-  const [loading, setLoading] = useState(false);
-  const [applied, setApplied] = useState(job.applied || false);
+  const [loading, setLoading] = React.useState(false);
+  const [applied, setApplied] = React.useState(job.applied || false);
 
   const applyJob = async () => {
     if (loading || applied) return;
