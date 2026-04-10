@@ -19,7 +19,7 @@ function JobList() {
     })
       .then((res) => {
         setJobs(res.data.data || []);
-        console.log("JOBS:", res.data.data);
+        console.log("JOBS:", res.data);
         setLoading(false);
       })
       .catch(() => {
