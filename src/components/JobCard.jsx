@@ -33,9 +33,9 @@ function JobCard({ job }) {
 
           <img
             className="flex-shrink-0 img-fluid border rounded"
-            src={
+           src={
               job.logo
-                ? `http://127.0.0.1:8000/storage/${job.logo}`
+                ? `https://server.budes.online/storage/${job.logo}`
                 : "/assets/img/default.png"
             }
             alt="Company Logo"
