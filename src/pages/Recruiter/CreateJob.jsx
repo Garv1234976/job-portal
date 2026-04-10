@@ -249,7 +249,7 @@ export default function CreateJob() {
             <div className="input-group">
               <span className="input-group-text">₹</span>
               <input
-                type="number"
+                type="text"
                 className={`form-control ${errors.salary_range ? "is-invalid" : ""}`}
                 name="salary_range"
                 placeholder="10,000 - 25,000"
