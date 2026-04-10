@@ -1,106 +1,113 @@
-import React, { useState, useEffect } from "react";
-import api from "../../services/api";
+import { useEffect, useState } from "react";
+import API from "../../services/api";
+import Swal from "sweetalert2";
 
+function JobListSection() {
+  const [jobs, setJobs] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-export default function CandidateDashboard() {
-  const [activeTab, setActiveTab] = useState("applied");
-  const [appliedJobs, setAppliedJobs] = useState([]);
-
-  const tabs = [
-    { id: "applied", label: "Applied Jobs" },
-    { id: "saved", label: "Saved Jobs" },
-    { id: "lastViewed", label: "Last Viewed" },
-    { id: "profile", label: "Edit Profile" },
-    { id: "resume", label: "Resume" },
-  ];
-
-  // 🔥 FETCH APPLIED JOBS
   useEffect(() => {
-    if (activeTab === "applied") {
-      fetchAppliedJobs();
-    }
-  }, [activeTab]);
+    fetchJobs();
+  }, []);
 
-  const fetchAppliedJobs = async () => {
-    try {
-      const res = await api.get("/applied-jobs");
-      console.log('ddddddddd',res.data.data);
-      setAppliedJobs(res.data.data || []);
-    } catch (err) {
-      console.error(err);
-    }
+  const fetchJobs = () => {
+    API.get("/jobs")
+      .then((res) => {
+        setJobs(res.data.data || []);
+        setLoading(false);
+      })
+      .catch(() => {
+        setLoading(false);
+      });
   };
 
-  const renderContent = () => {
-    switch (activeTab) {
-      case "applied":
-        return appliedJobs.length > 0 ? (
-          <div className="w-full">
-            {appliedJobs.map((item) => (
-              <div
-                key={item.id}
-                className="border p-4 mb-3 rounded shadow-sm"
-              >
-                <h5 className="font-bold">{item.job?.job_title}</h5>
-                <p>{item.job?.location}</p>
-                <p className="text-sm text-gray-500">
-                  Status: {item.status}
-                </p>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <p className="text-gray-600">No applied jobs yet.</p>
-        );
+  // ✅ APPLY JOB
+  const applyJob = async (jobId, applied) => {
+    if (applied) return;
 
-      case "saved":
-        return <p className="text-gray-600">No saved jobs.</p>;
+    try {
+      const res = await API.post("/apply-job", {
+        job_id: jobId,
+      });
 
-      case "lastViewed":
-        return <p className="text-gray-600">No recently viewed jobs.</p>;
+      Swal.fire({
+        icon: "success",
+        title: "Success",
+        text: res.data.message,
+      });
 
-      case "profile":
-        return <p className="text-gray-600">Update your profile details here.</p>;
+      // 🔥 refresh jobs to update applied status
+      fetchJobs();
 
-      case "resume":
-        return <p className="text-gray-600">Upload or update your resume.</p>;
-
-      default:
-        return null;
+    } catch (err) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: err.response?.data?.message || "Something went wrong",
+      });
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-100 to-gray-200 p-6">
-      <div className="max-w-6xl mx-auto">
+    <div className="container-xxl py-5">
+      <div className="container">
 
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-800">Candidate Dashboard</h1>
-          <p className="text-gray-500">Manage your jobs, profile and resume</p>
-        </div>
+        <h1 className="text-center mb-5">Job Listing</h1>
 
-        {/* Tabs */}
-        <div className="flex flex-wrap gap-3 mb-6">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`px-5 py-2 rounded-full text-sm font-medium ${
-                activeTab === tab.id
-                  ? "bg-blue-600 text-white"
-                  : "bg-white border"
-              }`}
-            >
-              {tab.label}
-            </button>
+        {loading && <p className="text-center">Loading...</p>}
+
+        {!loading && jobs.length === 0 && (
+          <p className="text-center">No jobs found</p>
+        )}
+
+        {!loading &&
+          jobs.map((job) => (
+            <div className="job-item p-4 mb-4 shadow-sm rounded" key={job.id}>
+              <div className="row g-4">
+
+                {/* LEFT */}
+                <div className="col-md-8 d-flex align-items-center">
+                  <img
+                    className="img-fluid border rounded"
+                    src={
+                      job.logo
+                        ? `https://server.budes.online/storage/${job.logo}`
+                        : "/assets/img/default.png"
+                    }
+                    style={{ width: "80px", height: "80px", objectFit: "cover" }}
+                  />
+
+                  <div className="ps-4">
+                    <h5>{job.job_title}</h5>
+
+                    <span>{job.location || "N/A"}</span> |{" "}
+                    <span>{job.employment_type || "Full Time"}</span> |{" "}
+                    <span>{job.salary_range || "Not Disclosed"}</span>
+                  </div>
+                </div>
+
+                {/* RIGHT */}
+                <div className="col-md-4 text-end">
+
+                  <button
+                    className={`btn ${
+                      job.applied ? "btn-success" : "btn-primary"
+                    }`}
+                    disabled={job.applied}
+                    onClick={() => applyJob(job.id, job.applied)}
+                  >
+                    {job.applied ? "Applied" : "Apply"}
+                  </button>
+
+                </div>
+
+              </div>
+            </div>
           ))}
-        </div>
 
-        {/* Content */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 min-h-[300px]">
-          {renderContent()}
-        </div>
       </div>
     </div>
   );
 }
+
+export default JobListSection;
