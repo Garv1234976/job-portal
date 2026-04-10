@@ -87,13 +87,13 @@ function JobCard({ job }) {
               <i className="far fa-heart text-primary"></i>
             </button>
             return (
-            {/* <button
+            <button
               className="btn btn-primary"
               onClick={applyJob}
               disabled={loading || applied}
             >
               {loading ? "Applying..." : applied ? "Applied" : "Apply Now"}
-            </button>  */}
+            </button> 
             );
           </div>
 
