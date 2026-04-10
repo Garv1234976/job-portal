@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import JobCard from "./JobCard";
+import JobCard from "./JobHeader";
 import API from "../services/api";
 
 function JobListSection() {
