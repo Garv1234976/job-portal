@@ -1,10 +1,14 @@
 import Swal from "sweetalert2";
 import API from "../services/api";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 function JobCard({ job }) {
   const [loading, setLoading] = React.useState(false);
-  const [applied, setApplied] = React.useState(job.applied || false);
+  const [applied, setApplied] = React.useState(false);
+
+  useEffect(() => {
+    setApplied(job.applied || false);
+  }, [job.applied]);
 
   const applyJob = async () => {
     if (loading || applied) return;
@@ -94,12 +98,12 @@ function JobCard({ job }) {
               disabled={loading || applied}
             >
               {loading ? "Applying..." : applied ? "Applied" : "Apply Now"}
-            </button> 
+            </button>
           </div>
 
           <small className="text-truncate">
             <i className="far fa-calendar-alt text-primary me-2"></i>
-                DeadLine:{" "}
+            DeadLine:{" "}
             {job.apply_deadline
               ? new Date(job.apply_deadline).toLocaleDateString()
               : "N/A"}
