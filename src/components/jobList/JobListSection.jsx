@@ -24,7 +24,7 @@ export default function CandidateDashboard() {
   const fetchAppliedJobs = async () => {
     try {
       const res = await api.get("/applied-jobs");
-      console.log(res.data.data);
+      console.log('ddddddddd',res.data.data);
       setAppliedJobs(res.data.data || []);
     } catch (err) {
       console.error(err);
