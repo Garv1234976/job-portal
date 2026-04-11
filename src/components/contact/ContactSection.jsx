@@ -105,7 +105,7 @@ function ContactSection() {
                   <div className="bg-white border rounded d-flex align-items-center justify-content-center me-3" style={{ width: "45px", height: "45px" }}>
                     <i className="fa fa-phone-alt text-primary"></i>
                   </div>
-                  <span>+91 98765 43210</span>
+                  <span>+91 6398086567</span>
                 </div>
               </div>
 
