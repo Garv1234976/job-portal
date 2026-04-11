@@ -12,7 +12,6 @@ function ContactSection() {
 
   const [loading, setLoading] = useState(false);
 
-  // Handle input
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -20,10 +19,8 @@ function ContactSection() {
     });
   };
 
-  // Submit form
   const submitContact = async (e) => {
     e.preventDefault();
-
     setLoading(true);
 
     try {
@@ -35,7 +32,6 @@ function ContactSection() {
         text: res.data.message,
       });
 
-      // Reset form
       setFormData({
         name: "",
         email: "",
@@ -58,9 +54,27 @@ function ContactSection() {
     <div className="container-xxl py-5">
       <div className="container">
 
-        <h1 className="text-center mb-5 wow fadeInUp">
+        <h1 className="text-center mb-3 wow fadeInUp">
           Contact For Any Query
         </h1>
+
+        {/* ✅ HELP TEXT */}
+        <p className="text-center text-muted mb-4">
+          Need help? We're here for you! You can contact us anytime via WhatsApp,
+          email, or the form below. We usually reply within 24 hours.
+        </p>
+
+        {/* ✅ WHATSAPP BUTTON */}
+        <div className="text-center mb-4">
+          <a
+            href="https://wa.me/919876543210"
+            target="_blank"
+            rel="noreferrer"
+            className="btn btn-success px-4 py-2"
+          >
+            💬 Chat on WhatsApp
+          </a>
+        </div>
 
         <div className="row g-4">
 
@@ -70,10 +84,7 @@ function ContactSection() {
 
               <div className="col-md-4">
                 <div className="d-flex align-items-center bg-light rounded p-4">
-                  <div
-                    className="bg-white border rounded d-flex align-items-center justify-content-center me-3"
-                    style={{ width: "45px", height: "45px" }}
-                  >
+                  <div className="bg-white border rounded d-flex align-items-center justify-content-center me-3" style={{ width: "45px", height: "45px" }}>
                     <i className="fa fa-map-marker-alt text-primary"></i>
                   </div>
                   <span>123 Street, New York, USA</span>
@@ -82,25 +93,19 @@ function ContactSection() {
 
               <div className="col-md-4">
                 <div className="d-flex align-items-center bg-light rounded p-4">
-                  <div
-                    className="bg-white border rounded d-flex align-items-center justify-content-center me-3"
-                    style={{ width: "45px", height: "45px" }}
-                  >
+                  <div className="bg-white border rounded d-flex align-items-center justify-content-center me-3" style={{ width: "45px", height: "45px" }}>
                     <i className="fa fa-envelope-open text-primary"></i>
                   </div>
-                  <span>info@example.com</span>
+                  <span>support@yourwebsite.com</span>
                 </div>
               </div>
 
               <div className="col-md-4">
                 <div className="d-flex align-items-center bg-light rounded p-4">
-                  <div
-                    className="bg-white border rounded d-flex align-items-center justify-content-center me-3"
-                    style={{ width: "45px", height: "45px" }}
-                  >
+                  <div className="bg-white border rounded d-flex align-items-center justify-content-center me-3" style={{ width: "45px", height: "45px" }}>
                     <i className="fa fa-phone-alt text-primary"></i>
                   </div>
-                  <span>+012 345 6789</span>
+                  <span>+91 98765 43210</span>
                 </div>
               </div>
 
@@ -179,6 +184,13 @@ function ContactSection() {
                       ></textarea>
                       <label>Message</label>
                     </div>
+                  </div>
+
+                  {/* ✅ EXTRA TRUST TEXT */}
+                  <div className="col-12">
+                    <small className="text-muted">
+                      🔒 Your information is safe with us
+                    </small>
                   </div>
 
                   <div className="col-12">
