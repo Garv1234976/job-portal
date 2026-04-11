@@ -84,28 +84,26 @@ function ContactSection() {
                   >
                     <i className="fa fa-envelope-open text-primary"></i>
                   </div>
-                  <span>support@yourwebsite.com</span>
+                  <span>info@dummy.com</span>
                 </div>
               </div>
 
               <div className="col-md-4">
                 <div className="d-flex align-items-center bg-light rounded p-4">
-                  <div
-                    className="bg-white border rounded d-flex align-items-center justify-content-center me-3"
-                    style={{ width: "45px", height: "45px" }}
+                  <a
+                    href="https://wa.me/0402 499 695"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="btn btn-success px-4 py-2"
                   >
-                    <i className="fa fa-phone-alt text-primary"></i>
-                  </div>
-                  <span>
-                    <a
-                      href="https://wa.me/916398086567"
-                      target="_blank"
-                      rel="noreferrer"
-                      className="btn btn-success px-4 py-2"
+                    <div
+                      className="bg-white border rounded d-flex align-items-center justify-content-center me-3"
+                      style={{ width: "45px", height: "45px" }}
                     >
-                      +91 6398086567
-                    </a>
-                  </span>
+                      <i className="fa fa-phone-alt text-primary"></i>
+                    </div>
+                    <span>0402 499 695</span>
+                  </a>
                 </div>
               </div>
             </div>
