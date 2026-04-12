@@ -209,7 +209,7 @@ function JobListSection() {
                         <div className="text-muted small mt-1">
                           <i className="fa fa-briefcase"></i>{" "}
                           {job.experience || "0-2 Yrs"} |{" "}
-                          <i className="fa fa-inr"></i> {job.salary_range} |{" "}
+                          <i className="fa-solid fa-indian-rupee-sign"></i> {job.salary_range} |{" "}
                           <i className="fa fa-map-marker"></i> {job.location}
                         </div>
 
