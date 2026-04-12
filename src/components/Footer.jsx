@@ -44,7 +44,7 @@ function Footer() {
         <div className="row g-5">
           {/* Company Info */}
           <div className="col-lg-4 col-md-6">
-            <h5 className="text-white mb-4">Business Buddies</h5>
+            <h5 className="text-white mb-4">Job Portal</h5>
 
             <p className="mb-2">
               <i className="fa fa-map-marker-alt me-3"></i>
@@ -151,7 +151,7 @@ function Footer() {
         <div className="row">
           <div className="col-12 text-center mb-3">
             © {new Date().getFullYear()}{" "}
-            <span className="text-white">Business Buddies</span>, All Rights
+            <span className="text-white">Job Portal</span>, All Rights
             Reserved.
           </div>
         </div>
