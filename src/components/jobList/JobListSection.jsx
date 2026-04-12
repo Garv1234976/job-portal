@@ -48,6 +48,19 @@ function JobListSection() {
     }
   };
 
+  const getDaysAgo = (date) => {
+    const created = new Date(date);
+    const now = new Date();
+
+    const diffTime = now - created;
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+    if (diffDays === 0) return "Today";
+    if (diffDays === 1) return "1 day ago";
+
+    return `${diffDays} days ago`;
+  };
+
   // SAVE / UNSAVE
   const toggleSaveJob = async (job) => {
     try {
@@ -208,22 +221,31 @@ function JobListSection() {
 
                         <div className="text-muted small mt-1">
                           <i className="fa fa-briefcase"></i>{" "}
-                          {job.experience || "0-2 Yrs"} |{" "}
-                          ₹ {job.salary_range} |{" "}
+                          {job.experience || "0-2 Yrs"} | ₹ {job.salary_range} |{" "}
                           <i className="fa fa-map-marker"></i> {job.location}
                         </div>
 
                         <div className="text-muted small mt-1">
                           {job.job_description?.slice(0, 80)}...
                         </div>
+
+                        <div className="text-muted small mt-1">
+                          {job.key_skills}
+                        </div>
+
+                        <div className="text-muted small mt-2">
+                          <i className="fa fa-clock-o"></i>{" "}
+                          {getDaysAgo(job.created_at)}
+                        </div>
+                        
                       </div>
                     </div>
 
                     {/* RIGHT */}
                     <div className="text-end">
-                      {/* SAVE ICON */}
+                      {/* SAVE WITH TEXT */}
                       <button
-                        className="btn border-0 bg-transparent"
+                        className="btn border-0 bg-transparent d-flex align-items-center gap-1"
                         onClick={() => toggleSaveJob(job)}
                       >
                         <i
@@ -233,9 +255,9 @@ function JobListSection() {
                               : "fa-bookmark-o"
                           }`}
                         ></i>
-                      </button>
 
-                      <br />
+                        <small>{job.saved ? "Saved" : "Save"}</small>
+                      </button>
 
                       {/* APPLY */}
                       <button
