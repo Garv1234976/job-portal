@@ -52,10 +52,6 @@ function ContactSection() {
   return (
     <div className="container-xxl py-5">
       <div className="container">
-        <h1 className="text-center mb-2 wow fadeInUp">
-          Business Buddies
-        </h1>
-
         <h4 className="text-center text-primary mb-3">
           Contact For Any Query
         </h4>
@@ -91,7 +87,7 @@ function ContactSection() {
                   >
                     <i className="fa fa-envelope-open text-primary"></i>
                   </div>
-                  <span>info@businessbuddies.com</span>
+                  <span>info@dummy.com</span>
                 </div>
               </div>
 
