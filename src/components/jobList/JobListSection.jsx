@@ -6,11 +6,9 @@ function JobListSection() {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // 🔍 Search states
   const [search, setSearch] = useState("");
   const [location, setLocation] = useState("");
 
-  // 📄 Pagination
   const [page, setPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
 
@@ -51,10 +49,8 @@ function JobListSection() {
   return (
     <div className="container-xxl py-5">
       <div className="container">
-        {/* 🔥 TITLE */}
         <h1 className="text-center mb-4 fw-bold">Find Your Dream Job</h1>
 
-        {/* 🔍 SEARCH BAR */}
         <div className="row g-3 mb-5 justify-content-center">
           <div className="col-md-4">
             <input
@@ -89,15 +85,12 @@ function JobListSection() {
           </div>
         </div>
 
-        {/* 🔄 LOADING */}
         {loading && <p className="text-center">Loading jobs...</p>}
 
-        {/* ❌ EMPTY */}
         {!loading && jobs.length === 0 && (
           <p className="text-center text-muted">No jobs found</p>
         )}
 
-        {/* 💼 JOB LIST */}
         {!loading &&
           jobs.map((job) => (
             <div
@@ -126,7 +119,7 @@ function JobListSection() {
                     <h5 className="mb-1">{job.job_title}</h5>
 
                     <div className="text-muted small">
-                      📍 {job.location || "N/A"} &nbsp;|&nbsp; 💼{" "}
+                      {job.location || "N/A"} &nbsp;|&nbsp; 💼{" "}
                       {job.employment_type || "Full Time"} &nbsp;|&nbsp; 💰{" "}
                       {job.salary_range || "Not Disclosed"}
                     </div>
