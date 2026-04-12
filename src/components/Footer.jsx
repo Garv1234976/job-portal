@@ -1,6 +1,7 @@
 import { useState } from "react";
-import API from "../../services/api";
+
 import Swal from "sweetalert2";
+import api from "../services/api";
 
 function Footer() {
   const [email, setEmail] = useState("");
@@ -15,7 +16,7 @@ function Footer() {
     setLoading(true);
 
     try {
-      const res = await API.post("/subscribe", { email });
+      const res = await api.post("/subscribe", { email });
 
       Swal.fire("Success", res.data.message, "success");
       setEmail("");
