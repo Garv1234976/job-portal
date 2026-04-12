@@ -23,14 +23,13 @@ function JobListSection() {
 
     API.get(`/jobs?page=${page}&search=${search}&location=${location}`)
       .then((res) => {
-        setJobs(res.data.data || []);
+        setJobs(res.data.data.data || []);
         setLastPage(res.data.data.last_page || 1);
         setLoading(false);
       })
       .catch(() => setLoading(false));
   };
 
-  // ✅ APPLY JOB
   const applyJob = async (jobId, applied) => {
     if (applied) return;
 
@@ -44,7 +43,7 @@ function JobListSection() {
       Swal.fire(
         "Error",
         err.response?.data?.message || "Something went wrong",
-        "error"
+        "error",
       );
     }
   };
@@ -52,7 +51,6 @@ function JobListSection() {
   return (
     <div className="container-xxl py-5">
       <div className="container">
-
         {/* 🔥 TITLE */}
         <h1 className="text-center mb-4 fw-bold">Find Your Dream Job</h1>
 
@@ -107,7 +105,6 @@ function JobListSection() {
               key={job.id}
             >
               <div className="row align-items-center">
-
                 {/* LEFT */}
                 <div className="col-md-8 d-flex align-items-center">
                   <img
@@ -129,16 +126,15 @@ function JobListSection() {
                     <h5 className="mb-1">{job.job_title}</h5>
 
                     <div className="text-muted small">
-                      📍 {job.location || "N/A"} &nbsp;|&nbsp;
-                      💼 {job.employment_type || "Full Time"} &nbsp;|&nbsp;
-                      💰 {job.salary_range || "Not Disclosed"}
+                      📍 {job.location || "N/A"} &nbsp;|&nbsp; 💼{" "}
+                      {job.employment_type || "Full Time"} &nbsp;|&nbsp; 💰{" "}
+                      {job.salary_range || "Not Disclosed"}
                     </div>
                   </div>
                 </div>
 
                 {/* RIGHT */}
                 <div className="col-md-4 text-md-end mt-3 mt-md-0">
-
                   <button
                     className={`btn ${
                       job.applied ? "btn-success" : "btn-primary"
@@ -148,9 +144,7 @@ function JobListSection() {
                   >
                     {job.applied ? "Applied" : "Apply Now"}
                   </button>
-
                 </div>
-
               </div>
             </div>
           ))}
@@ -179,7 +173,6 @@ function JobListSection() {
             </button>
           </div>
         )}
-
       </div>
     </div>
   );
