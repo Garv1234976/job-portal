@@ -33,9 +33,7 @@ function Footer() {
       Swal.fire("Success", res.data.message, "success");
       setEmail("");
     } catch (err) {
-      setError(
-        err.response?.data?.message || "Something went wrong"
-      );
+      setError(err.response?.data?.message || "Something went wrong");
     }
 
     setLoading(false);
@@ -45,7 +43,6 @@ function Footer() {
     <div className="container-fluid bg-dark text-white-50 footer pt-5 mt-5">
       <div className="container py-5">
         <div className="row g-5">
-
           {/* Company Info */}
           <div className="col-lg-4 col-md-6">
             <h5 className="text-white mb-4">Business Buddies</h5>
@@ -67,15 +64,30 @@ function Footer() {
 
             {/* Social */}
             <div className="d-flex pt-2">
-              <a className="btn btn-outline-light btn-social" href="https://www.facebook.com" target="_blank" rel="noreferrer">
+              <a
+                className="btn btn-outline-light btn-social"
+                href="https://www.facebook.com"
+                target="_blank"
+                rel="noreferrer"
+              >
                 <i className="fab fa-facebook-f"></i>
               </a>
 
-              <a className="btn btn-outline-light btn-social" href="https://www.linkedin.com" target="_blank" rel="noreferrer">
+              <a
+                className="btn btn-outline-light btn-social"
+                href="https://www.linkedin.com"
+                target="_blank"
+                rel="noreferrer"
+              >
                 <i className="fab fa-linkedin-in"></i>
               </a>
 
-              <a className="btn btn-outline-light btn-social" href="https://www.instagram.com" target="_blank" rel="noreferrer">
+              <a
+                className="btn btn-outline-light btn-social"
+                href="https://www.instagram.com"
+                target="_blank"
+                rel="noreferrer"
+              >
                 <i className="fab fa-instagram"></i>
               </a>
             </div>
@@ -84,12 +96,15 @@ function Footer() {
           {/* Links */}
           <div className="col-lg-4 col-md-6">
             <h5 className="text-white mb-4">Useful Links</h5>
-
-            <a className="btn btn-link text-white-50" href="/about">About Us</a>
-            <a className="btn btn-link text-white-50" href="/contact">Contact Us</a>
-            <a className="btn btn-link text-white-50" href="#">Services</a>
-            <a className="btn btn-link text-white-50" href="#">Privacy Policy</a>
-            <a className="btn btn-link text-white-50" href="#">Terms & Condition</a>
+            <a className="btn btn-link text-white-50" href="/">
+              Home
+            </a>
+            <a className="btn btn-link text-white-50" href="/about">
+              About Us
+            </a>
+            <a className="btn btn-link text-white-50" href="/contact">
+              Contact Us
+            </a>
           </div>
 
           {/* Newsletter */}
@@ -101,7 +116,10 @@ function Footer() {
               and modern web services.
             </p>
 
-            <div className="position-relative mx-auto" style={{ maxWidth: "400px" }}>
+            <div
+              className="position-relative mx-auto"
+              style={{ maxWidth: "400px" }}
+            >
               <input
                 className={`form-control bg-transparent w-100 py-3 ps-4 pe-5 ${error ? "is-invalid" : ""}`}
                 type="email"
@@ -109,7 +127,7 @@ function Footer() {
                 value={email}
                 onChange={(e) => {
                   setEmail(e.target.value);
-                  setError(""); // clear error while typing
+                  setError("");
                 }}
               />
 
@@ -122,30 +140,20 @@ function Footer() {
                 {loading ? "..." : "Sign Up"}
               </button>
             </div>
-
-            {/* ✅ ERROR MESSAGE BELOW INPUT */}
             {error && (
-              <small className="text-danger mt-2 d-block">
-                {error}
-              </small>
+              <small className="text-danger mt-2 d-block">{error}</small>
             )}
           </div>
-
         </div>
       </div>
 
       {/* Bottom */}
       <div className="container pt-3">
         <div className="row">
-          <div className="col-md-6 text-center text-md-start mb-3 mb-md-0">
+          <div className="col-12 text-center mb-3">
             © {new Date().getFullYear()}{" "}
-            <span className="text-white">Business Buddies</span>, All Rights Reserved.
-          </div>
-
-          <div className="col-md-6 text-center text-md-end">
-            <div className="footer-menu">
-              <a href="/">Home</a>
-            </div>
+            <span className="text-white">Business Buddies</span>, All Rights
+            Reserved.
           </div>
         </div>
       </div>
