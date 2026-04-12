@@ -171,11 +171,11 @@ function JobListSection() {
                         <h5 className="mb-1">{job.job_title}</h5>
 
                         <div className="text-muted small mt-1">
-                          <i className="fa fa-bookmark"></i> {job.experience || "0-2 Yrs"} | 💰 {job.salary_range} | 📍 {job.location}
+                          <i className="fa-regular fa-briefcase"></i> {job.experience || "0-2 Yrs"} | <i className="fa-regular fa-indian-rupee-sign"></i> {job.salary_range} | <i className="fa-sharp fa-regular fa-location-dot"></i> {job.location}
                         </div>
 
                         <div className="text-muted small mt-1">
-                          {job.job_description?.slice(0, 80)}...
+                          {job.description?.slice(0, 80)}...
                         </div>
                       </div>
                     </div>
