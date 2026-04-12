@@ -9,22 +9,23 @@ function JobListSection() {
   const [search, setSearch] = useState("");
   const [location, setLocation] = useState("");
 
-  // 🔥 FILTERS
+  // Filters
   const [jobType, setJobType] = useState("");
   const [salary, setSalary] = useState("");
+  const [experience, setExperience] = useState("");
 
   const [page, setPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
 
   useEffect(() => {
     fetchJobs();
-  }, [page, jobType, salary]);
+  }, [page, jobType, salary, experience]);
 
   const fetchJobs = () => {
     setLoading(true);
 
     API.get(
-      `/jobs?page=${page}&search=${search}&location=${location}&type=${jobType}&salary=${salary}`
+      `/jobs?page=${page}&search=${search}&location=${location}&type=${jobType}&salary=${salary}&experience=${experience}`
     )
       .then((res) => {
         setJobs(res.data.data.data || []);
@@ -34,7 +35,7 @@ function JobListSection() {
       .catch(() => setLoading(false));
   };
 
-  // ✅ APPLY
+  // APPLY
   const applyJob = async (jobId, applied) => {
     if (applied) return;
 
@@ -47,13 +48,20 @@ function JobListSection() {
     }
   };
 
-  // ❤️ SAVE JOB
-  const saveJob = async (jobId) => {
+  // SAVE / UNSAVE
+  const toggleSaveJob = async (job) => {
     try {
-      await API.post("/save-job", { job_id: jobId });
-      Swal.fire("Saved", "Job saved successfully", "success");
+      if (job.saved) {
+        await API.post("/unsave-job", { job_id: job.id });
+        job.saved = false;
+      } else {
+        await API.post("/save-job", { job_id: job.id });
+        job.saved = true;
+      }
+
+      setJobs([...jobs]);
     } catch {
-      Swal.fire("Error", "Failed to save job", "error");
+      Swal.fire("Error", "Action failed", "error");
     }
   };
 
@@ -61,38 +69,42 @@ function JobListSection() {
     <div className="container-xxl py-5">
       <div className="container">
 
-        <h2 className="mb-4 fw-bold">Find Jobs</h2>
+        <h2 className="fw-bold mb-4">Find Jobs</h2>
 
         <div className="row">
 
-          {/* 🔥 SIDEBAR FILTER */}
+          {/* 🔥 SIDEBAR */}
           <div className="col-md-3">
             <div className="bg-white p-3 shadow-sm rounded">
 
-              <h5>Filters</h5>
+              <h5>All Filters</h5>
+              <hr />
+
+              {/* Job Type */}
+              <h6>Work Mode</h6>
+              <div><input type="radio" name="type" onChange={() => setJobType("office")} /> Office</div>
+              <div><input type="radio" name="type" onChange={() => setJobType("remote")} /> Remote</div>
+              <div><input type="radio" name="type" onChange={() => setJobType("hybrid")} /> Hybrid</div>
 
               <hr />
 
-              <label>Job Type</label>
-              <select
-                className="form-control mb-3"
-                onChange={(e) => setJobType(e.target.value)}
-              >
-                <option value="">All</option>
-                <option value="Full Time">Full Time</option>
-                <option value="Part Time">Part Time</option>
-              </select>
+              {/* Experience */}
+              <h6>Experience</h6>
+              <input
+                type="range"
+                min="0"
+                max="10"
+                className="form-range"
+                onChange={(e) => setExperience(e.target.value)}
+              />
 
-              <label>Salary</label>
-              <select
-                className="form-control"
-                onChange={(e) => setSalary(e.target.value)}
-              >
-                <option value="">All</option>
-                <option value="0-20000">0-20k</option>
-                <option value="20000-50000">20k-50k</option>
-                <option value="50000+">50k+</option>
-              </select>
+              <hr />
+
+              {/* Salary */}
+              <h6>Salary</h6>
+              <div><input type="radio" name="salary" onChange={() => setSalary("0-3")} /> 0-3 Lakhs</div>
+              <div><input type="radio" name="salary" onChange={() => setSalary("3-6")} /> 3-6 Lakhs</div>
+              <div><input type="radio" name="salary" onChange={() => setSalary("6-10")} /> 6-10 Lakhs</div>
 
             </div>
           </div>
@@ -127,13 +139,18 @@ function JobListSection() {
               </div>
             </div>
 
-            {loading && <p>Loading...</p>}
+            {loading && <p>Loading jobs...</p>}
 
+            {!loading && jobs.length === 0 && (
+              <p className="text-muted">No jobs found</p>
+            )}
+
+            {/* JOB CARDS */}
             {!loading &&
               jobs.map((job) => (
                 <div
                   key={job.id}
-                  className="p-3 mb-3 bg-white shadow-sm rounded"
+                  className="p-4 mb-3 bg-white shadow-sm rounded border"
                 >
                   <div className="d-flex justify-content-between">
 
@@ -145,29 +162,48 @@ function JobListSection() {
                             ? `https://server.budes.online/storage/${job.logo}`
                             : "/assets/img/default.png"
                         }
+                        alt=""
                         style={{ width: 60, height: 60 }}
+                        className="rounded"
                       />
 
                       <div className="ms-3">
-                        <h6>{job.job_title}</h6>
+                        <h5 className="mb-1">{job.job_title}</h5>
+
                         <small className="text-muted">
-                          {job.location} | {job.salary_range}
+                          ⭐ 3.5 | Company
                         </small>
+
+                        <div className="text-muted small mt-1">
+                          💼 {job.experience || "0-2 Yrs"} | 💰 {job.salary_range} | 📍 {job.location}
+                        </div>
+
+                        <div className="text-muted small mt-1">
+                          {job.job_description?.slice(0, 80)}...
+                        </div>
                       </div>
                     </div>
 
                     {/* RIGHT */}
                     <div className="text-end">
 
+                      {/* SAVE ICON */}
                       <button
-                        className="btn btn-light me-2"
-                        onClick={() => saveJob(job.id)}
+                        className="btn border-0 bg-transparent"
+                        onClick={() => toggleSaveJob(job)}
                       >
-                        ❤️
+                        <i
+                          className={`fa ${
+                            job.saved ? "fa-bookmark text-primary" : "fa-bookmark-o"
+                          }`}
+                        ></i>
                       </button>
 
+                      <br />
+
+                      {/* APPLY */}
                       <button
-                        className={`btn ${
+                        className={`btn mt-3 ${
                           job.applied ? "btn-success" : "btn-primary"
                         }`}
                         disabled={job.applied}
@@ -182,32 +218,32 @@ function JobListSection() {
               ))}
 
             {/* PAGINATION */}
-            <div className="d-flex justify-content-center mt-4">
-              <button
-                disabled={page === 1}
-                onClick={() => setPage(page - 1)}
-                className="btn btn-outline-primary me-2"
-              >
-                Prev
-              </button>
+            {!loading && lastPage > 1 && (
+              <div className="d-flex justify-content-center mt-4">
+                <button
+                  disabled={page === 1}
+                  onClick={() => setPage(page - 1)}
+                  className="btn btn-outline-primary me-2"
+                >
+                  Prev
+                </button>
 
-              <span>
-                {page} / {lastPage}
-              </span>
+                <span>{page} / {lastPage}</span>
 
-              <button
-                disabled={page === lastPage}
-                onClick={() => setPage(page + 1)}
-                className="btn btn-outline-primary ms-2"
-              >
-                Next
-              </button>
-            </div>
+                <button
+                  disabled={page === lastPage}
+                  onClick={() => setPage(page + 1)}
+                  className="btn btn-outline-primary ms-2"
+                >
+                  Next
+                </button>
+              </div>
+            )}
 
           </div>
         </div>
       </div>
-    </div> 
+    </div>
   );
 }
 
