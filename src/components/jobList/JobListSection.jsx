@@ -25,7 +25,7 @@ function JobListSection() {
     setLoading(true);
 
     API.get(
-      `/jobs?page=${page}&search=${search}&location=${location}&type=${jobType}&salary=${salary}&experience=${experience}`
+      `/jobs?page=${page}&search=${search}&location=${location}&type=${jobType}&salary=${salary}&experience=${experience}`,
     )
       .then((res) => {
         setJobs(res.data.data.data || []);
@@ -68,23 +68,41 @@ function JobListSection() {
   return (
     <div className="container-xxl py-5">
       <div className="container">
-
         <h2 className="fw-bold mb-4">Find Jobs</h2>
 
         <div className="row">
-
           {/* 🔥 SIDEBAR */}
           <div className="col-md-3">
             <div className="bg-white p-3 shadow-sm rounded">
-
               <h5>All Filters</h5>
               <hr />
 
               {/* Job Type */}
               <h6>Work Mode</h6>
-              <div><input type="radio" name="type" onChange={() => setJobType("office")} /> Office</div>
-              <div><input type="radio" name="type" onChange={() => setJobType("remote")} /> Remote</div>
-              <div><input type="radio" name="type" onChange={() => setJobType("hybrid")} /> Hybrid</div>
+              <div>
+                <input
+                  type="radio"
+                  name="type"
+                  onChange={() => setJobType("office")}
+                />{" "}
+                Office
+              </div>
+              <div>
+                <input
+                  type="radio"
+                  name="type"
+                  onChange={() => setJobType("remote")}
+                />{" "}
+                Remote
+              </div>
+              <div>
+                <input
+                  type="radio"
+                  name="type"
+                  onChange={() => setJobType("hybrid")}
+                />{" "}
+                Hybrid
+              </div>
 
               <hr />
 
@@ -102,16 +120,35 @@ function JobListSection() {
 
               {/* Salary */}
               <h6>Salary</h6>
-              <div><input type="radio" name="salary" onChange={() => setSalary("0-3")} /> 0-3 Lakhs</div>
-              <div><input type="radio" name="salary" onChange={() => setSalary("3-6")} /> 3-6 Lakhs</div>
-              <div><input type="radio" name="salary" onChange={() => setSalary("6-10")} /> 6-10 Lakhs</div>
-
+              <div>
+                <input
+                  type="radio"
+                  name="salary"
+                  onChange={() => setSalary("0-3")}
+                />{" "}
+                0-3 Lakhs
+              </div>
+              <div>
+                <input
+                  type="radio"
+                  name="salary"
+                  onChange={() => setSalary("3-6")}
+                />{" "}
+                3-6 Lakhs
+              </div>
+              <div>
+                <input
+                  type="radio"
+                  name="salary"
+                  onChange={() => setSalary("6-10")}
+                />{" "}
+                6-10 Lakhs
+              </div>
             </div>
           </div>
 
           {/* 🔥 JOB LIST */}
           <div className="col-md-9">
-
             {/* SEARCH */}
             <div className="row g-2 mb-4">
               <div className="col-md-5">
@@ -153,7 +190,6 @@ function JobListSection() {
                   className="p-4 mb-3 bg-white shadow-sm rounded border"
                 >
                   <div className="d-flex justify-content-between">
-
                     {/* LEFT */}
                     <div className="d-flex">
                       <img
@@ -171,7 +207,10 @@ function JobListSection() {
                         <h5 className="mb-1">{job.job_title}</h5>
 
                         <div className="text-muted small mt-1">
-                          <i className="fa-regular fa-briefcase"></i> {job.experience || "0-2 Yrs"} | <i className="fa-regular fa-indian-rupee-sign"></i> {job.salary_range} | <i className="fa-sharp fa-regular fa-location-dot"></i> {job.location}
+                          <i className="fa fa-briefcase"></i>{" "}
+                          {job.experience || "0-2 Yrs"} |{" "}
+                          <i className="fa fa-inr"></i> {job.salary_range} |{" "}
+                          <i className="fa fa-map-marker"></i> {job.location}
                         </div>
 
                         <div className="text-muted small mt-1">
@@ -182,7 +221,6 @@ function JobListSection() {
 
                     {/* RIGHT */}
                     <div className="text-end">
-
                       {/* SAVE ICON */}
                       <button
                         className="btn border-0 bg-transparent"
@@ -190,7 +228,9 @@ function JobListSection() {
                       >
                         <i
                           className={`fa ${
-                            job.saved ? "fa-bookmark text-primary" : "fa-bookmark-o"
+                            job.saved
+                              ? "fa-bookmark text-primary"
+                              : "fa-bookmark-o"
                           }`}
                         ></i>
                       </button>
@@ -207,7 +247,6 @@ function JobListSection() {
                       >
                         {job.applied ? "Applied" : "Apply"}
                       </button>
-
                     </div>
                   </div>
                 </div>
@@ -224,7 +263,9 @@ function JobListSection() {
                   Prev
                 </button>
 
-                <span>{page} / {lastPage}</span>
+                <span>
+                  {page} / {lastPage}
+                </span>
 
                 <button
                   disabled={page === lastPage}
@@ -235,7 +276,6 @@ function JobListSection() {
                 </button>
               </div>
             )}
-
           </div>
         </div>
       </div>
