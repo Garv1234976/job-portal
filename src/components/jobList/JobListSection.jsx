@@ -23,7 +23,7 @@ function JobListSection() {
 
     API.get(`/jobs?page=${page}&search=${search}&location=${location}`)
       .then((res) => {
-        setJobs(res.data.data.data || []);
+        setJobs(res.data.data || []);
         setLastPage(res.data.data.last_page || 1);
         setLoading(false);
       })
