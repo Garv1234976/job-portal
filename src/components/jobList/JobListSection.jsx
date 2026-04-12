@@ -214,7 +214,7 @@ function JobListSection() {
                         </div>
 
                         <div className="text-muted small mt-1">
-                          {job.description?.slice(0, 80)}...
+                          {job.job_description?.slice(0, 80)}...
                         </div>
                       </div>
                     </div>
