@@ -159,7 +159,7 @@ function JobListSection() {
                       <img
                         src={
                           job.logo
-                            ? `https://server.budes.online/storage/${job.logo}`
+                            ? `https://server.budes.online/public/storage/${job.logo}`
                             : "/assets/img/default.png"
                         }
                         alt=""
@@ -170,12 +170,8 @@ function JobListSection() {
                       <div className="ms-3">
                         <h5 className="mb-1">{job.job_title}</h5>
 
-                        <small className="text-muted">
-                          ⭐ 3.5 | Company
-                        </small>
-
                         <div className="text-muted small mt-1">
-                          💼 {job.experience || "0-2 Yrs"} | 💰 {job.salary_range} | 📍 {job.location}
+                          <i class="fa-regular fa-briefcase"></i> {job.experience || "0-2 Yrs"} | 💰 {job.salary_range} | 📍 {job.location}
                         </div>
 
                         <div className="text-muted small mt-1">
