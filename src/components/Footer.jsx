@@ -135,7 +135,7 @@ function Footer() {
       </div>
 
       {/* Bottom */}
-      <div className="container border-top border-secondary pt-3">
+      <div className="container pt-3">
         <div className="row">
           <div className="col-md-6 text-center text-md-start mb-3 mb-md-0">
             © {new Date().getFullYear()}{" "}
