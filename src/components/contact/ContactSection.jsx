@@ -52,18 +52,23 @@ function ContactSection() {
   return (
     <div className="container-xxl py-5">
       <div className="container">
-        <h1 className="text-center mb-3 wow fadeInUp">Contact For Any Query</h1>
+        <h1 className="text-center mb-2 wow fadeInUp">
+          Business Buddies
+        </h1>
 
-        {/* ✅ HELP TEXT */}
+        <h4 className="text-center text-primary mb-3">
+          Contact For Any Query
+        </h4>
+
         <p className="text-center text-muted mb-4">
-          Need help? We're here for you! You can contact us anytime via
-          WhatsApp, email, or the form below. We usually reply within 24 hours.
+          Need help? We're here for you! Contact us via WhatsApp, email, or the form below.
+          We usually reply within 24 hours.
         </p>
 
         <div className="row g-4">
-          {/* Contact Info */}
           <div className="col-12">
             <div className="row gy-4">
+
               <div className="col-md-4">
                 <div className="d-flex align-items-center bg-light rounded p-4">
                   <div
@@ -72,7 +77,9 @@ function ContactSection() {
                   >
                     <i className="fa fa-map-marker-alt text-primary"></i>
                   </div>
-                  <span>123 Street, New York, USA</span>
+                  <span>
+                    <strong>Oxford Street</strong>, Zirakpur, Punjab, India
+                  </span>
                 </div>
               </div>
 
@@ -84,7 +91,7 @@ function ContactSection() {
                   >
                     <i className="fa fa-envelope-open text-primary"></i>
                   </div>
-                  <span>info@dummy.com</span>
+                  <span>info@businessbuddies.com</span>
                 </div>
               </div>
 
@@ -98,27 +105,27 @@ function ContactSection() {
                   </div>
                   <span>
                     <a
-                      href="https://wa.me/0402 499 695"
+                      href="https://wa.me/919478391355"
                       target="_blank"
                       rel="noreferrer"
                       className="btn btn-success px-4 py-2"
                     >
-                       0402 499 695
+                      Chat on WhatsApp
                     </a>
                   </span>
                 </div>
               </div>
+
             </div>
           </div>
 
-          {/* Map */}
           <div className="col-md-6">
             <iframe
               className="position-relative rounded w-100 h-100"
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3001156.4288297426!2d-78.01371936852176!3d42.72876761954724!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4ccc4bf0f123a5a9%3A0xddcfc6c1de189567!2sNew%20York%2C%20USA!5e0!3m2!1sen!2sbd!4v1603794290143!5m2!1sen!2sbd"
+              src="https://www.google.com/maps?q=Oxford+Street+Zirakpur+Punjab&output=embed"
               style={{ minHeight: "400px", border: 0 }}
               loading="lazy"
-              title="map"
+              title="Zirakpur Map"
             ></iframe>
           </div>
 
@@ -127,6 +134,7 @@ function ContactSection() {
             <div className="wow fadeInUp">
               <form onSubmit={submitContact}>
                 <div className="row g-3">
+
                   <div className="col-md-6">
                     <div className="form-floating">
                       <input
@@ -183,10 +191,9 @@ function ContactSection() {
                     </div>
                   </div>
 
-                  {/* ✅ EXTRA TRUST TEXT */}
                   <div className="col-12">
                     <small className="text-muted">
-                      🔒 Your information is safe with us
+                       Your information is safe with us
                     </small>
                   </div>
 
@@ -199,10 +206,12 @@ function ContactSection() {
                       {loading ? "Sending..." : "Send Message"}
                     </button>
                   </div>
+
                 </div>
               </form>
             </div>
           </div>
+
         </div>
       </div>
     </div>
