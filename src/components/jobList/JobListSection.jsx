@@ -103,7 +103,7 @@ function JobListSection() {
                   <img
                     src={
                       job.logo
-                        ? `https://server.budes.online/storage/${job.logo}`
+                        ? `https://server.budes.online/public/storage/${job.logo}`
                         : "/assets/img/default.png"
                     }
                     alt="logo"
