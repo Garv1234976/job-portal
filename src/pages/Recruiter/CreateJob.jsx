@@ -11,28 +11,79 @@ export default function CreateJob() {
     setErrors({ ...errors, [e.target.name]: "" });
   };
 
+  const validate = () => {
+    let newErrors = {};
+
+    if (!form.job_title) newErrors.job_title = "Required";
+    if (!form.job_description) newErrors.job_description = "Required";
+    if (!form.education) newErrors.education = "Required";
+    if (!form.experience) newErrors.experience = "Required";
+    if (!form.gender) newErrors.gender = "Required";
+    if (!form.location) newErrors.location = "Required";
+    if (!form.salary_range) newErrors.salary_range = "Required";
+    if (!form.openings) newErrors.openings = "Required";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const submit = async () => {
+    if (!validate()) return;
+
     try {
       const formData = new FormData();
+
       Object.keys(form).forEach((key) => {
         formData.append(key, form[key]);
       });
 
-      await API.post("/create-job", formData);
+      await API.post("/create-job", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
 
-      Swal.fire("Success", "Job Posted Successfully", "success");
-    } catch {
-      Swal.fire("Error", "Something went wrong", "error");
+      Swal.fire({
+        icon: "success",
+        title: "Success",
+        text: "Job Posted Successfully",
+        confirmButtonColor: "#28a745",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          window.location.href = "/recruiter/jobs";
+        }
+      });
+    } catch (err) {
+      const data = err.response?.data;
+
+      if (data?.upgrade) {
+        Swal.fire({
+          icon: "warning",
+          title: "Limit Reached",
+          text: data.message,
+          confirmButtonText: "Upgrade Plan",
+          confirmButtonColor: "#007bff",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.location.href = "/recruiter/plans";
+          }
+        });
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: data?.message || "Something went wrong",
+        });
+      }
     }
   };
 
   return (
     <div className="container mt-4">
-      <div className="card p-4">
-        <h3>Create Job</h3>
+      <div className="card shadow-lg p-4">
+        <h2 className="mb-4 text-center">Create Job</h2>
 
         <div className="row g-3">
-
           {/* Job Title */}
           <div className="col-md-6">
             <label>Job Title *</label>
@@ -56,16 +107,24 @@ export default function CreateJob() {
               onChange={handleChange}
             />
           </div>
-
-          {/* Logo */}
           <div className="col-md-6">
-            <label>Logo</label>
+            <label>
+              Logo <span className="text-danger">*</span>
+            </label>
             <input
               type="file"
+              name="logo"
               className="form-control"
-              onChange={(e) =>
-                setForm({ ...form, logo: e.target.files[0] })
-              }
+              onChange={(e) => setForm({ ...form, logo: e.target.files[0] })}
+            />
+          </div>
+          {/* Key Skills */}
+          <div className="col-md-6">
+            <label>Key Skills</label>
+            <input
+              className="form-control"
+              name="key_skills"
+              onChange={handleChange}
             />
           </div>
 
@@ -109,11 +168,67 @@ export default function CreateJob() {
           {/* Gender */}
           <div className="col-md-4">
             <label>Gender</label>
-            <select className="form-control" name="gender" onChange={handleChange}>
+            <select
+              className="form-control"
+              name="gender"
+              onChange={handleChange}
+            >
               <option value="">Select</option>
               <option>Male</option>
               <option>Female</option>
               <option>Both</option>
+            </select>
+          </div>
+
+          {/* Working Hours */}
+          <div className="col-md-4">
+            <label>Working Hours</label>
+            <input
+              className="form-control"
+              name="working_hours"
+              onChange={handleChange}
+            />
+          </div>
+
+          {/* Shift */}
+          <div className="col-md-4">
+            <label>Shift</label>
+            <select
+              className="form-control"
+              name="shift"
+              onChange={handleChange}
+            >
+              <option>Day</option>
+              <option>Night</option>
+            </select>
+          </div>
+
+          {/* Employment Type */}
+          <div className="col-md-4">
+            <label>Employment Type</label>
+            <select
+              className="form-control"
+              name="employment_type"
+              onChange={handleChange}
+            >
+              <option>Full Time</option>
+              <option>Part Time</option>
+              <option>Contract</option>
+              <option>Remote</option>
+            </select>
+          </div>
+
+          {/* Work Mode */}
+          <div className="col-md-4">
+            <label>Work Mode</label>
+            <select
+              className="form-control"
+              name="work_mode"
+              onChange={handleChange}
+            >
+              <option>Onsite</option>
+              <option>Hybrid</option>
+              <option>WFH</option>
             </select>
           </div>
 
@@ -144,6 +259,36 @@ export default function CreateJob() {
             />
           </div>
 
+          {/* Benefits */}
+          <div className="col-md-12">
+            <label>Benefits</label>
+            <textarea
+              className="form-control"
+              rows="2"
+              name="benefits"
+              onChange={handleChange}
+            />
+          </div>
+
+          {/* Extra Fields */}
+          <div className="col-md-3">
+            <label>Overtime</label>
+            <input
+              className="form-control"
+              name="overtime"
+              onChange={handleChange}
+            />
+          </div>
+
+          <div className="col-md-3">
+            <label>Cab Facility</label>
+            <input
+              className="form-control"
+              name="cab_facility"
+              onChange={handleChange}
+            />
+          </div>
+
           {/* Skills */}
           <div className="col-md-3">
             <label>Skills</label>
@@ -159,7 +304,6 @@ export default function CreateJob() {
               <option>Laravel</option>
             </select>
           </div>
-
           {/* Language */}
           <div className="col-md-3">
             <label>Language</label>
@@ -186,11 +330,22 @@ export default function CreateJob() {
             />
           </div>
 
+          <div className="col-md-3">
+            <label>Interview Mode</label>
+            <input
+              className="form-control"
+              name="interview_mode"
+              onChange={handleChange}
+            />
+          </div>
         </div>
 
-        <button className="btn btn-success mt-3" onClick={submit}>
-          Submit
-        </button>
+        {/* Submit */}
+        <div className="text-center mt-4">
+          <button className="btn btn-success px-5 py-2" onClick={submit}>
+            Post Job
+          </button>
+        </div>
       </div>
     </div>
   );
