@@ -12,17 +12,15 @@ function JobListSection() {
   // Filters
   const [jobType, setJobType] = useState("");
   const [salary, setSalary] = useState("");
-  const [experience, setExperience] = useState(0); // ✅ FIXED
+  const [experience, setExperience] = useState(0);
 
   const [page, setPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
 
-  // Pagination auto load
   useEffect(() => {
     fetchJobs();
   }, [page]);
 
-  // API
   const fetchJobs = (customPage = page) => {
     setLoading(true);
 
@@ -44,7 +42,6 @@ function JobListSection() {
       .catch(() => setLoading(false));
   };
 
-  // APPLY
   const applyJob = async (jobId, applied) => {
     if (applied) return;
 
@@ -57,7 +54,6 @@ function JobListSection() {
     }
   };
 
-  // DAYS AGO
   const getDaysAgo = (date) => {
     const created = new Date(date);
     const now = new Date();
@@ -68,7 +64,6 @@ function JobListSection() {
     return `${diffDays} days ago`;
   };
 
-  // SAVE
   const toggleSaveJob = async (job) => {
     try {
       if (job.saved) {
@@ -100,9 +95,36 @@ function JobListSection() {
 
               {/* Work Mode */}
               <h6>Work Mode</h6>
-              <div><input type="radio" name="type" onChange={() => setJobType("office")} /> Office</div>
-              <div><input type="radio" name="type" onChange={() => setJobType("remote")} /> Remote</div>
-              <div><input type="radio" name="type" onChange={() => setJobType("hybrid")} /> Hybrid</div>
+
+              <div>
+                <input
+                  type="radio"
+                  name="type"
+                  value="office"
+                  checked={jobType === "office"}
+                  onChange={(e) => setJobType(e.target.value)}
+                /> Office
+              </div>
+
+              <div>
+                <input
+                  type="radio"
+                  name="type"
+                  value="remote"
+                  checked={jobType === "remote"}
+                  onChange={(e) => setJobType(e.target.value)}
+                /> Remote
+              </div>
+
+              <div>
+                <input
+                  type="radio"
+                  name="type"
+                  value="hybrid"
+                  checked={jobType === "hybrid"}
+                  onChange={(e) => setJobType(e.target.value)}
+                /> Hybrid
+              </div>
 
               <hr />
 
@@ -135,13 +157,40 @@ function JobListSection() {
 
               {/* Salary */}
               <h6>Salary</h6>
-              <div><input type="radio" name="salary" onChange={() => setSalary("0-3")} /> 0-3 Lakhs</div>
-              <div><input type="radio" name="salary" onChange={() => setSalary("3-6")} /> 3-6 Lakhs</div>
-              <div><input type="radio" name="salary" onChange={() => setSalary("6-10")} /> 6-10 Lakhs</div>
+
+              <div>
+                <input
+                  type="radio"
+                  name="salary"
+                  value="0-3"
+                  checked={salary === "0-3"}
+                  onChange={(e) => setSalary(e.target.value)}
+                /> 0-3 Lakhs
+              </div>
+
+              <div>
+                <input
+                  type="radio"
+                  name="salary"
+                  value="3-6"
+                  checked={salary === "3-6"}
+                  onChange={(e) => setSalary(e.target.value)}
+                /> 3-6 Lakhs
+              </div>
+
+              <div>
+                <input
+                  type="radio"
+                  name="salary"
+                  value="6-10"
+                  checked={salary === "6-10"}
+                  onChange={(e) => setSalary(e.target.value)}
+                /> 6-10 Lakhs
+              </div>
 
               <hr />
 
-              {/* APPLY FILTER */}
+              {/* APPLY */}
               <button
                 className="btn btn-primary w-100 mt-2"
                 onClick={() => {
@@ -163,10 +212,6 @@ function JobListSection() {
                   setLocation("");
                   setPage(1);
                   fetchJobs(1);
-
-                  document.querySelectorAll("input[type=radio]").forEach((el) => {
-                    el.checked = false;
-                  });
                 }}
               >
                 Reset
@@ -175,7 +220,7 @@ function JobListSection() {
             </div>
           </div>
 
-          {/* JOB LIST */}
+         {/* JOB LIST */}
           <div className="col-md-9">
 
             {/* SEARCH */}
@@ -300,9 +345,10 @@ function JobListSection() {
             )}
 
           </div>
+
         </div>
       </div>
-    </div> 
+    </div>
   );
 }
 
