@@ -19,7 +19,7 @@ function JobCard() {
   const fetchJobs = (customPage = page) => {
     setLoading(true);
 
-    api.get(`/jobs`, {
+    API.get(`/jobs`, {
       params: {
         page: customPage,
         search,

@@ -18,7 +18,7 @@ function JobList() {
       params: { type },
     })
       .then((res) => {
-        setJobs(res.data.data || []);
+         setJobs(res.data.data.data || []);
         console.log("JOBS:", res.data.data);
         setLoading(false);
       })
