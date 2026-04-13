@@ -195,6 +195,7 @@ const fetchJobs = () => {
                   }}
                 >
                   Search
+                  </button>
               </div>
             </div>
 
