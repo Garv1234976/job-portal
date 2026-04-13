@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import API from "../../services/api";
 import Swal from "sweetalert2";
+import api from "../services/api";
 
 function JobCard() {
   const [jobs, setJobs] = useState([]);
@@ -19,7 +19,7 @@ function JobCard() {
   const fetchJobs = (customPage = page) => {
     setLoading(true);
 
-    API.get(`/jobs`, {
+    api.get(`/jobs`, {
       params: {
         page: customPage,
         search,
