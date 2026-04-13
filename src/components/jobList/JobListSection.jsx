@@ -302,7 +302,7 @@ function JobListSection() {
           </div>
         </div>
       </div>
-    </div>
+    </div> 
   );
 }
 
