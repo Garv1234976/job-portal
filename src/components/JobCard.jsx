@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Swal from "sweetalert2";
-import api from "../services/api";
+import API from "../services/api";
 
 function JobCard() {
   const [jobs, setJobs] = useState([]);
