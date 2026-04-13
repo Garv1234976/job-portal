@@ -97,33 +97,21 @@ function JobListSection() {
               <h6>Saved Jobs</h6>
 
               <div>
-                <input
-                  type="radio"
-                  name="saved"
-                  value=""
+                <input type="radio" name="saved" value=""
                   checked={savedFilter === ""}
-                  onChange={(e) => setSavedFilter(e.target.value)}
-                /> All Jobs
+                  onChange={(e) => setSavedFilter(e.target.value)} /> All Jobs
               </div>
 
               <div>
-                <input
-                  type="radio"
-                  name="saved"
-                  value="saved"
+                <input type="radio" name="saved" value="saved"
                   checked={savedFilter === "saved"}
-                  onChange={(e) => setSavedFilter(e.target.value)}
-                /> Saved Jobs
+                  onChange={(e) => setSavedFilter(e.target.value)} /> Saved Jobs
               </div>
 
               <div>
-                <input
-                  type="radio"
-                  name="saved"
-                  value="unsaved"
+                <input type="radio" name="saved" value="unsaved"
                   checked={savedFilter === "unsaved"}
-                  onChange={(e) => setSavedFilter(e.target.value)}
-                /> Unsaved Jobs
+                  onChange={(e) => setSavedFilter(e.target.value)} /> Unsaved Jobs
               </div>
 
               <hr />
@@ -153,15 +141,17 @@ function JobListSection() {
 
               {/* EXPERIENCE */}
               <h6>Experience</h6>
-              <div className="small">Selected: {experience} Years</div>
+              <div className="small text-muted">
+                Selected: <strong>{experience} Years</strong>
+              </div>
 
               <input
                 type="range"
                 min="0"
                 max="10"
                 value={experience}
-                onChange={(e) => setExperience(e.target.value)}
                 className="form-range"
+                onChange={(e) => setExperience(e.target.value)}
               />
 
               <hr />
@@ -190,19 +180,16 @@ function JobListSection() {
               <hr />
 
               {/* APPLY */}
-              <button
-                className="btn btn-primary w-100"
+              <button className="btn btn-primary w-100"
                 onClick={() => {
                   setPage(1);
                   fetchJobs(1);
-                }}
-              >
+                }}>
                 Apply Filters
               </button>
 
               {/* RESET */}
-              <button
-                className="btn btn-outline-secondary w-100 mt-2"
+              <button className="btn btn-outline-secondary w-100 mt-2"
                 onClick={() => {
                   setJobType("");
                   setSalary("");
@@ -212,8 +199,7 @@ function JobListSection() {
                   setSavedFilter("");
                   setPage(1);
                   fetchJobs(1);
-                }}
-              >
+                }}>
                 Reset
               </button>
 
@@ -254,11 +240,7 @@ function JobListSection() {
               </div>
             </div>
 
-            {loading && <p>Loading...</p>}
-
-            {!loading && jobs.length === 0 && (
-              <p>No jobs found</p>
-            )}
+            {loading && <p>Loading jobs...</p>}
 
             {/* JOB CARDS */}
             {jobs.map((job) => (
@@ -274,20 +256,25 @@ function JobListSection() {
                           : "/assets/img/default.png"
                       }
                       style={{ width: 60, height: 60 }}
+                      className="rounded"
                     />
 
                     <div className="ms-3">
                       <h5>{job.job_title}</h5>
 
-                      <div className="small text-muted">
-                        ₹ {job.salary_range} | {job.location}
+                      <div className="text-muted small">
+                        <i className="fa fa-briefcase"></i> {job.experience} |{" "}
+                        ₹ {job.salary_range} |{" "}
+                        <i className="fa fa-map-marker"></i> {job.location}
                       </div>
 
-                      <div className="small text-muted">
-                        {job.job_description?.slice(0, 60)}...
+                      <div className="text-muted small">
+                        <i className="fa fa-file-text"></i>{" "}
+                        {job.job_description?.slice(0, 70)}...
                       </div>
 
-                      <div className="small text-muted">
+                      <div className="text-muted small">
+                        <i className="fa fa-clock-o"></i>{" "}
                         {getDaysAgo(job.created_at)}
                       </div>
                     </div>
@@ -295,15 +282,22 @@ function JobListSection() {
 
                   <div className="text-end">
 
+                    {/* SAVE ICON */}
                     <button
-                      className="btn btn-light"
+                      className="btn border-0 bg-transparent"
                       onClick={() => toggleSaveJob(job)}
                     >
-                      {job.saved ? "Saved" : "Save"}
+                      <i
+                        className={`fa ${
+                          job.saved ? "fa-bookmark text-primary" : "fa-bookmark-o"
+                        }`}
+                      ></i>
+                      <small>{job.saved ? " Saved" : " Save"}</small>
                     </button>
 
                     <br />
 
+                    {/* APPLY */}
                     <button
                       className={`btn mt-2 ${
                         job.applied ? "btn-success" : "btn-primary"
@@ -323,19 +317,13 @@ function JobListSection() {
             {/* PAGINATION */}
             {lastPage > 1 && (
               <div className="text-center mt-3">
-                <button
-                  disabled={page === 1}
-                  onClick={() => setPage(page - 1)}
-                >
+                <button disabled={page === 1} onClick={() => setPage(page - 1)}>
                   Prev
                 </button>
 
                 <span className="mx-2">{page} / {lastPage}</span>
 
-                <button
-                  disabled={page === lastPage}
-                  onClick={() => setPage(page + 1)}
-                >
+                <button disabled={page === lastPage} onClick={() => setPage(page + 1)}>
                   Next
                 </button>
               </div>
