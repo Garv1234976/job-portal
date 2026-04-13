@@ -12,10 +12,11 @@ function JobListSection() {
   // Filters
   const [jobType, setJobType] = useState("");
   const [salary, setSalary] = useState("");
-  const [experience, setExperience] = useState(0); 
+  const [experience, setExperience] = useState(0);
 
   const [page, setPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
+  const [savedFilter, setSavedFilter] = useState("");
 
   // Pagination auto load
   useEffect(() => {
@@ -34,16 +35,17 @@ function JobListSection() {
         salary,
         type: jobType,
         experience,
+        saved: savedFilter,
       },
     })
       .then((res) => {
         setJobs(res.data.data.data || []);
         setLastPage(res.data.data.last_page || 1);
         setLoading(false);
+        setSavedFilter("");
       })
       .catch(() => setLoading(false));
   };
-
   // APPLY
   const applyJob = async (jobId, applied) => {
     if (applied) return;
@@ -90,19 +92,75 @@ function JobListSection() {
         <h2 className="fw-bold mb-4">Find Jobs</h2>
 
         <div className="row">
-
           {/* SIDEBAR */}
           <div className="col-md-3">
             <div className="bg-white p-3 shadow-sm rounded">
-
               <h5>All Filters</h5>
               <hr />
 
+              <hr />
+
+              <h6>Saved Jobs</h6>
+
+              <div>
+                <input
+                  type="radio"
+                  name="saved"
+                  value=""
+                  checked={savedFilter === ""}
+                  onChange={(e) => setSavedFilter(e.target.value)}
+                />{" "}
+                All Jobs
+              </div>
+
+              <div>
+                <input
+                  type="radio"
+                  name="saved"
+                  value="saved"
+                  checked={savedFilter === "saved"}
+                  onChange={(e) => setSavedFilter(e.target.value)}
+                />{" "}
+                Saved Jobs
+              </div>
+
+              <div>
+                <input
+                  type="radio"
+                  name="saved"
+                  value="unsaved"
+                  checked={savedFilter === "unsaved"}
+                  onChange={(e) => setSavedFilter(e.target.value)}
+                />{" "}
+                Unsaved Jobs
+              </div>
+
               {/* Work Mode */}
               <h6>Work Mode</h6>
-              <div><input type="radio" name="type" onChange={() => setJobType("office")} /> Office</div>
-              <div><input type="radio" name="type" onChange={() => setJobType("remote")} /> Remote</div>
-              <div><input type="radio" name="type" onChange={() => setJobType("hybrid")} /> Hybrid</div>
+              <div>
+                <input
+                  type="radio"
+                  name="type"
+                  onChange={() => setJobType("office")}
+                />{" "}
+                Office
+              </div>
+              <div>
+                <input
+                  type="radio"
+                  name="type"
+                  onChange={() => setJobType("remote")}
+                />{" "}
+                Remote
+              </div>
+              <div>
+                <input
+                  type="radio"
+                  name="type"
+                  onChange={() => setJobType("hybrid")}
+                />{" "}
+                Hybrid
+              </div>
 
               <hr />
 
@@ -135,9 +193,30 @@ function JobListSection() {
 
               {/* Salary */}
               <h6>Salary</h6>
-              <div><input type="radio" name="salary" onChange={() => setSalary("0-3")} /> 0-3 Lakhs</div>
-              <div><input type="radio" name="salary" onChange={() => setSalary("3-6")} /> 3-6 Lakhs</div>
-              <div><input type="radio" name="salary" onChange={() => setSalary("6-10")} /> 6-10 Lakhs</div>
+              <div>
+                <input
+                  type="radio"
+                  name="salary"
+                  onChange={() => setSalary("0-3")}
+                />{" "}
+                0-3 Lakhs
+              </div>
+              <div>
+                <input
+                  type="radio"
+                  name="salary"
+                  onChange={() => setSalary("3-6")}
+                />{" "}
+                3-6 Lakhs
+              </div>
+              <div>
+                <input
+                  type="radio"
+                  name="salary"
+                  onChange={() => setSalary("6-10")}
+                />{" "}
+                6-10 Lakhs
+              </div>
 
               <hr />
 
@@ -164,20 +243,20 @@ function JobListSection() {
                   setPage(1);
                   fetchJobs(1);
 
-                  document.querySelectorAll("input[type=radio]").forEach((el) => {
-                    el.checked = false;
-                  });
+                  document
+                    .querySelectorAll("input[type=radio]")
+                    .forEach((el) => {
+                      el.checked = false;
+                    });
                 }}
               >
                 Reset
               </button>
-
             </div>
           </div>
 
           {/* JOB LIST */}
           <div className="col-md-9">
-
             {/* SEARCH */}
             <div className="row g-2 mb-4">
               <div className="col-md-5">
@@ -220,10 +299,11 @@ function JobListSection() {
             {/* JOB CARDS */}
             {!loading &&
               jobs.map((job) => (
-                <div key={job.id} className="p-4 mb-3 bg-white shadow-sm rounded border">
-
+                <div
+                  key={job.id}
+                  className="p-4 mb-3 bg-white shadow-sm rounded border"
+                >
                   <div className="d-flex justify-content-between">
-
                     <div className="d-flex">
                       <img
                         src={
@@ -239,8 +319,8 @@ function JobListSection() {
                         <h5>{job.job_title}</h5>
 
                         <div className="text-muted small">
-                          <i className="fa fa-briefcase"></i> {job.experience || "0-2 Yrs"} |
-                          ₹ {job.salary_range} |
+                          <i className="fa fa-briefcase"></i>{" "}
+                          {job.experience || "0-2 Yrs"} | ₹ {job.salary_range} |
                           <i className="fa fa-map-marker"></i> {job.location}
                         </div>
 
@@ -248,23 +328,23 @@ function JobListSection() {
                           {job.job_description?.slice(0, 80)}...
                         </div>
 
-                        <div className="text-muted small">
-                          {job.key_skills}
-                        </div>
+                        <div className="text-muted small">{job.key_skills}</div>
 
                         <div className="text-muted small">
-                          <i className="fa fa-clock-o"></i> {getDaysAgo(job.created_at)}
+                          <i className="fa fa-clock-o"></i>{" "}
+                          {getDaysAgo(job.created_at)}
                         </div>
                       </div>
                     </div>
 
                     <div className="text-end">
-
                       <button
                         className="btn border-0 bg-transparent"
                         onClick={() => toggleSaveJob(job)}
                       >
-                        <i className={`fa ${job.saved ? "fa-bookmark text-primary" : "fa-bookmark-o"}`}></i>
+                        <i
+                          className={`fa ${job.saved ? "fa-bookmark text-primary" : "fa-bookmark-o"}`}
+                        ></i>
                         <small>{job.saved ? "Saved" : "Save"}</small>
                       </button>
 
@@ -277,9 +357,7 @@ function JobListSection() {
                       >
                         {job.applied ? "Applied" : "Apply"}
                       </button>
-
                     </div>
-
                   </div>
                 </div>
               ))}
@@ -287,22 +365,31 @@ function JobListSection() {
             {/* PAGINATION */}
             {!loading && lastPage > 1 && (
               <div className="d-flex justify-content-center mt-4">
-                <button disabled={page === 1} onClick={() => setPage(page - 1)} className="btn btn-outline-primary me-2">
+                <button
+                  disabled={page === 1}
+                  onClick={() => setPage(page - 1)}
+                  className="btn btn-outline-primary me-2"
+                >
                   Prev
                 </button>
 
-                <span>{page} / {lastPage}</span>
+                <span>
+                  {page} / {lastPage}
+                </span>
 
-                <button disabled={page === lastPage} onClick={() => setPage(page + 1)} className="btn btn-outline-primary ms-2">
+                <button
+                  disabled={page === lastPage}
+                  onClick={() => setPage(page + 1)}
+                  className="btn btn-outline-primary ms-2"
+                >
                   Next
                 </button>
               </div>
             )}
-
           </div>
         </div>
       </div>
-    </div>  
+    </div>
   );
 }
 
