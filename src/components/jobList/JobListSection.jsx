@@ -234,7 +234,7 @@ function JobListSection() {
                         </div>
 
                         <div className="text-muted small mt-2">
-                          <i className="fa fa-clock-o"></i>{" "}
+                          <i className="fa-light fa-clock"></i>{" "}
                           {getDaysAgo(job.created_at)}
                         </div>
                         
@@ -251,7 +251,7 @@ function JobListSection() {
                         <i
                           className={`fa ${
                             job.saved
-                              ? "fa-bookmark text-primary"
+                              ? "fa-slab fa-regular fa-bookmark"
                               : "fa-bookmark-o"
                           }`}
                         ></i>
