@@ -24,12 +24,14 @@ function JobListSection() {
 const fetchJobs = () => {
   setLoading(true);
 
-  API.get(`/jobs`, {
+ API.get(`/jobs`, {
     params: {
       page: page,
       search: search,
       location: location,
       salary: salary,
+      type: jobType,       
+      experience: experience 
     },
   })
     .then((res) => {
@@ -190,8 +192,8 @@ const fetchJobs = () => {
                 <button
                   className="btn btn-primary w-100"
                   onClick={() => {
-                    setPage(1); // reset page
-                    fetchJobs(); // call API manually
+                    setPage(1); 
+                    fetchJobs(); 
                   }}
                 >
                   Search
