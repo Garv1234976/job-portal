@@ -28,7 +28,7 @@ function JobCard() {
     })
       .then((res) => {
         setJobs(res.data.data.data || []);
-        console.log("JOBS:", res.data.data);
+        console.log("JOBS:", res.data.data.data);
         setLastPage(res.data.data.last_page || 1);
         setLoading(false);
       })
