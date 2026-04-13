@@ -94,42 +94,127 @@ function JobListSection() {
         <h2 className="fw-bold mb-4">Find Jobs</h2>
 
         <div className="row">
-
-          {/* SIDEBAR */}
           <div className="col-md-3">
             <div className="bg-white p-3 shadow-sm rounded">
               <h5>All Filters</h5>
               <hr />
 
+              {/* Work Mode */}
               <h6>Work Mode</h6>
-              <div><input type="radio" name="type" onChange={() => setJobType("office")} /> Office</div>
-              <div><input type="radio" name="type" onChange={() => setJobType("remote")} /> Remote</div>
-              <div><input type="radio" name="type" onChange={() => setJobType("hybrid")} /> Hybrid</div>
+
+              <div>
+                <input
+                  type="radio"
+                  name="type"
+                  onChange={() => setJobType("office")}
+                />{" "}
+                Office
+              </div>
+
+              <div>
+                <input
+                  type="radio"
+                  name="type"
+                  onChange={() => setJobType("remote")}
+                />{" "}
+                Remote
+              </div>
+
+              <div>
+                <input
+                  type="radio"
+                  name="type"
+                  onChange={() => setJobType("hybrid")}
+                />{" "}
+                Hybrid
+              </div>
 
               <hr />
 
+              {/* Experience */}
               <h6>Experience</h6>
+
+              <div className="mb-2 text-muted small">
+                Selected: <strong>{experience || 0} Years</strong>
+              </div>
+
               <input
                 type="range"
                 min="0"
                 max="10"
+                value={experience}
                 className="form-range"
                 onChange={(e) => setExperience(e.target.value)}
               />
 
+              <div className="d-flex justify-content-between small">
+                <span>0</span>
+                <span>10</span>
+              </div>
+
               <hr />
 
+              {/* Salary */}
               <h6>Salary</h6>
-              <div><input type="radio" name="salary" onChange={() => setSalary("0-3")} /> 0-3 Lakhs</div>
-              <div><input type="radio" name="salary" onChange={() => setSalary("3-6")} /> 3-6 Lakhs</div>
-              <div><input type="radio" name="salary" onChange={() => setSalary("6-10")} /> 6-10 Lakhs</div>
 
+              <div>
+                <input
+                  type="radio"
+                  name="salary"
+                  onChange={() => setSalary("0-3")}
+                />{" "}
+                0-3 Lakhs
+              </div>
+
+              <div>
+                <input
+                  type="radio"
+                  name="salary"
+                  onChange={() => setSalary("3-6")}
+                />{" "}
+                3-6 Lakhs
+              </div>
+
+              <div>
+                <input
+                  type="radio"
+                  name="salary"
+                  onChange={() => setSalary("6-10")}
+                />{" "}
+                6-10 Lakhs
+              </div>
+
+              <hr />
+
+              {/* 🔥 APPLY FILTER BUTTON */}
+              <button
+                className="btn btn-primary w-100 mt-2"
+                onClick={() => {
+                  setPage(1);
+                  fetchJobs(1);
+                }}
+              >
+                Apply Filters
+              </button>
+
+              {/* 🔥 RESET BUTTON */}
+              <button
+                className="btn btn-outline-secondary w-100 mt-2"
+                onClick={() => {
+                  setJobType("");
+                  setSalary("");
+                  setExperience("");
+                  setPage(1);
+                  fetchJobs(1);
+                }}
+              >
+                Reset
+              </button>
             </div>
           </div>
 
           {/* JOB LIST */}
           <div className="col-md-9">
-
             {/* SEARCH */}
             <div className="row g-2 mb-4">
               <div className="col-md-5">
@@ -172,10 +257,11 @@ function JobListSection() {
             {/* JOB CARDS */}
             {!loading &&
               jobs.map((job) => (
-                <div key={job.id} className="p-4 mb-3 bg-white shadow-sm rounded border">
-
+                <div
+                  key={job.id}
+                  className="p-4 mb-3 bg-white shadow-sm rounded border"
+                >
                   <div className="d-flex justify-content-between">
-
                     {/* LEFT */}
                     <div className="d-flex">
                       <img
@@ -192,8 +278,8 @@ function JobListSection() {
                         <h5>{job.job_title}</h5>
 
                         <div className="text-muted small">
-                          <i className="fa fa-briefcase"></i> {job.experience || "0-2 Yrs"} |
-                          ₹ {job.salary_range} |
+                          <i className="fa fa-briefcase"></i>{" "}
+                          {job.experience || "0-2 Yrs"} | ₹ {job.salary_range} |
                           <i className="fa fa-map-marker"></i> {job.location}
                         </div>
 
@@ -201,24 +287,24 @@ function JobListSection() {
                           {job.job_description?.slice(0, 80)}...
                         </div>
 
-                        <div className="text-muted small">
-                          {job.key_skills}
-                        </div>
+                        <div className="text-muted small">{job.key_skills}</div>
 
                         <div className="text-muted small">
-                          <i className="fa fa-clock-o"></i> {getDaysAgo(job.created_at)}
+                          <i className="fa fa-clock-o"></i>{" "}
+                          {getDaysAgo(job.created_at)}
                         </div>
                       </div>
                     </div>
 
                     {/* RIGHT */}
                     <div className="text-end">
-
                       <button
                         className="btn border-0 bg-transparent"
                         onClick={() => toggleSaveJob(job)}
                       >
-                        <i className={`fa ${job.saved ? "fa-bookmark text-primary" : "fa-bookmark-o"}`}></i>
+                        <i
+                          className={`fa ${job.saved ? "fa-bookmark text-primary" : "fa-bookmark-o"}`}
+                        ></i>
                         <small>{job.saved ? "Saved" : "Save"}</small>
                       </button>
 
@@ -231,9 +317,7 @@ function JobListSection() {
                       >
                         {job.applied ? "Applied" : "Apply"}
                       </button>
-
                     </div>
-
                   </div>
                 </div>
               ))}
@@ -241,18 +325,27 @@ function JobListSection() {
             {/* PAGINATION */}
             {!loading && lastPage > 1 && (
               <div className="d-flex justify-content-center mt-4">
-                <button disabled={page === 1} onClick={() => setPage(page - 1)} className="btn btn-outline-primary me-2">
+                <button
+                  disabled={page === 1}
+                  onClick={() => setPage(page - 1)}
+                  className="btn btn-outline-primary me-2"
+                >
                   Prev
                 </button>
 
-                <span>{page} / {lastPage}</span>
+                <span>
+                  {page} / {lastPage}
+                </span>
 
-                <button disabled={page === lastPage} onClick={() => setPage(page + 1)} className="btn btn-outline-primary ms-2">
+                <button
+                  disabled={page === lastPage}
+                  onClick={() => setPage(page + 1)}
+                  className="btn btn-outline-primary ms-2"
+                >
                   Next
                 </button>
               </div>
             )}
-
           </div>
         </div>
       </div>
