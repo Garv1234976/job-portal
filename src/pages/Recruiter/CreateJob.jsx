@@ -92,7 +92,7 @@ export default function CreateJob() {
 
           {/* Logo */}
           <div className="col-md-6">
-            <label>Logo *</label>
+            <label>Logo <span className="text-danger">*</span></label>
             <input
               type="file"
               name="logo"
@@ -111,7 +111,7 @@ export default function CreateJob() {
 
           {/* Description */}
           <div className="col-md-12">
-            <label>Job Description *</label>
+            <label>Job Description <span className="text-danger">*</span></label>
             <textarea
               className="form-control"
               rows="3"
@@ -123,7 +123,7 @@ export default function CreateJob() {
 
           {/* Education (SELECT) */}
           <div className="col-md-4">
-            <label>Education *</label>
+            <label>Education <span className="text-danger">*</span></label>
             <select className="form-control" name="education" onChange={handleChange}>
               <option value="">Select</option>
               <option>10th</option>
@@ -136,14 +136,14 @@ export default function CreateJob() {
 
           {/* Experience */}
           <div className="col-md-4">
-            <label>Experience *</label>
+            <label>Experience <span className="text-danger">*</span></label>
             <input className="form-control" name="experience" placeholder="0-2" onChange={handleChange} />
             <small className="text-danger">{errors.experience}</small>
           </div>
 
           {/* Gender (UPDATED) */}
           <div className="col-md-4">
-            <label>Gender *</label>
+            <label>Gender <span className="text-danger">*</span></label>
             <select className="form-control" name="gender" onChange={handleChange}>
               <option value="">Select</option>
               <option>Male</option>
@@ -191,7 +191,7 @@ export default function CreateJob() {
 
           {/* Location (SELECT) */}
           <div className="col-md-4">
-            <label>Location *</label>
+            <label>Location <span className="text-danger">*</span></label>
             <select className="form-control" name="location" onChange={handleChange}>
               <option value="">Select</option>
               <option>Delhi</option>
@@ -205,7 +205,7 @@ export default function CreateJob() {
 
           {/* Salary (UPDATED FORMAT) */}
           <div className="col-md-4">
-            <label>Salary Range *</label>
+            <label>Salary Range <span className="text-danger">*</span></label>
             <input
               className="form-control"
               name="salary_range"
@@ -259,7 +259,7 @@ export default function CreateJob() {
 
           {/* Openings */}
           <div className="col-md-3">
-            <label>Openings *</label>
+            <label>Openings <span className="text-danger">*</span></label>
             <input type="number" className="form-control" name="openings" onChange={handleChange} />
             <small className="text-danger">{errors.openings}</small>
           </div>

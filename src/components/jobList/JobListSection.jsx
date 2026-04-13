@@ -263,8 +263,8 @@ function JobListSection() {
                       <h5>{job.job_title}</h5>
 
                       <div className="text-muted small">
-                        <i className="fa fa-briefcase"></i> {job.experience} |{" "}
-                        ₹ {job.salary_range} |{" "}
+                        <i className="fa fa-briefcase"></i> {job.experience} |{"Years"} |{" "}
+                        ₹ {job.salary_range}  |{"Lakhs"} |{" "}
                         <i className="fa fa-map-marker"></i> {job.location}
                       </div>
 
