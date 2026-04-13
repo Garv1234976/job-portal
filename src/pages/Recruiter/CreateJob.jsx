@@ -64,7 +64,7 @@ export default function CreateJob() {
 
           {/* Job Title (SELECT + INPUT) */}
           <div className="col-md-6">
-            <label>Job Title *</label>
+            <label>Job Title <span className="text-danger">*</span></label>
 
             <select
               className="form-control mb-2"
