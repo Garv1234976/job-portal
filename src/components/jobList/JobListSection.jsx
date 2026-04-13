@@ -19,22 +19,26 @@ function JobListSection() {
 
   useEffect(() => {
     fetchJobs();
-  }, [page, jobType, salary, experience]);
+  }, [page]);
 
-  const fetchJobs = () => {
-    setLoading(true);
+const fetchJobs = () => {
+  setLoading(true);
 
-    API.get(
-      `/jobs?page=${page}&search=${search}&location=${location}&type=${jobType}&salary=${salary}&experience=${experience}`,
-    )
-      .then((res) => {
-        setJobs(res.data.data.data || []);
-        setLastPage(res.data.data.last_page || 1);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-  };
-
+  API.get(`/jobs`, {
+    params: {
+      page: page,
+      search: search,
+      location: location,
+      salary: salary,
+    },
+  })
+    .then((res) => {
+      setJobs(res.data.data.data || []);
+      setLastPage(res.data.data.last_page || 1);
+      setLoading(false);
+    })
+    .catch(() => setLoading(false));
+};
   // APPLY
   const applyJob = async (jobId, applied) => {
     if (applied) return;
@@ -183,9 +187,14 @@ function JobListSection() {
               </div>
 
               <div className="col-md-2">
-                <button className="btn btn-primary w-100" onClick={fetchJobs}>
+                <button
+                  className="btn btn-primary w-100"
+                  onClick={() => {
+                    setPage(1); // reset page
+                    fetchJobs(); // call API manually
+                  }}
+                >
                   Search
-                </button>
               </div>
             </div>
 
@@ -237,7 +246,6 @@ function JobListSection() {
                           <i className="fa-light fa-clock"></i>{" "}
                           {getDaysAgo(job.created_at)}
                         </div>
-                        
                       </div>
                     </div>
 
