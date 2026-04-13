@@ -270,7 +270,7 @@ function JobListSection() {
 
                       <div className="text-muted small">
                         <i className="fa fa-file-text"></i>{" "}
-                        {job.job_description?.slice(0, 70)}...
+                        {job.job_description?.slice(0, 200)}...
                       </div>
 
                       <div className="text-muted small">
