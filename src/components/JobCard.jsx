@@ -47,7 +47,7 @@ function JobCard({ job }) {
 
   const getDaysAgo = (date) => {
     const diffDays = Math.floor(
-      (new Date() - new Date(date)) / (1000 * 60 * 60 * 24)
+      (new Date() - new Date(date)) / (1000 * 60 * 60 * 24),
     );
     if (diffDays === 0) return "Today";
     if (diffDays === 1) return "1 day ago";
@@ -57,7 +57,6 @@ function JobCard({ job }) {
   return (
     <div className="p-3 mb-3 border rounded shadow-sm">
       <div className="d-flex justify-content-between">
-
         {/* LEFT */}
         <div className="d-flex">
           <img
@@ -75,8 +74,8 @@ function JobCard({ job }) {
 
             <div className="text-muted small">
               <i className="fa fa-briefcase"></i> {job.experience} Years | ₹{" "}
-              {job.salary_range} |{" "}
-              <i className="fa fa-map-marker"></i> {job.location}
+              {job.salary_range} | <i className="fa fa-map-marker"></i>{" "}
+              {job.location}
             </div>
 
             <div className="text-muted small">
@@ -84,20 +83,24 @@ function JobCard({ job }) {
             </div>
 
             <div className="text-muted small">
-              <i className="fa fa-clock-o"></i>{" "}
-              {getDaysAgo(job.created_at)}
+              <i className="fa fa-clock-o"></i> {getDaysAgo(job.created_at)}
             </div>
           </div>
         </div>
 
         {/* RIGHT */}
         <div className="text-end">
-
+          {/* SAVE ICON */}
           <button
             className="btn border-0 bg-transparent"
-            onClick={toggleSaveJob}
+            onClick={() => toggleSaveJob(job)}
           >
-            <i className={`fa ${saved ? "fa-bookmark text-primary" : "fa-bookmark-o"}`}></i>
+            <i
+              className={`fa ${
+                job.saved ? "fa-bookmark text-primary" : "fa-bookmark-o"
+              }`}
+            ></i>
+            <small>{job.saved ? " Saved" : " Save"}</small>
           </button>
 
           <br />
@@ -109,11 +112,11 @@ function JobCard({ job }) {
           >
             {applied ? "Applied" : "Apply"}
           </button>
-
         </div>
       </div>
     </div>
   );
 }
+
 
 export default JobCard;

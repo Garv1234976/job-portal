@@ -122,7 +122,7 @@ function JobListSection() {
               <div>
                 <input type="radio" name="type" value="office"
                   checked={jobType === "WFH"}
-                  onChange={(e) => setJobType(e.target.value)} /> Office
+                  onChange={(e) => setJobType(e.target.value)} /> WFH
               </div>
 
               <div>

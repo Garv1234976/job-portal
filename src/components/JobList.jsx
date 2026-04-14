@@ -1,82 +1,70 @@
 import { useEffect, useState } from "react";
-import JobCard from "./JobCard";
 import API from "../services/api";
+import JobCard from "./JobCard";
 
 function JobList() {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("featured");
+
+  const [page, setPage] = useState(1);
+  const [lastPage, setLastPage] = useState(1);
 
   useEffect(() => {
-    fetchJobs(activeTab);
-  }, [activeTab]);
+    fetchJobs();
+  }, [page]);
 
-  const fetchJobs = (type) => {
+  const fetchJobs = () => {
     setLoading(true);
 
     API.get("/jobs", {
-      params: { type },
+      params: { page },
     })
       .then((res) => {
-         setJobs(res.data.data.data || []);
+        setJobs(res.data.data.data || []);
+        setLastPage(res.data.data.last_page || 1);
         setLoading(false);
       })
-      .catch(() => {
-        setLoading(false);
-      });
+      .catch(() => setLoading(false));
   };
 
   return (
-    <div className="container-xxl py-5">
-      <div className="container">
+    <div className="container py-5">
 
-        <h1 className="text-center mb-5">Job Listing</h1>
+      <h2 className="mb-4">Find Jobs</h2>
 
-        {/* 🔥 Tabs */}
-        <ul className="nav nav-pills d-inline-flex justify-content-center border-bottom mb-5">
+      {loading && <p>Loading...</p>}
 
-          <li className="nav-item">
-            <button
-              className={`nav-link ${activeTab === "featured" ? "active" : ""}`}
-              onClick={() => setActiveTab("featured")}
-            >
-              Featured
-            </button>
-          </li>
+      {!loading && jobs.length === 0 && <p>No jobs found</p>}
 
-          <li className="nav-item">
-            <button
-              className={`nav-link ${activeTab === "Full Time" ? "active" : ""}`}
-              onClick={() => setActiveTab("Full Time")}
-            >
-              Full Time
-            </button>
-          </li>
+      {!loading &&
+        jobs.map((job) => <JobCard key={job.id} job={job} />)}
 
-          <li className="nav-item">
-            <button
-              className={`nav-link ${activeTab === "Part Time" ? "active" : ""}`}
-              onClick={() => setActiveTab("Part Time")}
-            >
-              Part Time
-            </button>
-          </li>
+      {/* ✅ PAGINATION */}
+      {lastPage > 1 && (
+        <div className="text-center mt-4">
 
-        </ul>
+          <button
+            className="btn btn-light me-2"
+            disabled={page === 1}
+            onClick={() => setPage(page - 1)}
+          >
+            Prev
+          </button>
 
-        {/* 🔄 Loading */}
-        {loading && <div className="text-center">Loading jobs...</div>}
+          <span className="mx-2">
+            Page {page} of {lastPage}
+          </span>
 
-        {/* 📦 Jobs */}
-        {!loading && jobs.length > 0 ? (
-          jobs.map((job) => (
-            <JobCard key={job.id} job={job} />
-          ))
-        ) : (
-          !loading && <div className="text-center">No jobs found</div>
-        )}
+          <button
+            className="btn btn-light ms-2"
+            disabled={page === lastPage}
+            onClick={() => setPage(page + 1)}
+          >
+            Next
+          </button>
 
-      </div>
+        </div>
+      )}
     </div>
   );
 }
