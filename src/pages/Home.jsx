@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import Navbar from "../components/Navbar";
 import Spinner from "../components/Spinner";
 import Carousel from "../components/Carousel";
@@ -9,15 +11,32 @@ import Testimonial from "../components/Testimonial";
 import Footer from "../components/Footer";
 
 function Home() {
+  // ✅ ADD FILTER STATE HERE
+  const [filters, setFilters] = useState({
+    search: "",
+    location: "",
+    category: "",
+  });
+
   return (
     <div className="container-xxl bg-white p-0">
       <Spinner />
       <Navbar />
       <Carousel />
-      <SearchBar />
+
+      {/* ✅ CONNECTED SEARCH BAR */}
+      <SearchBar
+        onSearch={(data) => {
+          setFilters(data);
+        }}
+      />
+
       <Category />
       <About />
-      <JobList />
+
+      {/* ✅ PASS FILTERS TO JOB LIST */}
+      <JobList filters={filters} />
+
       <Testimonial />
       <Footer />
     </div>

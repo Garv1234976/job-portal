@@ -1,20 +1,13 @@
 import { useEffect, useState } from "react";
 import API from "../services/api";
 import JobCard from "./JobCard";
-import SearchBar from "./SearchBar";
 
-function JobList() {
+function JobList({ filters }) {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const [page, setPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
-
-  const [filters, setFilters] = useState({
-    search: "",
-    location: "",
-    category: "",
-  });
 
   useEffect(() => {
     fetchJobs();
@@ -26,9 +19,9 @@ function JobList() {
     API.get("/jobs", {
       params: {
         page,
-        search: filters.search,
-        location: filters.location,
-        category: filters.category,
+        search: filters?.search,
+        location: filters?.location,
+        category: filters?.category,
       },
     })
       .then((res) => {
@@ -42,14 +35,6 @@ function JobList() {
   return (
     <div className="container py-5">
 
-      {/* ✅ ADD THIS */}
-      <SearchBar
-        onSearch={(data) => {
-          setPage(1);
-          setFilters(data);
-        }}
-      />
-
       <h2 className="mb-4">Find Jobs</h2>
 
       {loading && <p>Loading...</p>}
@@ -59,7 +44,7 @@ function JobList() {
       {!loading &&
         jobs.map((job) => <JobCard key={job.id} job={job} />)}
 
-      {/* Pagination */}
+      {/* ✅ Pagination */}
       {lastPage > 1 && (
         <div className="text-center mt-4">
 
