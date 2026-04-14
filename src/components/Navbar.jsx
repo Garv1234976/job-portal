@@ -102,13 +102,34 @@ function Navbar() {
           )}
 
           {token && (
-            <button
-              onClick={handleLogout}
-              className="btn btn-danger ms-3"
-              style={{ height: "40px", marginTop: "20px" }}
-            >
-              Logout
-            </button>
+            <div className="nav-item dropdown ms-3">
+              <a
+                href="#"
+                className="nav-link dropdown-toggle"
+                data-bs-toggle="dropdown"
+              >
+                <i className="fa fa-user-circle me-1"></i> My Account
+              </a>
+
+              <div className="dropdown-menu dropdown-menu-end">
+                <Link to="/profile" className="dropdown-item">
+                  👤 Profile
+                </Link>
+
+                <Link to="/saved-jobs" className="dropdown-item">
+                  🔖 Saved Jobs
+                </Link>
+
+                <div className="dropdown-divider"></div>
+
+                <button
+                  onClick={handleLogout}
+                  className="dropdown-item text-danger"
+                >
+                  🚪 Logout
+                </button>
+              </div>
+            </div>
           )}
         </div>
 

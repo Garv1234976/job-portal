@@ -7,6 +7,7 @@ import Contact from "./pages/Contact";
 import JobList from "./pages/JobList";
 import JobDetail from "./pages/JobDetail";
 import Category from "./pages/Category";
+import Profile from "./pages/Profile";
 
 // Auth
 import Login from "./pages/Auth/Login";
@@ -82,6 +83,16 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute roleRequired="candidate">
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
+
 
         <Route
           path="/candidate/profile"
