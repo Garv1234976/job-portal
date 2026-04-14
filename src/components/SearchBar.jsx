@@ -15,21 +15,32 @@ function SearchBar({ onSearch }) {
 
   const fetchFilters = async () => {
     try {
-      const res = await API.get("/filters"); 
+      const res = await API.get("/filters");
 
-      setCategories(res.data.categories || []);
-      setLocations(res.data.locations || []);
+      setCategories(res.data?.categories || []);
+      setLocations(res.data?.locations || []);
     } catch (err) {
-      console.log("Filter API error");
+      console.log("Filter API error", err);
     }
   };
 
   const handleSearch = () => {
+    if (typeof onSearch !== "function") {
+      console.error("onSearch is not a function");
+      return;
+    }
+
     onSearch({
       search: keyword,
       category,
       location,
     });
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
   };
 
   return (
@@ -44,9 +55,10 @@ function SearchBar({ onSearch }) {
                 <input
                   type="text"
                   className="form-control border-0"
-                  placeholder="Keyword"
+                  placeholder="Search jobs..."
                   value={keyword}
                   onChange={(e) => setKeyword(e.target.value)}
+                  onKeyDown={handleKeyPress}
                 />
               </div>
 
@@ -85,6 +97,7 @@ function SearchBar({ onSearch }) {
 
           <div className="col-md-2">
             <button
+              type="button" 
               className="btn btn-dark border-0 w-100"
               onClick={handleSearch}
             >
