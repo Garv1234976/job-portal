@@ -43,12 +43,12 @@ function JobList() {
     <div className="container py-5">
 
       {/* ✅ SearchBar FIXED */}
-      <SearchBar
+      {/* <SearchBar
         onSearch={(data) => {
           setPage(1);
           setFilters(data);
         }}
-      />
+      /> */}
 
       <h2 className="mb-4">Find Jobs</h2>
 
