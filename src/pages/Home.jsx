@@ -24,7 +24,6 @@ function Home() {
       <Navbar />
       <Carousel />
 
-      {/* ✅ CONNECTED SEARCH BAR */}
       <SearchBar
         onSearch={(data) => {
           setFilters(data);
@@ -34,7 +33,6 @@ function Home() {
       <Category />
       <About />
 
-      {/* ✅ PASS FILTERS TO JOB LIST */}
       <JobList filters={filters} />
 
       <Testimonial />
