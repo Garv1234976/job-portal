@@ -42,13 +42,13 @@ function JobList() {
   return (
     <div className="container py-5">
 
-      {/* ✅ SearchBar FIXED */}
-      {/* <SearchBar
+      {/* ✅ ADD THIS */}
+      <SearchBar
         onSearch={(data) => {
           setPage(1);
           setFilters(data);
         }}
-      /> */}
+      />
 
       <h2 className="mb-4">Find Jobs</h2>
 
@@ -59,7 +59,7 @@ function JobList() {
       {!loading &&
         jobs.map((job) => <JobCard key={job.id} job={job} />)}
 
-      {/* ✅ Pagination */}
+      {/* Pagination */}
       {lastPage > 1 && (
         <div className="text-center mt-4">
 
