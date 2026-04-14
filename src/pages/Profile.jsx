@@ -1,15 +1,17 @@
 import { useEffect, useState } from "react";
 import API from "../services/api";
 import Swal from "sweetalert2";
+import { useNavigate } from "react-router-dom";
 
 function Profile() {
-  const [user, setUser] = useState({});
-  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
+  const [loading, setLoading] = useState(true);
   const [form, setForm] = useState({
     name: "",
     email: "",
     phone: "",
+    bio: "",
   });
 
   useEffect(() => {
@@ -20,11 +22,11 @@ function Profile() {
     try {
       const res = await API.get("/profile");
 
-      setUser(res.data.data);
       setForm({
         name: res.data.data.name || "",
         email: res.data.data.email || "",
         phone: res.data.data.phone || "",
+        bio: res.data.data.bio || "",
       });
 
       setLoading(false);
@@ -37,11 +39,16 @@ function Profile() {
     try {
       const res = await API.post("/update-profile", form);
 
-      Swal.fire("Success", res.data.message, "success");
-      setTimeout(() => {
-        navigate("/");
-      }, 1500);
-    } catch (err) {
+      Swal.fire({
+        icon: "success",
+        title: "Profile Updated",
+        text: res.data.message,
+        timer: 1500,
+        showConfirmButton: false,
+      });
+
+      setTimeout(() => navigate("/"), 1500);
+    } catch {
       Swal.fire("Error", "Update failed", "error");
     }
   };
@@ -50,18 +57,44 @@ function Profile() {
 
   return (
     <div className="container py-5">
+
       <div className="row justify-content-center">
-        <div className="col-md-6">
-          <div className="card shadow">
+
+        <div className="col-lg-8">
+
+          {/* PROFILE HEADER */}
+          <div className="card shadow mb-4">
+            <div className="card-body d-flex align-items-center">
+
+              <img
+                src="/assets/img/default.png"
+                alt="profile"
+                style={{ width: "80px", height: "80px" }}
+                className="rounded-circle me-3"
+              />
+
+              <div>
+                <h4 className="mb-1">{form.name}</h4>
+                <p className="text-muted mb-0">{form.email}</p>
+              </div>
+
+            </div>
+          </div>
+
+          {/* BASIC INFO */}
+          <div className="card shadow mb-4">
             <div className="card-body">
-              <h4 className="mb-4 text-center">My Profile</h4>
+
+              <h5 className="mb-3">Basic Information</h5>
 
               <div className="mb-3">
                 <label>Name</label>
                 <input
                   className="form-control"
                   value={form.name}
-                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, name: e.target.value })
+                  }
                 />
               </div>
 
@@ -75,17 +108,48 @@ function Profile() {
                 <input
                   className="form-control"
                   value={form.phone}
-                  onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                  onChange={(e) =>
+                    setForm({ ...form, phone: e.target.value })
+                  }
                 />
               </div>
 
-              <button className="btn btn-primary w-100" onClick={handleUpdate}>
-                Update Profile
-              </button>
             </div>
           </div>
+
+          {/* ABOUT */}
+          <div className="card shadow mb-4">
+            <div className="card-body">
+
+              <h5 className="mb-3">About</h5>
+
+              <textarea
+                className="form-control"
+                rows="4"
+                placeholder="Write about yourself..."
+                value={form.bio}
+                onChange={(e) =>
+                  setForm({ ...form, bio: e.target.value })
+                }
+              />
+
+            </div>
+          </div>
+
+          {/* ACTION BUTTON */}
+          <div className="text-center">
+            <button
+              className="btn btn-primary px-5 py-2"
+              onClick={handleUpdate}
+            >
+              Save Changes
+            </button>
+          </div>
+
         </div>
+
       </div>
+
     </div>
   );
 }
