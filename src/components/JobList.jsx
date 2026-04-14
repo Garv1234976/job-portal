@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import API from "../services/api";
 import JobCard from "./JobCard";
-import SearchBar from "./SearchBar"; 
+import SearchBar from "./SearchBar";
 
 function JobList() {
   const [jobs, setJobs] = useState([]);
@@ -42,6 +42,7 @@ function JobList() {
   return (
     <div className="container py-5">
 
+      {/* ✅ SearchBar FIXED */}
       <SearchBar
         onSearch={(data) => {
           setPage(1);
@@ -58,6 +59,7 @@ function JobList() {
       {!loading &&
         jobs.map((job) => <JobCard key={job.id} job={job} />)}
 
+      {/* ✅ Pagination */}
       {lastPage > 1 && (
         <div className="text-center mt-4">
 

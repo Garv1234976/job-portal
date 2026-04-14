@@ -25,22 +25,13 @@ function SearchBar({ onSearch }) {
   };
 
   const handleSearch = () => {
-    if (typeof onSearch !== "function") {
-      console.error("onSearch is not a function");
-      return;
-    }
+    if (typeof onSearch !== "function") return;
 
     onSearch({
       search: keyword,
       category,
       location,
     });
-  };
-
-  const handleKeyPress = (e) => {
-    if (e.key === "Enter") {
-      handleSearch();
-    }
   };
 
   return (
@@ -58,7 +49,6 @@ function SearchBar({ onSearch }) {
                   placeholder="Search jobs..."
                   value={keyword}
                   onChange={(e) => setKeyword(e.target.value)}
-                  onKeyDown={handleKeyPress}
                 />
               </div>
 
@@ -97,8 +87,8 @@ function SearchBar({ onSearch }) {
 
           <div className="col-md-2">
             <button
-              type="button" 
-              className="btn btn-dark border-0 w-100"
+              type="button"
+              className="btn btn-dark w-100"
               onClick={handleSearch}
             >
               Search
