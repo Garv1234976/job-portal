@@ -116,9 +116,9 @@ function Navbar() {
                   👤 Profile
                 </Link>
 
-                <Link to="/saved-jobs" className="dropdown-item">
+                {/* <Link to="/saved-jobs" className="dropdown-item">
                   🔖 Saved Jobs
-                </Link>
+                </Link> */}
 
                 <div className="dropdown-divider"></div>
 

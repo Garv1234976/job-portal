@@ -38,6 +38,9 @@ function Profile() {
       const res = await API.post("/update-profile", form);
 
       Swal.fire("Success", res.data.message, "success");
+      setTimeout(() => {
+        navigate("/");
+      }, 1500);
     } catch (err) {
       Swal.fire("Error", "Update failed", "error");
     }
@@ -47,13 +50,10 @@ function Profile() {
 
   return (
     <div className="container py-5">
-
       <div className="row justify-content-center">
         <div className="col-md-6">
-
           <div className="card shadow">
             <div className="card-body">
-
               <h4 className="mb-4 text-center">My Profile</h4>
 
               <div className="mb-3">
@@ -61,19 +61,13 @@ function Profile() {
                 <input
                   className="form-control"
                   value={form.name}
-                  onChange={(e) =>
-                    setForm({ ...form, name: e.target.value })
-                  }
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
                 />
               </div>
 
               <div className="mb-3">
                 <label>Email</label>
-                <input
-                  className="form-control"
-                  value={form.email}
-                  disabled
-                />
+                <input className="form-control" value={form.email} disabled />
               </div>
 
               <div className="mb-3">
@@ -81,25 +75,17 @@ function Profile() {
                 <input
                   className="form-control"
                   value={form.phone}
-                  onChange={(e) =>
-                    setForm({ ...form, phone: e.target.value })
-                  }
+                  onChange={(e) => setForm({ ...form, phone: e.target.value })}
                 />
               </div>
 
-              <button
-                className="btn btn-primary w-100"
-                onClick={handleUpdate}
-              >
+              <button className="btn btn-primary w-100" onClick={handleUpdate}>
                 Update Profile
               </button>
-
             </div>
           </div>
-
         </div>
       </div>
-
     </div>
   );
 }
