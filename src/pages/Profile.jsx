@@ -55,7 +55,7 @@ function Profile() {
 
               {/* PROFILE IMAGE */}
               <img
-                src="/assets/img/default.png"
+                src="/assets/img/default.jpg"
                 className="rounded-circle"
                 style={{ width: 120, height: 120 }}
                 alt="profile"
