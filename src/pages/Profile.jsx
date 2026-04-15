@@ -1,9 +1,21 @@
 import { useEffect, useState } from "react";
 import API from "../services/api";
+import {
+  FaMapMarkerAlt,
+  FaPhone,
+  FaEnvelope,
+  FaBriefcase,
+  FaUserEdit,
+  FaTools,
+  FaGraduationCap,
+} from "react-icons/fa";
+import Swal from "sweetalert2";
 
 function Profile() {
   const [user, setUser] = useState({});
+  const [form, setForm] = useState({});
   const [loading, setLoading] = useState(true);
+  const [editMode, setEditMode] = useState(false);
 
   useEffect(() => {
     fetchProfile();
@@ -13,6 +25,7 @@ function Profile() {
     try {
       const res = await API.get("/profile");
       setUser(res.data.data);
+      setForm(res.data.data);
       setLoading(false);
     } catch {
       setLoading(false);
@@ -21,140 +34,192 @@ function Profile() {
 
   if (loading) return <p className="text-center mt-5">Loading...</p>;
 
-  // ✅ PROFILE COMPLETION LOGIC
-  const calculateProfile = () => {
-    let percent = 0;
-
-    if (user.name) percent += 10;
-    if (user.phone) percent += 10;
-    if (user.email) percent += 10;
-    if (user.full_name) percent += 10;
-    if (user.gender) percent += 10;
-    if (user.dob) percent += 10;
-    if (user.skills) percent += 10;
-    if (user.qualification) percent += 10;
-    if (user.preferred_location) percent += 10;
-    if (user.cv) percent += 10;
-
-    return percent;
+  // ✅ SAFE PARSE
+  const parseJSON = (data, fallback = []) => {
+    try {
+      if (!data) return fallback;
+      return typeof data === "string" ? JSON.parse(data) : data;
+    } catch {
+      return fallback;
+    }
   };
 
-  const profilePercent = calculateProfile();
+  // ✅ EXPERIENCE FORMAT
+  const getExperience = () => {
+    const exp = parseJSON(user.experience_details, []);
+    if (!exp.length) return "Fresher";
+
+    return exp
+      .map((e) => `${e.job_profile || "Fresher"} (${e.years || 0} yrs)`)
+      .join(", ");
+  };
+
+  // ✅ SKILLS FORMAT
+  const getSkills = () => {
+    const skills = parseJSON(user.skills, []);
+    if (!skills.length) return "Add skills";
+    return skills.join(", ");
+  };
+
+  // ✅ UPDATE PROFILE
+  const handleUpdate = async () => {
+    try {
+      await API.post("/update-profile", form);
+
+      Swal.fire("Success", "Profile updated", "success");
+
+      setEditMode(false);
+      fetchProfile();
+    } catch {
+      Swal.fire("Error", "Update failed", "error");
+    }
+  };
 
   return (
     <div className="container py-5">
-
       <div className="card shadow-lg p-4 rounded-4">
-
         <div className="row align-items-center">
 
-          {/* LEFT SIDE */}
-          <div className="col-md-3 text-center position-relative">
-
-            <div className="position-relative d-inline-block">
-
-              {/* PROFILE IMAGE */}
-              <img
-                src="/assets/img/default.jpg"
-                className="rounded-circle"
-                style={{ width: 120, height: 120 }}
-                alt="profile"
-              />
-
-              {/* PROGRESS */}
-              <svg
-                width="140"
-                height="140"
-                style={{ position: "absolute", top: -10, left: -10 }}
-              >
-                <circle cx="70" cy="70" r="60" stroke="#eee" strokeWidth="8" fill="none" />
-                <circle
-                  cx="70"
-                  cy="70"
-                  r="60"
-                  stroke="#28a745"
-                  strokeWidth="8"
-                  fill="none"
-                  strokeDasharray={`${(profilePercent / 100) * 377}, 377`}
-                  transform="rotate(-90 70 70)"
-                />
-              </svg>
-
-              {/* % */}
-              <div
-                style={{
-                  position: "absolute",
-                  bottom: -10,
-                  left: "50%",
-                  transform: "translateX(-50%)",
-                  background: "#fff",
-                  padding: "5px 12px",
-                  borderRadius: "20px",
-                  fontWeight: "bold",
-                  fontSize: "13px",
-                }}
-              >
-                {profilePercent}%
-              </div>
-
-            </div>
-
+          {/* LEFT */}
+          <div className="col-md-3 text-center">
+            <img
+              src="/assets/img/default.jpg"
+              className="rounded-circle"
+              style={{ width: 120, height: 120 }}
+              alt="profile"
+            />
           </div>
 
-          {/* RIGHT SIDE */}
+          {/* RIGHT */}
           <div className="col-md-9">
 
-            {/* NAME */}
-            <div className="d-flex justify-content-between">
-              <h3>{user.full_name || user.name}</h3>
-              <i className="fa fa-edit" style={{ cursor: "pointer" }}></i>
-            </div>
+            {/* HEADER */}
+            <div className="d-flex justify-content-between align-items-center">
+              {editMode ? (
+                <input
+                  className="form-control w-50"
+                  value={form.full_name || ""}
+                  onChange={(e) =>
+                    setForm({ ...form, full_name: e.target.value })
+                  }
+                />
+              ) : (
+                <h3>{user.full_name || user.name}</h3>
+              )}
 
-            <p className="text-muted">
-              Last updated: {new Date(user.updated_at).toDateString()}
-            </p>
+              <FaUserEdit
+                style={{ cursor: "pointer" }}
+                onClick={() => setEditMode(!editMode)}
+              />
+            </div>
 
             <hr />
 
-            {/* DETAILS */}
             <div className="row">
 
-              <div className="col-md-6 mb-2">
-                <i className="fa fa-map-marker text-primary me-2"></i>
-                {user.preferred_location || "Add location"}
+              {/* LOCATION */}
+              <div className="col-md-6 mb-3">
+                <FaMapMarkerAlt className="me-2 text-primary" />
+                {editMode ? (
+                  <input
+                    className="form-control"
+                    value={form.preferred_location || ""}
+                    onChange={(e) =>
+                      setForm({ ...form, preferred_location: e.target.value })
+                    }
+                  />
+                ) : (
+                  user.preferred_location || "Add location"
+                )}
               </div>
 
-              <div className="col-md-6 mb-2">
-                <i className="fa fa-phone text-success me-2"></i>
-                {user.phone || "Add phone"}
+              {/* PHONE */}
+              <div className="col-md-6 mb-3">
+                <FaPhone className="me-2 text-success" />
+                {editMode ? (
+                  <input
+                    className="form-control"
+                    value={form.phone || ""}
+                    onChange={(e) =>
+                      setForm({ ...form, phone: e.target.value })
+                    }
+                  />
+                ) : (
+                  user.phone || "Add phone"
+                )}
               </div>
 
-              <div className="col-md-6 mb-2">
-                <i className="fa fa-envelope text-danger me-2"></i>
+              {/* EMAIL */}
+              <div className="col-md-6 mb-3">
+                <FaEnvelope className="me-2 text-danger" />
                 {user.email}
               </div>
 
-              <div className="col-md-6 mb-2">
-                <i className="fa fa-briefcase me-2"></i>
-                {user.experience_details || "Fresher"}
+              {/* QUALIFICATION */}
+              <div className="col-md-6 mb-3">
+                <FaGraduationCap className="me-2" />
+                {editMode ? (
+                  <input
+                    className="form-control"
+                    value={form.qualification || ""}
+                    onChange={(e) =>
+                      setForm({ ...form, qualification: e.target.value })
+                    }
+                  />
+                ) : (
+                  user.qualification || "Add qualification"
+                )}
               </div>
 
-              <div className="col-md-6 mb-2">
-                🎓 {user.qualification || "Add qualification"}
+              {/* SKILLS */}
+              <div className="col-md-6 mb-3">
+                <FaTools className="me-2" />
+                {editMode ? (
+                  <input
+                    className="form-control"
+                    placeholder="Laravel, React"
+                    value={form.skills || ""}
+                    onChange={(e) =>
+                      setForm({ ...form, skills: e.target.value })
+                    }
+                  />
+                ) : (
+                  getSkills()
+                )}
               </div>
 
-              <div className="col-md-6 mb-2">
-                🛠 Skills: {user.skills || "Add skills"}
+              {/* EXPERIENCE */}
+              <div className="col-md-6 mb-3">
+                <FaBriefcase className="me-2" />
+                {editMode ? (
+                  <input
+                    className="form-control"
+                    placeholder="Web Developer (2 yrs)"
+                    value={form.experience_details || ""}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        experience_details: e.target.value,
+                      })
+                    }
+                  />
+                ) : (
+                  getExperience()
+                )}
               </div>
 
             </div>
 
+            {/* SAVE BUTTON */}
+            {editMode && (
+              <button className="btn btn-success mt-3" onClick={handleUpdate}>
+                Save Changes
+              </button>
+            )}
+
           </div>
-
         </div>
-
       </div>
-
     </div>
   );
 }
