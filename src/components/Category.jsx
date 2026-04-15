@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import API from "../services/api";
+import "./Category.css";
 
 function Category() {
   const [categories, setCategories] = useState([]);
@@ -29,13 +30,15 @@ function Category() {
   return (
     <div className="container-xxl py-5">
       <div className="container">
-
         {/* HEADER */}
         <div className="d-flex justify-content-between align-items-center mb-4">
           <h1>Explore By Category</h1>
 
           <div>
-            <button className="btn btn-light me-2" onClick={() => scroll("left")}>
+            <button
+              className="btn btn-light me-2"
+              onClick={() => scroll("left")}
+            >
               ❮
             </button>
             <button className="btn btn-light" onClick={() => scroll("right")}>
@@ -47,15 +50,14 @@ function Category() {
         {/* SLIDER */}
         <div
           ref={scrollRef}
+          className="slider-container"
           style={{
             display: "flex",
             overflowX: "auto",
             gap: "20px",
             scrollSnapType: "x mandatory",
-            paddingBottom: "10px",
           }}
         >
-
           {categories.map((cat) => {
             const isExpanded = expanded[cat.id];
 
@@ -70,23 +72,19 @@ function Category() {
                 }}
               >
                 <div className="cat-item rounded p-4 h-100 border">
-
                   {/* ICON */}
-                  <i
-                    className={`fa fa-3x ${cat.icon} text-success mb-3`}
-                  ></i>
+                  <i className={`fa fa-3x ${cat.icon} text-success mb-3`}></i>
 
                   {/* TITLE */}
                   <h6 className="mb-2 fw-bold">{cat.name}</h6>
 
                   {/* SUB LIST */}
                   <ul className="list-unstyled small text-muted mb-2">
-                    {(isExpanded
-                      ? cat.children
-                      : cat.children.slice(0, 3)
-                    ).map((sub) => (
-                      <li key={sub.id}>• {sub.name}</li>
-                    ))}
+                    {(isExpanded ? cat.children : cat.children.slice(0, 3)).map(
+                      (sub) => (
+                        <li key={sub.id}>• {sub.name}</li>
+                      ),
+                    )}
                   </ul>
 
                   {/* MORE */}
@@ -101,14 +99,11 @@ function Category() {
                         : `+${cat.children.length - 3} more`}
                     </small>
                   )}
-
                 </div>
               </div>
             );
           })}
-
         </div>
-
       </div>
     </div>
   );
