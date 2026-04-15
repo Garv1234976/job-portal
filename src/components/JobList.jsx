@@ -21,7 +21,7 @@ function JobList({ filters }) {
         page,
         search: filters?.search,
         location: filters?.location,
-        category: filters?.category,
+        category_id: filters?.category_id,
       },
     })
       .then((res) => {
