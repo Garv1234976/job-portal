@@ -1,18 +1,10 @@
 import { useEffect, useState } from "react";
 import API from "../services/api";
-import Swal from "sweetalert2";
-import { useNavigate } from "react-router-dom";
+import { FaMapMarkerAlt, FaPhone, FaEnvelope, FaEdit } from "react-icons/fa";
 
 function Profile() {
-  const navigate = useNavigate();
-
+  const [user, setUser] = useState({});
   const [loading, setLoading] = useState(true);
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    bio: "",
-  });
 
   useEffect(() => {
     fetchProfile();
@@ -21,129 +13,128 @@ function Profile() {
   const fetchProfile = async () => {
     try {
       const res = await API.get("/profile");
-
-      setForm({
-        name: res.data.data.name || "",
-        email: res.data.data.email || "",
-        phone: res.data.data.phone || "",
-        bio: res.data.data.bio || "",
-      });
-
+      setUser(res.data.data);
       setLoading(false);
     } catch {
       setLoading(false);
-    }
-  };
-
-  const handleUpdate = async () => {
-    try {
-      const res = await API.post("/update-profile", form);
-
-      Swal.fire({
-        icon: "success",
-        title: "Profile Updated",
-        text: res.data.message,
-        timer: 1500,
-        showConfirmButton: false,
-      });
-
-      setTimeout(() => navigate("/"), 1500);
-    } catch {
-      Swal.fire("Error", "Update failed", "error");
     }
   };
 
   if (loading) return <p className="text-center mt-5">Loading...</p>;
 
+  // ✅ fake profile % (you can calculate later)
+  const profilePercent = 28;
+
   return (
     <div className="container py-5">
 
-      <div className="row justify-content-center">
+      <div className="card shadow-lg p-4 rounded-4">
 
-        <div className="col-lg-8">
+        <div className="row align-items-center">
 
-          {/* PROFILE HEADER */}
-          <div className="card shadow mb-4">
-            <div className="card-body d-flex align-items-center">
+          {/* LEFT - PROFILE IMAGE + PROGRESS */}
+          <div className="col-md-3 text-center position-relative">
 
+            <div className="position-relative d-inline-block">
+
+              {/* Profile Image */}
               <img
                 src="/assets/img/default.png"
                 alt="profile"
-                style={{ width: "80px", height: "80px" }}
-                className="rounded-circle me-3"
+                className="rounded-circle"
+                style={{ width: 120, height: 120 }}
               />
 
-              <div>
-                <h4 className="mb-1">{form.name}</h4>
-                <p className="text-muted mb-0">{form.email}</p>
-              </div>
-
-            </div>
-          </div>
-
-          {/* BASIC INFO */}
-          <div className="card shadow mb-4">
-            <div className="card-body">
-
-              <h5 className="mb-3">Basic Information</h5>
-
-              <div className="mb-3">
-                <label>Name</label>
-                <input
-                  className="form-control"
-                  value={form.name}
-                  onChange={(e) =>
-                    setForm({ ...form, name: e.target.value })
-                  }
+              {/* Progress Circle */}
+              <svg
+                width="140"
+                height="140"
+                style={{
+                  position: "absolute",
+                  top: -10,
+                  left: -10,
+                }}
+              >
+                <circle
+                  cx="70"
+                  cy="70"
+                  r="60"
+                  stroke="#eee"
+                  strokeWidth="8"
+                  fill="none"
                 />
-              </div>
-
-              <div className="mb-3">
-                <label>Email</label>
-                <input className="form-control" value={form.email} disabled />
-              </div>
-
-              <div className="mb-3">
-                <label>Phone</label>
-                <input
-                  className="form-control"
-                  value={form.phone}
-                  onChange={(e) =>
-                    setForm({ ...form, phone: e.target.value })
-                  }
+                <circle
+                  cx="70"
+                  cy="70"
+                  r="60"
+                  stroke="#ff4d4f"
+                  strokeWidth="8"
+                  fill="none"
+                  strokeDasharray={`${(profilePercent / 100) * 377}, 377`}
+                  transform="rotate(-90 70 70)"
                 />
+              </svg>
+
+              {/* Percentage */}
+              <div
+                style={{
+                  position: "absolute",
+                  bottom: -10,
+                  left: "50%",
+                  transform: "translateX(-50%)",
+                  background: "#fff",
+                  padding: "4px 10px",
+                  borderRadius: "20px",
+                  fontSize: "12px",
+                  fontWeight: "bold",
+                }}
+              >
+                {profilePercent}%
               </div>
 
             </div>
+
           </div>
 
-          {/* ABOUT */}
-          <div className="card shadow mb-4">
-            <div className="card-body">
+          {/* RIGHT - DETAILS */}
+          <div className="col-md-9">
 
-              <h5 className="mb-3">About</h5>
+            {/* NAME + EDIT */}
+            <div className="d-flex justify-content-between align-items-center">
+              <h3 className="mb-1">{user.name}</h3>
+              <FaEdit style={{ cursor: "pointer" }} />
+            </div>
 
-              <textarea
-                className="form-control"
-                rows="4"
-                placeholder="Write about yourself..."
-                value={form.bio}
-                onChange={(e) =>
-                  setForm({ ...form, bio: e.target.value })
-                }
-              />
+            <p className="text-muted">
+              Profile last updated - {new Date().toDateString()}
+            </p>
+
+            <hr />
+
+            {/* INFO GRID */}
+            <div className="row">
+
+              <div className="col-md-6 mb-2">
+                <FaMapMarkerAlt className="me-2 text-primary" />
+                {user.location || "Location not added"}
+              </div>
+
+              <div className="col-md-6 mb-2">
+                <FaPhone className="me-2 text-success" />
+                {user.phone || "Phone not added"}
+              </div>
+
+              <div className="col-md-6 mb-2">
+                <FaEnvelope className="me-2 text-danger" />
+                {user.email}
+              </div>
+
+              <div className="col-md-6 mb-2">
+                🎓 {user.experience || "Fresher"}
+              </div>
 
             </div>
-          </div>
 
-          {/* ACTION BUTTON */}
-          <div className="text-center">
-            <button
-              className="btn btn-primary px-5 py-2"
-              onClick={handleUpdate}
-            >
-              Save Changes
-            </button>
           </div>
 
         </div>
