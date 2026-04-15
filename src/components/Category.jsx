@@ -4,7 +4,7 @@ import API from "../services/api";
 function Category() {
   const [categories, setCategories] = useState([]);
   const [expanded, setExpanded] = useState({});
-  const scrollRef = useRef(); // ✅ add this
+  const scrollRef = useRef();
 
   useEffect(() => {
     API.get("/categories").then((res) => {
@@ -19,41 +19,40 @@ function Category() {
     }));
   };
 
-  // ✅ scroll functions
-  const scrollLeft = () => {
-    scrollRef.current.scrollBy({ left: -300, behavior: "smooth" });
-  };
-
-  const scrollRight = () => {
-    scrollRef.current.scrollBy({ left: 300, behavior: "smooth" });
+  const scroll = (dir) => {
+    scrollRef.current.scrollBy({
+      left: dir === "left" ? -320 : 320,
+      behavior: "smooth",
+    });
   };
 
   return (
     <div className="container-xxl py-5">
       <div className="container">
 
-        {/* HEADER + ARROWS */}
-        <div className="d-flex justify-content-between align-items-center mb-5">
+        {/* HEADER */}
+        <div className="d-flex justify-content-between align-items-center mb-4">
           <h1>Explore By Category</h1>
 
           <div>
-            <button className="btn btn-light me-2" onClick={scrollLeft}>
-              ⟨
+            <button className="btn btn-light me-2" onClick={() => scroll("left")}>
+              ❮
             </button>
-            <button className="btn btn-light" onClick={scrollRight}>
-              ⟩
+            <button className="btn btn-light" onClick={() => scroll("right")}>
+              ❯
             </button>
           </div>
         </div>
 
-        {/* ✅ CHANGE ONLY THIS PART */}
+        {/* SLIDER */}
         <div
           ref={scrollRef}
-          className="d-flex"
           style={{
+            display: "flex",
             overflowX: "auto",
             gap: "20px",
-            scrollBehavior: "smooth",
+            scrollSnapType: "x mandatory",
+            paddingBottom: "10px",
           }}
         >
 
@@ -63,15 +62,25 @@ function Category() {
             return (
               <div
                 key={cat.id}
-                style={{ minWidth: "250px" }} // ✅ important
+                style={{
+                  minWidth: "260px",
+                  maxWidth: "260px",
+                  flex: "0 0 auto",
+                  scrollSnapAlign: "start",
+                }}
               >
-                <div className="cat-item rounded p-4 h-100">
+                <div className="cat-item rounded p-4 h-100 border">
 
-                  <i className={`fa fa-3x ${cat.icon} text-primary mb-4`}></i>
+                  {/* ICON */}
+                  <i
+                    className={`fa fa-3x ${cat.icon} text-success mb-3`}
+                  ></i>
 
-                  <h6 className="mb-3">{cat.name}</h6>
+                  {/* TITLE */}
+                  <h6 className="mb-2 fw-bold">{cat.name}</h6>
 
-                  <ul className="list-unstyled small mb-2">
+                  {/* SUB LIST */}
+                  <ul className="list-unstyled small text-muted mb-2">
                     {(isExpanded
                       ? cat.children
                       : cat.children.slice(0, 3)
@@ -80,9 +89,10 @@ function Category() {
                     ))}
                   </ul>
 
+                  {/* MORE */}
                   {cat.children.length > 3 && (
                     <small
-                      className="text-primary"
+                      className="text-success"
                       style={{ cursor: "pointer" }}
                       onClick={() => toggleMore(cat.id)}
                     >
@@ -104,4 +114,4 @@ function Category() {
   );
 }
 
-export default Category;  
+export default Category;
