@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import API from "../services/api";
+import Navbar from "../components/Navbar";
+import Footer from "../components/Footer";
 import {
   FaMapMarkerAlt,
   FaPhone,
@@ -17,6 +19,7 @@ function Profile() {
   const [form, setForm] = useState({});
   const [loading, setLoading] = useState(true);
   const [editMode, setEditMode] = useState(false);
+
   const qualificationOptions = [
     { value: "10th", label: "10th" },
     { value: "12th", label: "12th" },
@@ -40,7 +43,14 @@ function Profile() {
     }
   };
 
-  if (loading) return <p className="text-center mt-5">Loading...</p>;
+  if (loading)
+    return (
+      <>
+        <Navbar />
+        <p className="text-center mt-5">Loading...</p>
+        <Footer />
+      </>
+    );
 
   const parseJSON = (data, fallback = []) => {
     try {
@@ -103,206 +113,237 @@ function Profile() {
   ];
 
   return (
-    <div className="container py-5">
-      <div className="card shadow-lg p-4 rounded-4 border-0">
-        <div className="row align-items-center">
-          <div className="col-md-3 text-center">
-            <img
-              src="/assets/img/default.jpg"
-              className="rounded-circle"
-              style={{ width: 120, height: 120 }}
-              alt="profile"
-            />
-          </div>
+    <div className="container-xxl bg-white p-0">
 
-          <div className="col-md-9">
-            <div className="d-flex justify-content-between align-items-center mb-3">
-              <div className="w-50">
-                <label className="form-label fw-semibold">
-                  <FaUserEdit className="me-2 text-primary" />
-                  Full Name
-                </label>
+      {/* ✅ NAVBAR */}
+      <Navbar />
 
-                {editMode ? (
-                  <input
-                    className="form-control"
-                    value={form.full_name || ""}
-                    onChange={(e) =>
-                      setForm({ ...form, full_name: e.target.value })
-                    }
-                  />
-                ) : (
-                  <div className="form-control bg-light">
-                    {user.full_name || user.name}
-                  </div>
-                )}
-              </div>
+      {/* ✅ PROFILE CONTENT */}
+      <div className="container py-5">
+        <div className="card shadow-lg p-4 rounded-4 border-0">
+          <div className="row align-items-center">
 
-              <FaUserEdit onClick={() => setEditMode(!editMode)} />
+            <div className="col-md-3 text-center">
+              <img
+                src="/assets/img/default.jpg"
+                className="rounded-circle"
+                style={{ width: 120, height: 120 }}
+                alt="profile"
+              />
             </div>
 
-            <hr />
+            <div className="col-md-9">
 
-            <div className="row g-3">
-              <div className="col-md-6">
-                <label className="form-label fw-semibold">
-                  <FaMapMarkerAlt className="me-2 text-primary" />
-                  Location
-                </label>
+              <div className="d-flex justify-content-between align-items-center mb-3">
+                <div className="w-50">
+                  <label className="form-label fw-semibold">
+                    <FaUserEdit className="me-2 text-primary" />
+                    Full Name
+                  </label>
 
-                {editMode ? (
-                  <input
-                    className="form-control"
-                    value={form.preferred_location || ""}
-                    onChange={(e) =>
-                      setForm({ ...form, preferred_location: e.target.value })
-                    }
-                  />
-                ) : (
-                  <div className="form-control bg-light">
-                    {user.preferred_location || "Add location"}
-                  </div>
-                )}
+                  {editMode ? (
+                    <input
+                      className="form-control"
+                      value={form.full_name || ""}
+                      onChange={(e) =>
+                        setForm({ ...form, full_name: e.target.value })
+                      }
+                    />
+                  ) : (
+                    <div className="form-control bg-light">
+                      {user.full_name || user.name}
+                    </div>
+                  )}
+                </div>
+
+                <FaUserEdit
+                  style={{ cursor: "pointer" }}
+                  onClick={() => setEditMode(!editMode)}
+                />
               </div>
 
-              <div className="col-md-6">
-                <label className="form-label fw-semibold">
-                  <FaPhone className="me-2 text-success" />
-                  Phone
-                </label>
+              <hr />
 
-                {editMode ? (
-                  <input
-                    className="form-control"
-                    value={form.phone || ""}
-                    onChange={(e) =>
-                      setForm({ ...form, phone: e.target.value })
-                    }
-                  />
-                ) : (
-                  <div className="form-control bg-light">
-                    {user.phone || "Add phone"}
-                  </div>
-                )}
-              </div>
+              <div className="row g-3">
 
-              <div className="col-md-6">
-                <label className="form-label fw-semibold">
-                  <FaEnvelope className="me-2 text-danger" />
-                  Email
-                </label>
-                <div className="form-control bg-light">{user.email}</div>
-              </div>
+                {/* LOCATION */}
+                <div className="col-md-6">
+                  <label className="form-label fw-semibold">
+                    <FaMapMarkerAlt className="me-2 text-primary" />
+                    Location
+                  </label>
 
-              <div className="col-md-6">
-                <label className="form-label fw-semibold">
-                  <FaGraduationCap className="me-2 text-warning" />
-                  Qualification
-                </label>
+                  {editMode ? (
+                    <input
+                      className="form-control"
+                      value={form.preferred_location || ""}
+                      onChange={(e) =>
+                        setForm({ ...form, preferred_location: e.target.value })
+                      }
+                    />
+                  ) : (
+                    <div className="form-control bg-light">
+                      {user.preferred_location || "Add location"}
+                    </div>
+                  )}
+                </div>
 
-                {editMode ? (
-                  <Select
-                    isMulti
-                    value={
-                      Array.isArray(form.qualification)
-                        ? form.qualification.map((q) => ({
-                            value: q,
-                            label: q,
-                          }))
-                        : []
-                    }
-                    options={qualificationOptions}
-                    onChange={(selected) => {
-                      setForm({
-                        ...form,
-                        qualification: selected.map((item) => item.value),
-                      });
-                    }}
-                  />
-                ) : (
-                  <div className="form-control bg-light">
-                    {getQualification()}
-                  </div>
-                )}
-              </div>
+                {/* PHONE */}
+                <div className="col-md-6">
+                  <label className="form-label fw-semibold">
+                    <FaPhone className="me-2 text-success" />
+                    Phone
+                  </label>
 
-              {/* ✅ UPDATED SKILLS */}
-              <div className="col-md-6">
-                <label className="form-label fw-semibold">
-                  <FaTools className="me-2 text-info" />
-                  Skills (Max 5)
-                </label>
+                  {editMode ? (
+                    <input
+                      className="form-control"
+                      value={form.phone || ""}
+                      onChange={(e) =>
+                        setForm({ ...form, phone: e.target.value })
+                      }
+                    />
+                  ) : (
+                    <div className="form-control bg-light">
+                      {user.phone || "Add phone"}
+                    </div>
+                  )}
+                </div>
 
-                {editMode ? (
-                  <Select
-                    isMulti
-                    value={
-                      Array.isArray(form.skills)
-                        ? form.skills.map((s) => ({ value: s, label: s }))
-                        : []
-                    }
-                    options={skillOptions}
-                    onChange={(selected) => {
-                      if (selected.length <= 5) {
+                {/* EMAIL */}
+                <div className="col-md-6">
+                  <label className="form-label fw-semibold">
+                    <FaEnvelope className="me-2 text-danger" />
+                    Email
+                  </label>
+                  <div className="form-control bg-light">{user.email}</div>
+                </div>
+
+                {/* QUALIFICATION */}
+                <div className="col-md-6">
+                  <label className="form-label fw-semibold">
+                    <FaGraduationCap className="me-2 text-warning" />
+                    Qualification
+                  </label>
+
+                  {editMode ? (
+                    <Select
+                      isMulti
+                      value={
+                        Array.isArray(form.qualification)
+                          ? form.qualification.map((q) => ({
+                              value: q,
+                              label: q,
+                            }))
+                          : []
+                      }
+                      options={qualificationOptions}
+                      onChange={(selected) =>
                         setForm({
                           ...form,
-                          skills: selected.map((item) => item.value),
-                        });
-                      } else {
-                        Swal.fire("Error", "Only 5 skills allowed", "error");
+                          qualification: selected.map((i) => i.value),
+                        })
                       }
-                    }}
-                  />
-                ) : (
-                  <div className="form-control bg-light">{getSkills()}</div>
-                )}
+                    />
+                  ) : (
+                    <div className="form-control bg-light">
+                      {getQualification()}
+                    </div>
+                  )}
+                </div>
+
+                {/* SKILLS */}
+                <div className="col-md-6">
+                  <label className="form-label fw-semibold">
+                    <FaTools className="me-2 text-info" />
+                    Skills (Max 5)
+                  </label>
+
+                  {editMode ? (
+                    <Select
+                      isMulti
+                      value={
+                        Array.isArray(form.skills)
+                          ? form.skills.map((s) => ({
+                              value: s,
+                              label: s,
+                            }))
+                          : []
+                      }
+                      options={skillOptions}
+                      onChange={(selected) => {
+                        if (selected.length <= 5) {
+                          setForm({
+                            ...form,
+                            skills: selected.map((i) => i.value),
+                          });
+                        } else {
+                          Swal.fire("Error", "Only 5 skills allowed", "error");
+                        }
+                      }}
+                    />
+                  ) : (
+                    <div className="form-control bg-light">
+                      {getSkills()}
+                    </div>
+                  )}
+                </div>
+
+                {/* EXPERIENCE */}
+                <div className="col-md-6">
+                  <label className="form-label fw-semibold">
+                    <FaBriefcase className="me-2 text-secondary" />
+                    Experience
+                  </label>
+
+                  {editMode ? (
+                    <input
+                      className="form-control"
+                      value={
+                        Array.isArray(form.experience_details)
+                          ? form.experience_details
+                              .map((e) => e.job_profile || "")
+                              .join(", ")
+                          : ""
+                      }
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          experience_details: [
+                            {
+                              job_profile: e.target.value,
+                              years: 0,
+                            },
+                          ],
+                        })
+                      }
+                    />
+                  ) : (
+                    <div className="form-control bg-light">
+                      {getExperience()}
+                    </div>
+                  )}
+                </div>
+
               </div>
 
-              <div className="col-md-6">
-                <label className="form-label fw-semibold">
-                  <FaBriefcase className="me-2 text-secondary" />
-                  Experience
-                </label>
+              {editMode && (
+                <button
+                  className="btn btn-success mt-4 px-4"
+                  onClick={handleUpdate}
+                >
+                  Save Changes
+                </button>
+              )}
 
-                {editMode ? (
-                  <input
-                    className="form-control"
-                    value={
-                      Array.isArray(form.experience_details)
-                        ? form.experience_details
-                            .map((e) => e.job_profile || "")
-                            .join(", ")
-                        : ""
-                    }
-                    onChange={(e) =>
-                      setForm({
-                        ...form,
-                        experience_details: [
-                          {
-                            job_profile: e.target.value,
-                            years: 0,
-                          },
-                        ],
-                      })
-                    }
-                  />
-                ) : (
-                  <div className="form-control bg-light">{getExperience()}</div>
-                )}
-              </div>
             </div>
-
-            {editMode && (
-              <button
-                className="btn btn-success mt-4 px-4"
-                onClick={handleUpdate}
-              >
-                Save Changes
-              </button>
-            )}
           </div>
         </div>
       </div>
+
+      {/* ✅ FOOTER */}
+      <Footer />
+
     </div>
   );
 }
