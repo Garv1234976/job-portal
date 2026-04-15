@@ -1,10 +1,9 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import API from "../services/api";
 
 function Category() {
   const [categories, setCategories] = useState([]);
-  const [expanded, setExpanded] = useState({});
-  const scrollRef = useRef(null); // ✅ reference for scroll
+  const scrollRef = useRef();
 
   useEffect(() => {
     API.get("/categories").then((res) => {
@@ -12,14 +11,7 @@ function Category() {
     });
   }, []);
 
-  const toggleMore = (id) => {
-    setExpanded((prev) => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
-  };
-
-  // ✅ SCROLL LEFT
+  // 👉 scroll left
   const scrollLeft = () => {
     scrollRef.current.scrollBy({
       left: -300,
@@ -27,7 +19,7 @@ function Category() {
     });
   };
 
-  // ✅ SCROLL RIGHT
+  // 👉 scroll right
   const scrollRight = () => {
     scrollRef.current.scrollBy({
       left: 300,
@@ -39,64 +31,59 @@ function Category() {
     <div className="container-xxl py-5">
       <div className="container">
 
-        <h1 className="text-center mb-5">Explore By Category</h1>
+        {/* HEADER */}
+        <div className="d-flex justify-content-between align-items-center mb-4">
+          <h2>Explore By Category</h2>
 
-        {/* ✅ NAV BUTTONS */}
-        <div className="d-flex justify-content-end mb-3">
-          <button className="btn btn-light me-2" onClick={scrollLeft}>
-            &#10094;
-          </button>
-          <button className="btn btn-light" onClick={scrollRight}>
-            &#10095;
-          </button>
+          <div>
+            <button className="btn btn-light me-2" onClick={scrollLeft}>
+              ⟨
+            </button>
+            <button className="btn btn-light" onClick={scrollRight}>
+              ⟩
+            </button>
+          </div>
         </div>
 
-        {/* ✅ CAROUSEL CONTAINER */}
+        {/* SLIDER */}
         <div
           ref={scrollRef}
-          className="d-flex overflow-auto"
-          style={{ gap: "15px", scrollBehavior: "smooth" }}
+          style={{
+            display: "flex",
+            overflowX: "auto",
+            gap: "20px",
+            scrollBehavior: "smooth",
+          }}
         >
+          {categories.map((cat) => (
+            <div
+              key={cat.id}
+              style={{
+                minWidth: "250px",
+                borderRadius: "10px",
+                padding: "20px",
+                background: "#fff",
+                boxShadow: "0 2px 10px rgba(0,0,0,0.1)",
+                textAlign: "center",
+              }}
+            >
 
-          {categories.map((cat) => {
-            const isExpanded = expanded[cat.id];
+              {/* ICON */}
+              <i
+                className={`fa ${cat.icon} text-primary mb-3`}
+                style={{ fontSize: "40px" }}
+              ></i>
 
-            return (
-              <div
-                key={cat.id}
-                className="cat-item rounded p-4 flex-shrink-0"
-                style={{ minWidth: "250px" }}
-              >
+              {/* TITLE */}
+              <h6>{cat.name}</h6>
 
-                <i className={`fa fa-3x ${cat.icon} text-primary mb-4`}></i>
+              {/* SUBCATEGORY */}
+              <p className="text-muted small">
+                {cat.children?.slice(0, 2).map((s) => s.name).join(", ")}
+              </p>
 
-                <h6 className="mb-3">{cat.name}</h6>
-
-                <ul className="list-unstyled small mb-2">
-                  {(isExpanded
-                    ? cat.children
-                    : cat.children.slice(0, 3)
-                  ).map((sub) => (
-                    <li key={sub.id}>• {sub.name}</li>
-                  ))}
-                </ul>
-
-                {cat.children.length > 3 && (
-                  <small
-                    className="text-primary"
-                    style={{ cursor: "pointer" }}
-                    onClick={() => toggleMore(cat.id)}
-                  >
-                    {isExpanded
-                      ? "Show less"
-                      : `+${cat.children.length - 3} more`}
-                  </small>
-                )}
-
-              </div>
-            );
-          })}
-
+            </div>
+          ))}
         </div>
 
       </div>
