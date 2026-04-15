@@ -44,24 +44,36 @@ function Profile() {
     }
   };
 
-  // ✅ EXPERIENCE FORMAT
+  // ✅ EXPERIENCE FIX (NO EMPTY ())
   const getExperience = () => {
     const exp = parseJSON(user.experience_details, []);
+
     if (!exp.length) return "Fresher";
 
     return exp
-      .map((e) => `${e.job_profile || "Fresher"} (${e.years || 0} yrs)`)
-      .join(", ");
+      .map((e) => {
+        if (!e.job_profile && !e.years) return null;
+
+        if (e.job_profile && e.years) {
+          return `${e.job_profile} (${e.years} yrs)`;
+        }
+
+        if (e.job_profile) return e.job_profile;
+
+        return null;
+      })
+      .filter(Boolean)
+      .join(", ") || "Fresher";
   };
 
-  // ✅ SKILLS FORMAT
+  // ✅ SKILLS
   const getSkills = () => {
     const skills = parseJSON(user.skills, []);
     if (!skills.length) return "Add skills";
     return skills.join(", ");
   };
 
-  // ✅ QUALIFICATION FORMAT
+  // ✅ QUALIFICATION FIX
   const getQualification = () => {
     const q = parseJSON(user.qualification, []);
     if (!q.length) return "Add qualification";
@@ -72,9 +84,7 @@ function Profile() {
   const handleUpdate = async () => {
     try {
       await API.post("/update-profile", form);
-
       Swal.fire("Success", "Profile updated", "success");
-
       setEditMode(false);
       fetchProfile();
     } catch {
@@ -84,7 +94,7 @@ function Profile() {
 
   return (
     <div className="container py-5">
-      <div className="card shadow-lg p-4 rounded-4">
+      <div className="card shadow-lg p-4 rounded-4 border-0">
         <div className="row align-items-center">
 
           {/* LEFT */}
@@ -100,19 +110,28 @@ function Profile() {
           {/* RIGHT */}
           <div className="col-md-9">
 
-            {/* HEADER */}
-            <div className="d-flex justify-content-between align-items-center">
-              {editMode ? (
-                <input
-                  className="form-control w-50"
-                  value={form.full_name || ""}
-                  onChange={(e) =>
-                    setForm({ ...form, full_name: e.target.value })
-                  }
-                />
-              ) : (
-                <h3>{user.full_name || user.name}</h3>
-              )}
+            {/* HEADER WITH LABEL */}
+            <div className="d-flex justify-content-between align-items-center mb-3">
+              <div className="w-50">
+                <label className="form-label fw-semibold">
+                  <FaUserEdit className="me-2 text-primary" />
+                  Full Name
+                </label>
+
+                {editMode ? (
+                  <input
+                    className="form-control"
+                    value={form.full_name || ""}
+                    onChange={(e) =>
+                      setForm({ ...form, full_name: e.target.value })
+                    }
+                  />
+                ) : (
+                  <div className="form-control bg-light">
+                    {user.full_name || user.name}
+                  </div>
+                )}
+              </div>
 
               <FaUserEdit
                 style={{ cursor: "pointer" }}
@@ -122,11 +141,15 @@ function Profile() {
 
             <hr />
 
-            <div className="row">
+            <div className="row g-3">
 
               {/* LOCATION */}
-              <div className="col-md-6 mb-3">
-                <FaMapMarkerAlt className="me-2 text-primary" />
+              <div className="col-md-6">
+                <label className="form-label fw-semibold">
+                  <FaMapMarkerAlt className="me-2 text-primary" />
+                  Location
+                </label>
+
                 {editMode ? (
                   <input
                     className="form-control"
@@ -136,13 +159,19 @@ function Profile() {
                     }
                   />
                 ) : (
-                  user.preferred_location || "Add location"
+                  <div className="form-control bg-light">
+                    {user.preferred_location || "Add location"}
+                  </div>
                 )}
               </div>
 
               {/* PHONE */}
-              <div className="col-md-6 mb-3">
-                <FaPhone className="me-2 text-success" />
+              <div className="col-md-6">
+                <label className="form-label fw-semibold">
+                  <FaPhone className="me-2 text-success" />
+                  Phone
+                </label>
+
                 {editMode ? (
                   <input
                     className="form-control"
@@ -152,19 +181,29 @@ function Profile() {
                     }
                   />
                 ) : (
-                  user.phone || "Add phone"
+                  <div className="form-control bg-light">
+                    {user.phone || "Add phone"}
+                  </div>
                 )}
               </div>
 
               {/* EMAIL */}
-              <div className="col-md-6 mb-3">
-                <FaEnvelope className="me-2 text-danger" />
-                {user.email}
+              <div className="col-md-6">
+                <label className="form-label fw-semibold">
+                  <FaEnvelope className="me-2 text-danger" />
+                  Email
+                </label>
+
+                <div className="form-control bg-light">{user.email}</div>
               </div>
 
               {/* QUALIFICATION */}
-              <div className="col-md-6 mb-3">
-                <FaGraduationCap className="me-2" />
+              <div className="col-md-6">
+                <label className="form-label fw-semibold">
+                  <FaGraduationCap className="me-2 text-warning" />
+                  Qualification
+                </label>
+
                 {editMode ? (
                   <input
                     className="form-control"
@@ -181,17 +220,22 @@ function Profile() {
                     }
                   />
                 ) : (
-                  getQualification()
+                  <div className="form-control bg-light">
+                    {getQualification()}
+                  </div>
                 )}
               </div>
 
               {/* SKILLS */}
-              <div className="col-md-6 mb-3">
-                <FaTools className="me-2" />
+              <div className="col-md-6">
+                <label className="form-label fw-semibold">
+                  <FaTools className="me-2 text-info" />
+                  Skills
+                </label>
+
                 {editMode ? (
                   <input
                     className="form-control"
-                    placeholder="Laravel, React"
                     value={
                       Array.isArray(form.skills)
                         ? form.skills.join(", ")
@@ -205,24 +249,26 @@ function Profile() {
                     }
                   />
                 ) : (
-                  getSkills()
+                  <div className="form-control bg-light">
+                    {getSkills()}
+                  </div>
                 )}
               </div>
 
               {/* EXPERIENCE */}
-              <div className="col-md-6 mb-3">
-                <FaBriefcase className="me-2" />
+              <div className="col-md-6">
+                <label className="form-label fw-semibold">
+                  <FaBriefcase className="me-2 text-secondary" />
+                  Experience
+                </label>
+
                 {editMode ? (
                   <input
                     className="form-control"
-                    placeholder="Web Developer (2 yrs)"
                     value={
                       Array.isArray(form.experience_details)
                         ? form.experience_details
-                            .map(
-                              (e) =>
-                                `${e.job_profile || ""} (${e.years || ""})`
-                            )
+                            .map((e) => e.job_profile || "")
                             .join(", ")
                         : ""
                     }
@@ -239,7 +285,9 @@ function Profile() {
                     }
                   />
                 ) : (
-                  getExperience()
+                  <div className="form-control bg-light">
+                    {getExperience()}
+                  </div>
                 )}
               </div>
 
@@ -247,7 +295,7 @@ function Profile() {
 
             {/* SAVE BUTTON */}
             {editMode && (
-              <button className="btn btn-success mt-3" onClick={handleUpdate}>
+              <button className="btn btn-success mt-4 px-4" onClick={handleUpdate}>
                 Save Changes
               </button>
             )}
