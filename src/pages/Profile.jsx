@@ -17,6 +17,13 @@ function Profile() {
   const [form, setForm] = useState({});
   const [loading, setLoading] = useState(true);
   const [editMode, setEditMode] = useState(false);
+  const qualificationOptions = [
+    { value: "10th", label: "10th" },
+    { value: "12th", label: "12th" },
+    { value: "Diploma", label: "Diploma" },
+    { value: "Graduate", label: "Graduate" },
+    { value: "Post Graduate", label: "Post Graduate" },
+  ];
 
   useEffect(() => {
     fetchProfile();
@@ -48,15 +55,18 @@ function Profile() {
     const exp = parseJSON(user.experience_details, []);
     if (!exp.length) return "Fresher";
 
-    return exp
-      .map((e) => {
-        if (!e.job_profile && !e.years) return null;
-        if (e.job_profile && e.years) return `${e.job_profile} (${e.years} yrs)`;
-        if (e.job_profile) return e.job_profile;
-        return null;
-      })
-      .filter(Boolean)
-      .join(", ") || "Fresher";
+    return (
+      exp
+        .map((e) => {
+          if (!e.job_profile && !e.years) return null;
+          if (e.job_profile && e.years)
+            return `${e.job_profile} (${e.years} yrs)`;
+          if (e.job_profile) return e.job_profile;
+          return null;
+        })
+        .filter(Boolean)
+        .join(", ") || "Fresher"
+    );
   };
 
   const getSkills = () => {
@@ -96,7 +106,6 @@ function Profile() {
     <div className="container py-5">
       <div className="card shadow-lg p-4 rounded-4 border-0">
         <div className="row align-items-center">
-
           <div className="col-md-3 text-center">
             <img
               src="/assets/img/default.jpg"
@@ -107,7 +116,6 @@ function Profile() {
           </div>
 
           <div className="col-md-9">
-
             <div className="d-flex justify-content-between align-items-center mb-3">
               <div className="w-50">
                 <label className="form-label fw-semibold">
@@ -136,7 +144,6 @@ function Profile() {
             <hr />
 
             <div className="row g-3">
-
               <div className="col-md-6">
                 <label className="form-label fw-semibold">
                   <FaMapMarkerAlt className="me-2 text-primary" />
@@ -194,19 +201,23 @@ function Profile() {
                 </label>
 
                 {editMode ? (
-                  <input
-                    className="form-control"
+                  <Select
+                    isMulti
                     value={
                       Array.isArray(form.qualification)
-                        ? form.qualification.join(", ")
-                        : form.qualification || ""
+                        ? form.qualification.map((q) => ({
+                            value: q,
+                            label: q,
+                          }))
+                        : []
                     }
-                    onChange={(e) =>
+                    options={qualificationOptions}
+                    onChange={(selected) => {
                       setForm({
                         ...form,
-                        qualification: e.target.value.split(","),
-                      })
-                    }
+                        qualification: selected.map((item) => item.value),
+                      });
+                    }}
                   />
                 ) : (
                   <div className="form-control bg-light">
@@ -243,9 +254,7 @@ function Profile() {
                     }}
                   />
                 ) : (
-                  <div className="form-control bg-light">
-                    {getSkills()}
-                  </div>
+                  <div className="form-control bg-light">{getSkills()}</div>
                 )}
               </div>
 
@@ -278,20 +287,19 @@ function Profile() {
                     }
                   />
                 ) : (
-                  <div className="form-control bg-light">
-                    {getExperience()}
-                  </div>
+                  <div className="form-control bg-light">{getExperience()}</div>
                 )}
               </div>
-
             </div>
 
             {editMode && (
-              <button className="btn btn-success mt-4 px-4" onClick={handleUpdate}>
+              <button
+                className="btn btn-success mt-4 px-4"
+                onClick={handleUpdate}
+              >
                 Save Changes
               </button>
             )}
-
           </div>
         </div>
       </div>
