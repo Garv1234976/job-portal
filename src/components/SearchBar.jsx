@@ -3,12 +3,10 @@ import API from "../services/api";
 
 function SearchBar({ onSearch }) {
   const [keyword, setKeyword] = useState("");
-  const [category, setCategory] = useState(""); // parent
-  const [subCategory, setSubCategory] = useState(""); // child
+  const [categoryId, setCategoryId] = useState(""); // only subcategory id
   const [location, setLocation] = useState("");
 
   const [categories, setCategories] = useState([]);
-  const [subCategories, setSubCategories] = useState([]);
   const [locations, setLocations] = useState([]);
 
   useEffect(() => {
@@ -18,7 +16,6 @@ function SearchBar({ onSearch }) {
   const fetchFilters = async () => {
     try {
       const res = await API.get("/filters");
-
       setCategories(res.data?.categories || []);
       setLocations(res.data?.locations || []);
     } catch (err) {
@@ -26,22 +23,12 @@ function SearchBar({ onSearch }) {
     }
   };
 
-  // ✅ When category changes
-  const handleCategoryChange = (e) => {
-    const selectedId = e.target.value;
-    setCategory(selectedId);
-    setSubCategory("");
-
-    const selectedCat = categories.find((c) => c.id == selectedId);
-    setSubCategories(selectedCat?.children || []);
-  };
-
   const handleSearch = () => {
     if (typeof onSearch !== "function") return;
 
     onSearch({
       search: keyword,
-      category_id: subCategory, // ✅ send subcategory id
+      category_id: categoryId, // ✅ subcategory id
       location,
     });
   };
@@ -55,7 +42,7 @@ function SearchBar({ onSearch }) {
             <div className="row g-2">
 
               {/* 🔍 KEYWORD */}
-              <div className="col-md-3">
+              <div className="col-md-4">
                 <input
                   className="form-control border-0"
                   placeholder="Search jobs..."
@@ -64,44 +51,30 @@ function SearchBar({ onSearch }) {
                 />
               </div>
 
-              {/* 📂 CATEGORY */}
-              <div className="col-md-3">
+              {/* 📂 CATEGORY + SUBCATEGORY (GROUPED) */}
+              <div className="col-md-4">
                 <select
                   className="form-select border-0"
-                  value={category}
-                  onChange={handleCategoryChange}
+                  value={categoryId}
+                  onChange={(e) => setCategoryId(e.target.value)}
                 >
                   <option value="">Select Category</option>
 
                   {categories.map((cat) => (
-                    <option key={cat.id} value={cat.id}>
-                      {cat.name}
-                    </option>
-                  ))}
-
-                </select>
-              </div>
-
-              {/* 📁 SUBCATEGORY */}
-              <div className="col-md-3">
-                <select
-                  className="form-select border-0"
-                  value={subCategory}
-                  onChange={(e) => setSubCategory(e.target.value)}
-                >
-                  <option value="">Select Sub Category</option>
-
-                  {subCategories.map((sub) => (
-                    <option key={sub.id} value={sub.id}>
-                      {sub.name}
-                    </option>
+                    <optgroup key={cat.id} label={cat.name}>
+                      {cat.children.map((sub) => (
+                        <option key={sub.id} value={sub.id}>
+                          {sub.name}
+                        </option>
+                      ))}
+                    </optgroup>
                   ))}
 
                 </select>
               </div>
 
               {/* 📍 LOCATION */}
-              <div className="col-md-3">
+              <div className="col-md-4">
                 <select
                   className="form-select border-0"
                   value={location}
