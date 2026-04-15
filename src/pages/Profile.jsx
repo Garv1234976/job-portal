@@ -61,6 +61,13 @@ function Profile() {
     return skills.join(", ");
   };
 
+  // ✅ QUALIFICATION FORMAT
+  const getQualification = () => {
+    const q = parseJSON(user.qualification, []);
+    if (!q.length) return "Add qualification";
+    return q.join(", ");
+  };
+
   // ✅ UPDATE PROFILE
   const handleUpdate = async () => {
     try {
@@ -161,13 +168,20 @@ function Profile() {
                 {editMode ? (
                   <input
                     className="form-control"
-                    value={form.qualification || ""}
+                    value={
+                      Array.isArray(form.qualification)
+                        ? form.qualification.join(", ")
+                        : form.qualification || ""
+                    }
                     onChange={(e) =>
-                      setForm({ ...form, qualification: e.target.value })
+                      setForm({
+                        ...form,
+                        qualification: e.target.value.split(","),
+                      })
                     }
                   />
                 ) : (
-                  user.qualification || "Add qualification"
+                  getQualification()
                 )}
               </div>
 
@@ -178,9 +192,16 @@ function Profile() {
                   <input
                     className="form-control"
                     placeholder="Laravel, React"
-                    value={form.skills || ""}
+                    value={
+                      Array.isArray(form.skills)
+                        ? form.skills.join(", ")
+                        : form.skills || ""
+                    }
                     onChange={(e) =>
-                      setForm({ ...form, skills: e.target.value })
+                      setForm({
+                        ...form,
+                        skills: e.target.value.split(","),
+                      })
                     }
                   />
                 ) : (
@@ -195,11 +216,25 @@ function Profile() {
                   <input
                     className="form-control"
                     placeholder="Web Developer (2 yrs)"
-                    value={form.experience_details || ""}
+                    value={
+                      Array.isArray(form.experience_details)
+                        ? form.experience_details
+                            .map(
+                              (e) =>
+                                `${e.job_profile || ""} (${e.years || ""})`
+                            )
+                            .join(", ")
+                        : ""
+                    }
                     onChange={(e) =>
                       setForm({
                         ...form,
-                        experience_details: e.target.value,
+                        experience_details: [
+                          {
+                            job_profile: e.target.value,
+                            years: 0,
+                          },
+                        ],
                       })
                     }
                   />
