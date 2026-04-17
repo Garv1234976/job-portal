@@ -33,8 +33,14 @@ function Category() {
     });
   };
 
+  // ✅ FIXED
   const handleSubCategoryClick = (catId, subId) => {
-    navigate(`/jobs?category=${catId}&sub_category=${subId}`);
+    navigate(`/jobs?category_id=${catId}&sub_category_id=${subId}`);
+  };
+
+  // ✅ ADD CATEGORY CLICK
+  const handleCategoryClick = (catId) => {
+    navigate(`/jobs?category_id=${catId}`);
   };
 
   return (
@@ -66,7 +72,7 @@ function Category() {
           </div>
         </div>
 
-        {/* EMPTY STATE */}
+        {/* EMPTY */}
         {categories.length === 0 && (
           <div className="text-center text-muted py-5">
             Loading categories...
@@ -100,17 +106,21 @@ function Category() {
               >
                 <div className="cat-item rounded p-4 h-100 border shadow-sm bg-white">
 
-                  {/* ICON */}
-                  <i
-                    className={`fa fa-3x ${
-                      cat.icon || "fa-briefcase"
-                    } text-success mb-3`}
-                  ></i>
+                  {/* CATEGORY CLICK */}
+                  <div
+                    style={{ cursor: "pointer" }}
+                    onClick={() => handleCategoryClick(cat.id)}
+                  >
+                    <i
+                      className={`fa fa-3x ${
+                        cat.icon || "fa-briefcase"
+                      } text-success mb-3`}
+                    ></i>
 
-                  {/* TITLE */}
-                  <h6 className="mb-2 fw-bold">{cat.name}</h6>
+                    <h6 className="mb-2 fw-bold">{cat.name}</h6>
+                  </div>
 
-                  {/* SUB LIST */}
+                  {/* SUBCATEGORY */}
                   <ul className="list-unstyled small text-muted mb-2">
                     {(isExpanded
                       ? cat.children || []
@@ -118,11 +128,11 @@ function Category() {
                     ).map((sub) => (
                       <li
                         key={sub.id}
+                        className="sub-cat-item"
                         style={{ cursor: "pointer" }}
                         onClick={() =>
                           handleSubCategoryClick(cat.id, sub.id)
                         }
-                        className="sub-cat-item"
                       >
                         • {sub.name}
                       </li>

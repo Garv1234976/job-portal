@@ -20,7 +20,6 @@ function JobListSection() {
 
   const location = useLocation();
 
-  // ✅ GET URL PARAMS
   const getQueryParams = () => {
     const params = new URLSearchParams(location.search);
     return {
@@ -29,12 +28,10 @@ function JobListSection() {
     };
   };
 
-  // 🔁 Reset page when URL changes
   useEffect(() => {
     setPage(1);
   }, [location.search]);
 
-  // 🔁 Fetch jobs
   useEffect(() => {
     fetchJobs();
   }, [page, location.search]);
@@ -54,7 +51,6 @@ function JobListSection() {
         experience,
         saved: savedFilter,
 
-        // ✅ IMPORTANT
         category_id: query.category_id,
         sub_category_id: query.sub_category_id,
       },
@@ -67,7 +63,6 @@ function JobListSection() {
       .finally(() => setLoading(false));
   };
 
-  // ✅ APPLY JOB
   const applyJob = async (jobId, applied) => {
     if (applied) return;
 
@@ -80,7 +75,6 @@ function JobListSection() {
     }
   };
 
-  // ✅ SAVE JOB
   const toggleSaveJob = async (job) => {
     try {
       if (job.saved) {
@@ -96,7 +90,6 @@ function JobListSection() {
     }
   };
 
-  // ✅ DATE
   const getDaysAgo = (date) => {
     const diff = Math.floor(
       (new Date() - new Date(date)) / (1000 * 60 * 60 * 24)
