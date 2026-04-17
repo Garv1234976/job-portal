@@ -24,7 +24,6 @@ function JobCard({ job }) {
       });
 
       setApplied(true);
-
       Swal.fire("Success", res.data.message, "success");
     } catch (err) {
       Swal.fire(
@@ -50,7 +49,7 @@ function JobCard({ job }) {
         await API.post("/save-job", { job_id: job.id });
         setSaved(true);
       }
-    } catch (err) {
+    } catch {
       Swal.fire("Error", "Action failed", "error");
     } finally {
       setSaving(false);
@@ -58,18 +57,18 @@ function JobCard({ job }) {
   };
 
   const getDaysAgo = (date) => {
-    const diffDays = Math.floor(
+    const diff = Math.floor(
       (new Date() - new Date(date)) / (1000 * 60 * 60 * 24)
     );
 
-    if (diffDays === 0) return "Today";
-    if (diffDays === 1) return "1 day ago";
-    return `${diffDays} days ago`;
+    if (diff === 0) return "Today";
+    if (diff === 1) return "1 day ago";
+    return `${diff} days ago`;
   };
 
   return (
-    <div className="p-3 mb-3 border rounded shadow-sm">
-      <div className="d-flex justify-content-between">
+    <div className="p-3 mb-3 border rounded shadow-sm bg-white job-card">
+      <div className="d-flex justify-content-between align-items-start">
 
         {/* LEFT */}
         <div className="d-flex">
@@ -79,51 +78,66 @@ function JobCard({ job }) {
                 ? `https://server.budes.online/public/storage/${job.logo}`
                 : "/assets/img/default.png"
             }
-            style={{ width: 60, height: 60, objectFit: "cover" }}
-            className="rounded"
             alt="logo"
+            style={{ width: 60, height: 60, objectFit: "cover" }}
+            className="rounded border"
           />
 
           <div className="ms-3">
-            <h5>{job.job_title}</h5>
 
-            <div className="text-muted small">
-              <i className="fa fa-briefcase"></i> {job.experience} Years | ₹{" "}
-              {job.salary_range} |{" "}
-              <i className="fa fa-map-marker"></i> {job.location}
+            {/* TITLE */}
+            <h5 className="fw-bold mb-1">{job.job_title}</h5>
+
+            {/* META */}
+            <div className="text-muted small mb-1">
+              <i className="fa-solid fa-briefcase me-1"></i>
+              {job.experience} Years
+
+              <span className="mx-2">|</span>
+
+              ₹ {job.salary_range}
+
+              <span className="mx-2">|</span>
+
+              <i className="fa-solid fa-location-dot me-1"></i>
+              {job.location}
             </div>
 
-            <div className="text-muted small">
+            {/* DESC */}
+            <div className="text-muted small mb-1">
               {job.job_description?.slice(0, 120)}...
             </div>
 
+            {/* DATE */}
             <div className="text-muted small">
-              <i className="fa fa-clock-o"></i>{" "}
+              <i className="fa-regular fa-clock me-1"></i>
               {getDaysAgo(job.created_at)}
             </div>
+
           </div>
         </div>
 
+        {/* RIGHT */}
         <div className="text-end">
 
+          {/* SAVE BUTTON */}
           <button
-            className="btn border-0 bg-transparent"
+            className="btn btn-sm btn-light border mb-2"
             onClick={toggleSaveJob}
           >
             <i
               className={`fa ${
-                saved ? "fa-bookmark text-primary" : "fa-bookmark-o"
-              }`}
+                saved ? "fa-solid fa-bookmark text-primary" : "fa-regular fa-bookmark"
+              } me-1`}
             ></i>
-            <small>
-              {saving ? " Saving..." : saved ? " Saved" : " Save"}
-            </small>
+            {saving ? "Saving..." : saved ? "Saved" : "Save"}
           </button>
 
           <br />
 
+          {/* APPLY BUTTON */}
           <button
-            className={`btn mt-2 ${
+            className={`btn btn-sm ${
               applied ? "btn-success" : "btn-primary"
             }`}
             onClick={applyJob}

@@ -76,10 +76,6 @@ function CategorySection() {
                     <h6 className="mb-2 fw-bold text-dark">
                       {cat.name}
                     </h6>
-
-                    <p className="mb-2 text-muted">
-                      {cat.jobs_count ?? 0} Jobs Available
-                    </p>
                   </div>
 
                   {/* SUBCATEGORY */}
