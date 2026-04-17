@@ -1,6 +1,8 @@
 import API from "../../services/api";
 import Swal from "sweetalert2";
 import { useEffect, useRef, useState } from "react";
+import Navbar from "../../components/Navbar";
+import Footer from "../../components/Footer";
 
 export default function CreateJob() {
   const [form, setForm] = useState({});
@@ -73,6 +75,8 @@ export default function CreateJob() {
   };
 
   return (
+     <>
+     <Navbar />
     <div className="container mt-4">
       <div className="card shadow-lg p-4">
         <h2 className="mb-4 text-center">Create Job</h2>
@@ -410,5 +414,7 @@ export default function CreateJob() {
         </div>
       </div>
     </div>
+    <Footer />
+    </>
   );
 }
