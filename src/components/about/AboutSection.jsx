@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 function AboutSection() {
   return (
     <div className="container-xxl py-5">
@@ -5,14 +7,14 @@ function AboutSection() {
         <div className="row g-5 align-items-center">
 
           {/* Images */}
-          <div className="col-lg-6 wow fadeIn" data-wow-delay="0.1s">
+          <div className="col-lg-6">
             <div className="row g-0 about-bg rounded overflow-hidden">
 
               <div className="col-6 text-start">
                 <img
                   className="img-fluid w-100"
                   src="/assets/img/about-1.jpg"
-                  alt="about"
+                  alt="jobs"
                 />
               </div>
 
@@ -20,7 +22,7 @@ function AboutSection() {
                 <img
                   className="img-fluid"
                   src="/assets/img/about-2.jpg"
-                  alt="about"
+                  alt="career"
                   style={{ width: "85%", marginTop: "15%" }}
                 />
               </div>
@@ -29,7 +31,7 @@ function AboutSection() {
                 <img
                   className="img-fluid"
                   src="/assets/img/about-3.jpg"
-                  alt="about"
+                  alt="hiring"
                   style={{ width: "85%" }}
                 />
               </div>
@@ -38,7 +40,7 @@ function AboutSection() {
                 <img
                   className="img-fluid w-100"
                   src="/assets/img/about-4.jpg"
-                  alt="about"
+                  alt="company"
                 />
               </div>
 
@@ -46,35 +48,36 @@ function AboutSection() {
           </div>
 
           {/* Content */}
-          <div className="col-lg-6 wow fadeIn" data-wow-delay="0.5s">
+          <div className="col-lg-6">
 
             <h1 className="mb-4">
-              We Help To Get The Best Job And Find A Talent
+              Find the Right Job Across India
             </h1>
 
             <p className="mb-4">
-              Tempor erat elitr rebum at clita. Diam dolor diam ipsum sit.
-              Aliqu diam amet diam et eos. Clita erat ipsum et lorem et sit.
+              We connect job seekers with trusted companies across India. 
+              Whether you're a fresher or an experienced professional, 
+              discover opportunities that match your skills and career goals.
             </p>
 
             <p>
               <i className="fa fa-check text-primary me-3"></i>
-              Tempor erat elitr rebum at clita
+              Explore jobs in IT, Marketing, Finance, Sales & more
             </p>
 
             <p>
               <i className="fa fa-check text-primary me-3"></i>
-              Aliqu diam amet diam et eos
+              Apply instantly with a simple and fast process
             </p>
 
             <p>
               <i className="fa fa-check text-primary me-3"></i>
-              Clita duo justo magna dolore erat amet
+              Connect with verified employers across India
             </p>
 
-            <a href="#" className="btn btn-primary py-3 px-5 mt-3">
-              Read More
-            </a>
+            <Link to="/jobs" className="btn btn-primary py-3 px-5 mt-3">
+              Explore Jobs
+            </Link>
 
           </div>
 

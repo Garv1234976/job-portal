@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 function About() {
   return (
     <div className="container-xxl py-5">
@@ -43,7 +45,6 @@ function About() {
           </div>
 
           {/* Content Section */}
-          {/* Content Section */}
           <div className="col-lg-6">
             <h1 className="mb-4">
               Find Your Dream Job or Hire Top Talent Across India
@@ -74,9 +75,9 @@ function About() {
               resources
             </p>
 
-            <a href="#" className="btn btn-primary py-3 px-5 mt-3">
+            <Link to="/jobs" className="btn btn-primary py-3 px-5 mt-3">
               Explore Jobs
-            </a>
+            </Link>
           </div>
         </div>
       </div>
