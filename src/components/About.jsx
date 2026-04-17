@@ -3,11 +3,9 @@ function About() {
     <div className="container-xxl py-5">
       <div className="container">
         <div className="row g-5 align-items-center">
-
           {/* Images Section */}
           <div className="col-lg-6">
             <div className="row g-0 about-bg rounded overflow-hidden">
-
               <div className="col-6 text-start">
                 <img
                   className="img-fluid w-100"
@@ -41,42 +39,45 @@ function About() {
                   alt="about"
                 />
               </div>
-
             </div>
           </div>
 
           {/* Content Section */}
+          {/* Content Section */}
           <div className="col-lg-6">
-
             <h1 className="mb-4">
-              We Help To Get The Best Job And Find A Talent
+              Find Your Dream Job or Hire Top Talent Across India
             </h1>
 
             <p className="mb-4">
-              Tempor erat elitr rebum at clita. Diam dolor diam ipsum sit.
+              We connect job seekers with leading companies across India.
+              Whether you're looking to start your career or hire skilled
+              professionals, our platform makes recruitment fast, reliable, and
+              efficient.
             </p>
 
             <p>
               <i className="fa fa-check text-primary me-3"></i>
-              Tempor erat elitr rebum at clita
+              Explore thousands of verified job opportunities across multiple
+              industries
             </p>
 
             <p>
               <i className="fa fa-check text-primary me-3"></i>
-              Aliqu diam amet diam et eos
+              Hire qualified candidates with smart filtering and easy hiring
+              tools
             </p>
 
             <p>
               <i className="fa fa-check text-primary me-3"></i>
-              Clita duo justo magna dolore erat amet
+              Build your career with trusted employers and career growth
+              resources
             </p>
 
             <a href="#" className="btn btn-primary py-3 px-5 mt-3">
-              Read More
+              Explore Jobs
             </a>
-
           </div>
-
         </div>
       </div>
     </div>
