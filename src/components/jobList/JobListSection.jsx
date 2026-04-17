@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import API from "../../services/api";
 import Swal from "sweetalert2";
+import JobCard from "../../components/JobCard"; // ✅ IMPORTANT
 
 function JobListSection() {
   const [jobs, setJobs] = useState([]);
@@ -51,6 +52,7 @@ function JobListSection() {
         experience,
         saved: savedFilter,
 
+        // ✅ IMPORTANT
         category_id: query.category_id,
         sub_category_id: query.sub_category_id,
       },
@@ -61,42 +63,6 @@ function JobListSection() {
       })
       .catch(() => setJobs([]))
       .finally(() => setLoading(false));
-  };
-
-  const applyJob = async (jobId, applied) => {
-    if (applied) return;
-
-    try {
-      const res = await API.post("/apply-job", { job_id: jobId });
-      Swal.fire("Success", res.data.message, "success");
-      fetchJobs();
-    } catch (err) {
-      Swal.fire("Error", err.response?.data?.message || "Error", "error");
-    }
-  };
-
-  const toggleSaveJob = async (job) => {
-    try {
-      if (job.saved) {
-        await API.post("/unsave-job", { job_id: job.id });
-        job.saved = false;
-      } else {
-        await API.post("/save-job", { job_id: job.id });
-        job.saved = true;
-      }
-      setJobs([...jobs]);
-    } catch {
-      Swal.fire("Error", "Action failed", "error");
-    }
-  };
-
-  const getDaysAgo = (date) => {
-    const diff = Math.floor(
-      (new Date() - new Date(date)) / (1000 * 60 * 60 * 24)
-    );
-    if (diff === 0) return "Today";
-    if (diff === 1) return "1 day ago";
-    return `${diff} days ago`;
   };
 
   return (
@@ -221,57 +187,15 @@ function JobListSection() {
               </div>
             </div>
 
+            {/* JOB LIST */}
             {loading && <p>Loading jobs...</p>}
+
             {!loading && jobs.length === 0 && <p>No jobs found</p>}
 
-            {jobs.map((job)=>(
-              <div key={job.id} className="p-3 mb-3 border rounded shadow-sm">
-
-                <div className="d-flex justify-content-between">
-
-                  <div className="d-flex">
-                    <img
-                      src={job.logo
-                        ? `https://server.budes.online/public/storage/${job.logo}`
-                        : "/assets/img/default.png"}
-                      style={{ width:60, height:60 }}
-                    />
-
-                    <div className="ms-3">
-                      <h5>{job.job_title}</h5>
-
-                      <div className="small text-muted">
-                        {job.experience} Years | ₹ {job.salary_range} Lakhs | {job.location}
-                      </div>
-
-                      <div className="small text-muted">
-                        {job.job_description?.slice(0,120)}...
-                      </div>
-
-                      <div className="small text-muted">
-                        {getDaysAgo(job.created_at)}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div>
-                    <button onClick={()=>toggleSaveJob(job)}>
-                      {job.saved ? "Saved" : "Save"}
-                    </button>
-
-                    <br />
-
-                    <button
-                      disabled={job.applied}
-                      onClick={()=>applyJob(job.id, job.applied)}
-                    >
-                      {job.applied ? "Applied" : "Apply"}
-                    </button>
-                  </div>
-
-                </div>
-              </div>
-            ))}
+            {!loading &&
+              jobs.map((job) => (
+                <JobCard key={job.id} job={job} />
+              ))}
 
           </div>
 
