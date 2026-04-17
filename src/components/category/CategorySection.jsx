@@ -21,8 +21,9 @@ function CategorySection() {
     }));
   };
 
+  // ✅ FIXED FUNCTION
   const handleSubClick = (catId, subId) => {
-    navigate(`/jobs?category=${catId}&sub_category=${subId}`);
+    navigate(`/jobs?category_id=${catId}&sub_category_id=${subId}`);
   };
 
   return (
@@ -31,7 +32,7 @@ function CategorySection() {
 
         {/* HEADER */}
         <div className="text-center mb-5">
-          <h1 className="fw-bold wow fadeInUp" data-wow-delay="0.1s">
+          <h1 className="fw-bold wow fadeInUp">
             Explore Jobs by Category
           </h1>
           <p className="text-muted">
@@ -59,30 +60,29 @@ function CategorySection() {
               >
                 <div className="cat-item rounded p-4 h-100 shadow-sm border bg-white">
 
-                  {/* CLICKABLE CATEGORY */}
+                  {/* CATEGORY CLICK */}
                   <div
                     style={{ cursor: "pointer" }}
-                    onClick={() => navigate(`/jobs?category=${cat.id}`)}
+                    onClick={() =>
+                      navigate(`/jobs?category_id=${cat.id}`)
+                    }
                   >
-                    {/* ICON */}
                     <i
                       className={`fa fa-3x ${
                         cat.icon || "fa-briefcase"
                       } text-primary mb-3`}
                     ></i>
 
-                    {/* TITLE */}
                     <h6 className="mb-2 fw-bold text-dark">
                       {cat.name}
                     </h6>
 
-                    {/* JOB COUNT */}
                     <p className="mb-2 text-muted">
                       {cat.jobs_count ?? 0} Jobs Available
                     </p>
                   </div>
 
-                  {/* SUBCATEGORY LIST */}
+                  {/* SUBCATEGORY */}
                   <ul className="list-unstyled small text-muted mb-2">
                     {(isExpanded
                       ? cat.children || []
@@ -101,7 +101,7 @@ function CategorySection() {
                     ))}
                   </ul>
 
-                  {/* MORE BUTTON */}
+                  {/* MORE */}
                   {(cat.children?.length || 0) > 3 && (
                     <small
                       className="text-primary fw-semibold"

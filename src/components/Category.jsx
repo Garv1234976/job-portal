@@ -33,8 +33,14 @@ function Category() {
     });
   };
 
+  // ✅ FIXED FUNCTION
   const handleSubCategoryClick = (catId, subId) => {
-    navigate(`/jobs?category=${catId}&sub_category=${subId}`);
+    navigate(`/jobs?category_id=${catId}&sub_category_id=${subId}`);
+  };
+
+  // ✅ CATEGORY CLICK
+  const handleCategoryClick = (catId) => {
+    navigate(`/jobs?category_id=${catId}`);
   };
 
   return (
@@ -100,15 +106,21 @@ function Category() {
               >
                 <div className="cat-item rounded p-4 h-100 border shadow-sm bg-white">
 
-                  {/* ICON */}
-                  <i
-                    className={`fa fa-3x ${
-                      cat.icon || "fa-briefcase"
-                    } text-success mb-3`}
-                  ></i>
+                  {/* CATEGORY CLICKABLE */}
+                  <div
+                    style={{ cursor: "pointer" }}
+                    onClick={() => handleCategoryClick(cat.id)}
+                  >
+                    {/* ICON */}
+                    <i
+                      className={`fa fa-3x ${
+                        cat.icon || "fa-briefcase"
+                      } text-success mb-3`}
+                    ></i>
 
-                  {/* TITLE */}
-                  <h6 className="mb-2 fw-bold">{cat.name}</h6>
+                    {/* TITLE */}
+                    <h6 className="mb-2 fw-bold">{cat.name}</h6>
+                  </div>
 
                   {/* SUB LIST */}
                   <ul className="list-unstyled small text-muted mb-2">
@@ -118,11 +130,11 @@ function Category() {
                     ).map((sub) => (
                       <li
                         key={sub.id}
+                        className="sub-cat-item"
                         style={{ cursor: "pointer" }}
                         onClick={() =>
                           handleSubCategoryClick(cat.id, sub.id)
                         }
-                        className="sub-cat-item"
                       >
                         • {sub.name}
                       </li>
