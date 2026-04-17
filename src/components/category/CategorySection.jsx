@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import API from "../services/api";
+import api from "../../services/api";
+
 
 function CategorySection() {
   const [categories, setCategories] = useState([]);
 
   useEffect(() => {
-    API.get("/categories").then((res) => {
+    api.get("/categories").then((res) => {
       setCategories(res.data.data || []);
     });
   }, []);
