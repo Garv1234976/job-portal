@@ -29,11 +29,11 @@ function Home() {
           setFilters(data);
         }}
       />
-
+      <JobList filters={filters} />
+       
       <Category />
       <About />
 
-      <JobList filters={filters} />
 
       <Testimonial />
       <Footer />
