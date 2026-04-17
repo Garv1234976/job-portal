@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import API from "../../services/api";
-import Swal from "sweetalert2";
-import JobCard from "../../components/JobCard"; // ✅ IMPORTANT
+import JobCard from "../../components/JobCard";
 
 function JobListSection() {
   const [jobs, setJobs] = useState([]);
@@ -21,6 +20,7 @@ function JobListSection() {
 
   const location = useLocation();
 
+  // ✅ GET QUERY PARAMS
   const getQueryParams = () => {
     const params = new URLSearchParams(location.search);
     return {
@@ -29,10 +29,12 @@ function JobListSection() {
     };
   };
 
+  // 🔁 Reset page when URL changes
   useEffect(() => {
     setPage(1);
   }, [location.search]);
 
+  // 🔁 Fetch jobs
   useEffect(() => {
     fetchJobs();
   }, [page, location.search]);
@@ -51,8 +53,6 @@ function JobListSection() {
         type: jobType,
         experience,
         saved: savedFilter,
-
-        // ✅ IMPORTANT
         category_id: query.category_id,
         sub_category_id: query.sub_category_id,
       },
@@ -63,6 +63,38 @@ function JobListSection() {
       })
       .catch(() => setJobs([]))
       .finally(() => setLoading(false));
+  };
+
+  // ✅ SMART PAGINATION FUNCTION
+  const getPagination = () => {
+    const pages = [];
+
+    if (lastPage <= 7) {
+      for (let i = 1; i <= lastPage; i++) {
+        pages.push(i);
+      }
+    } else {
+      pages.push(1);
+
+      if (page > 4) {
+        pages.push("...");
+      }
+
+      const start = Math.max(2, page - 1);
+      const end = Math.min(lastPage - 1, page + 1);
+
+      for (let i = start; i <= end; i++) {
+        pages.push(i);
+      }
+
+      if (page < lastPage - 3) {
+        pages.push("...");
+      }
+
+      pages.push(lastPage);
+    }
+
+    return pages;
   };
 
   return (
@@ -80,64 +112,30 @@ function JobListSection() {
               <h5>All Filters</h5>
               <hr />
 
-              {/* Saved */}
               <h6>Saved Jobs</h6>
-
-              <div>
-                <input type="radio" checked={savedFilter === ""} onChange={() => setSavedFilter("")}/> All Jobs
-              </div>
-
-              <div>
-                <input type="radio" checked={savedFilter === "saved"} onChange={() => setSavedFilter("saved")}/> Saved Jobs
-              </div>
-
-              <div>
-                <input type="radio" checked={savedFilter === "unsaved"} onChange={() => setSavedFilter("unsaved")}/> Unsaved Jobs
-              </div>
+              <div><input type="radio" checked={savedFilter === ""} onChange={() => setSavedFilter("")}/> All Jobs</div>
+              <div><input type="radio" checked={savedFilter === "saved"} onChange={() => setSavedFilter("saved")}/> Saved Jobs</div>
+              <div><input type="radio" checked={savedFilter === "unsaved"} onChange={() => setSavedFilter("unsaved")}/> Unsaved Jobs</div>
 
               <hr />
 
-              {/* Work Mode */}
               <h6>Work Mode</h6>
-
-              <div>
-                <input type="radio" value="WFH" checked={jobType==="WFH"} onChange={(e)=>setJobType(e.target.value)}/> WFH
-              </div>
-
-              <div>
-                <input type="radio" value="remote" checked={jobType==="remote"} onChange={(e)=>setJobType(e.target.value)}/> Remote
-              </div>
-
-              <div>
-                <input type="radio" value="hybrid" checked={jobType==="hybrid"} onChange={(e)=>setJobType(e.target.value)}/> Hybrid
-              </div>
+              <div><input type="radio" value="WFH" checked={jobType==="WFH"} onChange={(e)=>setJobType(e.target.value)}/> WFH</div>
+              <div><input type="radio" value="remote" checked={jobType==="remote"} onChange={(e)=>setJobType(e.target.value)}/> Remote</div>
+              <div><input type="radio" value="hybrid" checked={jobType==="hybrid"} onChange={(e)=>setJobType(e.target.value)}/> Hybrid</div>
 
               <hr />
 
-              {/* Experience */}
               <h6>Experience</h6>
               <div>Selected: {experience} Years</div>
-
-              <input type="range" min="0" max="10" value={experience}
-                onChange={(e)=>setExperience(e.target.value)}
-              />
+              <input type="range" min="0" max="10" value={experience} onChange={(e)=>setExperience(e.target.value)} />
 
               <hr />
 
-              {/* Salary */}
               <h6>Salary</h6>
-
-              <div>
-                <input type="radio" value="0-3" checked={salary==="0-3"} onChange={(e)=>setSalary(e.target.value)}/> 0-3 Lakhs
-              </div>
-
-              <div>
-                <input type="radio" value="3-6" checked={salary==="3-6"} onChange={(e)=>setSalary(e.target.value)}/> 3-6 Lakhs
-              </div>
-
-              <div>
-                <input type="radio" value="6-10" checked={salary==="6-10"} onChange={(e)=>setSalary(e.target.value)}/> 6-10 Lakhs
-              </div>
+              <div><input type="radio" value="0-3" checked={salary==="0-3"} onChange={(e)=>setSalary(e.target.value)}/> 0-3 Lakhs</div>
+              <div><input type="radio" value="3-6" checked={salary==="3-6"} onChange={(e)=>setSalary(e.target.value)}/> 3-6 Lakhs</div>
+              <div><input type="radio" value="6-10" checked={salary==="6-10"} onChange={(e)=>setSalary(e.target.value)}/> 6-10 Lakhs</div>
 
               <hr />
 
@@ -189,13 +187,66 @@ function JobListSection() {
 
             {/* JOB LIST */}
             {loading && <p>Loading jobs...</p>}
-
             {!loading && jobs.length === 0 && <p>No jobs found</p>}
 
             {!loading &&
               jobs.map((job) => (
                 <JobCard key={job.id} job={job} />
               ))}
+
+            {/* ✅ SMART PAGINATION */}
+            {lastPage > 1 && (
+              <div className="d-flex justify-content-center mt-4 flex-wrap gap-2">
+
+                {/* PREV */}
+                <button
+                  className="btn btn-light border"
+                  disabled={page === 1}
+                  onClick={() => {
+                    setPage(page - 1);
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }}
+                >
+                  ‹
+                </button>
+
+                {/* PAGES */}
+                {getPagination().map((p, i) => (
+                  <button
+                    key={i}
+                    disabled={p === "..."}
+                    className={`btn ${
+                      page === p
+                        ? "btn-dark"
+                        : p === "..."
+                        ? "btn-light border disabled"
+                        : "btn-light border"
+                    }`}
+                    onClick={() => {
+                      if (typeof p === "number") {
+                        setPage(p);
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                      }
+                    }}
+                  >
+                    {p}
+                  </button>
+                ))}
+
+                {/* NEXT */}
+                <button
+                  className="btn btn-light border"
+                  disabled={page === lastPage}
+                  onClick={() => {
+                    setPage(page + 1);
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }}
+                >
+                  ›
+                </button>
+
+              </div>
+            )}
 
           </div>
 
