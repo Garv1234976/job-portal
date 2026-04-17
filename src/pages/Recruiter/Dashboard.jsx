@@ -3,6 +3,10 @@ import { useEffect, useState } from "react";
 import API from "../../services/api";
 import Swal from "sweetalert2";
 
+// ✅ IMPORT THESE
+import Navbar from "../../components/Navbar";
+import Footer from "../../components/Footer";
+
 export default function Dashboard() {
   const navigate = useNavigate();
   const [activePlan, setActivePlan] = useState(null);
@@ -30,68 +34,77 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="container mt-4">
-      <h2 className="mb-4">Recruiter Dashboard</h2>
+    <>
+      {/* ✅ NAVBAR */}
+      <Navbar />
 
-      <div className="row g-4">
+      {/* MAIN CONTENT */}
+      <div className="container mt-4 mb-5">
+        <h2 className="mb-4">Recruiter Dashboard</h2>
 
-        <div className="col-md-3">
-          <div className="card shadow p-3 text-center h-100 dashboard-card">
-            <i className="fa fa-plus-circle fa-2x text-primary mb-2"></i>
-            <h5>Post Job</h5>
-            <p>Create new job listing</p>
-            <button
-              className="btn btn-primary w-100"
-              onClick={handlePostJob}
-            >
-              Post Job
-            </button>
+        <div className="row g-4">
+
+          <div className="col-md-3">
+            <div className="card shadow p-3 text-center h-100 dashboard-card">
+              <i className="fa fa-plus-circle fa-2x text-primary mb-2"></i>
+              <h5>Post Job</h5>
+              <p>Create new job listing</p>
+              <button
+                className="btn btn-primary w-100"
+                onClick={handlePostJob}
+              >
+                Post Job
+              </button>
+            </div>
           </div>
-        </div>
 
-        <div className="col-md-3">
-          <div className="card shadow p-3 text-center h-100 dashboard-card">
-            <i className="fa fa-briefcase fa-2x text-success mb-2"></i>
-            <h5>My Jobs</h5>
-            <p>Manage your jobs</p>
-            <button
-              className="btn btn-success w-100"
-              onClick={() => navigate("/recruiter/jobs")}
-            >
-              View Jobs
-            </button>
+          <div className="col-md-3">
+            <div className="card shadow p-3 text-center h-100 dashboard-card">
+              <i className="fa fa-briefcase fa-2x text-success mb-2"></i>
+              <h5>My Jobs</h5>
+              <p>Manage your jobs</p>
+              <button
+                className="btn btn-success w-100"
+                onClick={() => navigate("/recruiter/jobs")}
+              >
+                View Jobs
+              </button>
+            </div>
           </div>
-        </div>
 
-        <div className="col-md-3">
-          <div className="card shadow p-3 text-center h-100 dashboard-card">
-            <i className="fa fa-users fa-2x text-warning mb-2"></i>
-            <h5>Applications</h5>
-            <p>Check applicants</p>
-            <button
-              className="btn btn-warning w-100"
-              onClick={() => navigate("/recruiter/applications")}
-            >
-              View Applications
-            </button>
+          <div className="col-md-3">
+            <div className="card shadow p-3 text-center h-100 dashboard-card">
+              <i className="fa fa-users fa-2x text-warning mb-2"></i>
+              <h5>Applications</h5>
+              <p>Check applicants</p>
+              <button
+                className="btn btn-warning w-100"
+                onClick={() => navigate("/recruiter/applications")}
+              >
+                View Applications
+              </button>
+            </div>
           </div>
-        </div>
 
-        <div className="col-md-3">
-          <div className="card shadow p-3 text-center h-100 dashboard-card">
-            <i className="fa fa-times-circle fa-2x text-dark mb-2"></i>
-            <h5>Closed Jobs</h5>
-            <p>Archived jobs</p>
-            <button
-              className="btn btn-dark w-100"
-              onClick={() => navigate("/recruiter/closed-jobs")}
-            >
-              View Closed
-            </button>
+          <div className="col-md-3">
+            <div className="card shadow p-3 text-center h-100 dashboard-card">
+              <i className="fa fa-times-circle fa-2x text-dark mb-2"></i>
+              <h5>Closed Jobs</h5>
+              <p>Archived jobs</p>
+              <button
+                className="btn btn-dark w-100"
+                onClick={() => navigate("/recruiter/closed-jobs")}
+              >
+                View Closed
+              </button>
+            </div>
           </div>
-        </div>
 
+        </div>
       </div>
-    </div>
+
+      {/* ✅ FOOTER */}
+      <Footer />
+    </>
   );
 }
