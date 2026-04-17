@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
 import API from "../../services/api";
 import Swal from "sweetalert2";
 
@@ -8,7 +7,7 @@ function JobListSection() {
   const [loading, setLoading] = useState(true);
 
   const [search, setSearch] = useState("");
-  const [locationInput, setLocationInput] = useState("");
+  const [location, setLocation] = useState("");
 
   const [jobType, setJobType] = useState("");
   const [salary, setSalary] = useState("");
@@ -18,51 +17,32 @@ function JobListSection() {
   const [page, setPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
 
-  const location = useLocation();
-
-  // ✅ GET URL PARAMS
-  const getQueryParams = () => {
-    const params = new URLSearchParams(location.search);
-
-    return {
-      category_id: params.get("category_id"),
-      sub_category_id: params.get("sub_category_id"),
-    };
-  };
-
-  useEffect(() => {
-    setPage(1);
-  }, [location.search]);
-
   useEffect(() => {
     fetchJobs();
-  }, [page, location.search]);
+  }, [page]);
 
   const fetchJobs = (customPage = page) => {
     setLoading(true);
-
-    const query = getQueryParams();
 
     API.get(`/jobs`, {
       params: {
         page: customPage,
         search,
-        location: locationInput,
+        location,
         salary,
         type: jobType,
         experience,
         saved: savedFilter,
-
-        category_id: query.category_id,
+         category_id: query.category_id,
         sub_category_id: query.sub_category_id,
       },
     })
       .then((res) => {
         setJobs(res.data.data.data || []);
         setLastPage(res.data.data.last_page || 1);
+        setLoading(false);
       })
-      .catch(() => setJobs([]))
-      .finally(() => setLoading(false));
+      .catch(() => setLoading(false));
   };
 
   const applyJob = async (jobId, applied) => {
@@ -115,45 +95,64 @@ function JobListSection() {
               <h5>All Filters</h5>
               <hr />
 
-              {/* SAVED */}
+              {/* SAVED FILTER */}
               <h6>Saved Jobs</h6>
 
               <div>
-                <input type="radio" checked={savedFilter === ""} onChange={() => setSavedFilter("")}/> All Jobs
+                <input type="radio" name="saved" value=""
+                  checked={savedFilter === ""}
+                  onChange={(e) => setSavedFilter(e.target.value)} /> All Jobs
               </div>
 
               <div>
-                <input type="radio" checked={savedFilter === "saved"} onChange={() => setSavedFilter("saved")}/> Saved Jobs
+                <input type="radio" name="saved" value="saved"
+                  checked={savedFilter === "saved"}
+                  onChange={(e) => setSavedFilter(e.target.value)} /> Saved Jobs
               </div>
 
               <div>
-                <input type="radio" checked={savedFilter === "unsaved"} onChange={() => setSavedFilter("unsaved")}/> Unsaved Jobs
+                <input type="radio" name="saved" value="unsaved"
+                  checked={savedFilter === "unsaved"}
+                  onChange={(e) => setSavedFilter(e.target.value)} /> Unsaved Jobs
               </div>
 
               <hr />
 
-              {/* TYPE */}
+              {/* WORK MODE */}
               <h6>Work Mode</h6>
 
               <div>
-                <input type="radio" value="WFH" checked={jobType === "WFH"} onChange={(e) => setJobType(e.target.value)} /> WFH
+                <input type="radio" name="type" value="office"
+                  checked={jobType === "WFH"}
+                  onChange={(e) => setJobType(e.target.value)} /> WFH
               </div>
 
               <div>
-                <input type="radio" value="remote" checked={jobType === "remote"} onChange={(e) => setJobType(e.target.value)} /> Remote
+                <input type="radio" name="type" value="remote"
+                  checked={jobType === "remote"}
+                  onChange={(e) => setJobType(e.target.value)} /> Remote
               </div>
 
               <div>
-                <input type="radio" value="hybrid" checked={jobType === "hybrid"} onChange={(e) => setJobType(e.target.value)} /> Hybrid
+                <input type="radio" name="type" value="hybrid"
+                  checked={jobType === "hybrid"}
+                  onChange={(e) => setJobType(e.target.value)} /> Hybrid
               </div>
 
               <hr />
 
               {/* EXPERIENCE */}
               <h6>Experience</h6>
-              <div className="small">Selected: {experience} Years</div>
+              <div className="small text-muted">
+                Selected: <strong>{experience} Years</strong>
+              </div>
 
-              <input type="range" min="0" max="10" value={experience}
+              <input
+                type="range"
+                min="0"
+                max="10"
+                value={experience}
+                className="form-range"
                 onChange={(e) => setExperience(e.target.value)}
               />
 
@@ -163,34 +162,46 @@ function JobListSection() {
               <h6>Salary</h6>
 
               <div>
-                <input type="radio" value="0-3" checked={salary === "0-3"} onChange={(e) => setSalary(e.target.value)} /> 0-3 Lakhs
+                <input type="radio" name="salary" value="0-3"
+                  checked={salary === "0-3"}
+                  onChange={(e) => setSalary(e.target.value)} /> 0-3 Lakhs
               </div>
 
               <div>
-                <input type="radio" value="3-6" checked={salary === "3-6"} onChange={(e) => setSalary(e.target.value)} /> 3-6 Lakhs
+                <input type="radio" name="salary" value="3-6"
+                  checked={salary === "3-6"}
+                  onChange={(e) => setSalary(e.target.value)} /> 3-6 Lakhs
               </div>
 
               <div>
-                <input type="radio" value="6-10" checked={salary === "6-10"} onChange={(e) => setSalary(e.target.value)} /> 6-10 Lakhs
+                <input type="radio" name="salary" value="6-10"
+                  checked={salary === "6-10"}
+                  onChange={(e) => setSalary(e.target.value)} /> 6-10 Lakhs
               </div>
 
               <hr />
 
               {/* APPLY */}
-              <button className="btn btn-primary w-100" onClick={() => fetchJobs(1)}>
+              <button className="btn btn-primary w-100"
+                onClick={() => {
+                  setPage(1);
+                  fetchJobs(1);
+                }}>
                 Apply Filters
               </button>
 
-              <button className="btn btn-outline-secondary w-100 mt-2" onClick={() => {
-                setJobType("");
-                setSalary("");
-                setExperience(0);
-                setSearch("");
-                setLocationInput("");
-                setSavedFilter("");
-                setPage(1);
-                fetchJobs(1);
-              }}>
+              {/* RESET */}
+              <button className="btn btn-outline-secondary w-100 mt-2"
+                onClick={() => {
+                  setJobType("");
+                  setSalary("");
+                  setExperience(0);
+                  setSearch("");
+                  setLocation("");
+                  setSavedFilter("");
+                  setPage(1);
+                  fetchJobs(1);
+                }}>
                 Reset
               </button>
 
@@ -203,21 +214,29 @@ function JobListSection() {
             {/* SEARCH */}
             <div className="row mb-3">
               <div className="col-md-5">
-                <input className="form-control" placeholder="Search jobs..."
+                <input
+                  className="form-control"
+                  placeholder="Search jobs..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                 />
               </div>
 
               <div className="col-md-5">
-                <input className="form-control" placeholder="Location"
-                  value={locationInput}
-                  onChange={(e) => setLocationInput(e.target.value)}
+                <input
+                  className="form-control"
+                  placeholder="Location"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
                 />
               </div>
 
               <div className="col-md-2">
-                <button className="btn btn-primary w-100" onClick={() => fetchJobs(1)}>
+                <button className="btn btn-primary w-100"
+                  onClick={() => {
+                    setPage(1);
+                    fetchJobs(1);
+                  }}>
                   Search
                 </button>
               </div>
@@ -225,8 +244,7 @@ function JobListSection() {
 
             {loading && <p>Loading jobs...</p>}
 
-            {!loading && jobs.length === 0 && <p>No jobs found</p>}
-
+            {/* JOB CARDS */}
             {jobs.map((job) => (
               <div key={job.id} className="p-3 mb-3 border rounded shadow-sm">
 
@@ -234,47 +252,84 @@ function JobListSection() {
 
                   <div className="d-flex">
                     <img
-                      src={job.logo
-                        ? `https://server.budes.online/public/storage/${job.logo}`
-                        : "/assets/img/default.png"}
+                      src={
+                        job.logo
+                          ? `https://server.budes.online/public/storage/${job.logo}`
+                          : "/assets/img/default.png"
+                      }
                       style={{ width: 60, height: 60 }}
+                      className="rounded"
                     />
 
                     <div className="ms-3">
                       <h5>{job.job_title}</h5>
 
-                      <div className="small text-muted">
-                        {job.experience} Years | ₹ {job.salary_range} Lakhs | {job.location}
+                      <div className="text-muted small">
+                        <i className="fa fa-briefcase"></i> {job.experience}  {"Years"} |{" "}
+                        ₹ {job.salary_range}  {"Lakhs"} |{" "}
+                        <i className="fa fa-map-marker"></i> {job.location}
                       </div>
 
-                      <div className="small text-muted">
-                        {job.job_description?.slice(0, 120)}...
+                      <div className="text-muted small">
+                        <i className="fa fa-file-text"></i>{" "}
+                        {job.job_description?.slice(0, 200)}...
                       </div>
 
-                      <div className="small text-muted">
+                      <div className="text-muted small">
+                        <i className="fa fa-clock-o"></i>{" "}
                         {getDaysAgo(job.created_at)}
                       </div>
                     </div>
                   </div>
 
-                  <div>
-                    <button onClick={() => toggleSaveJob(job)}>
-                      {job.saved ? "Saved" : "Save"}
+                  <div className="text-end">
+
+                    {/* SAVE ICON */}
+                    <button
+                      className="btn border-0 bg-transparent"
+                      onClick={() => toggleSaveJob(job)}
+                    >
+                      <i
+                        className={`fa ${
+                          job.saved ? "fa-bookmark text-primary" : "fa-bookmark-o"
+                        }`}
+                      ></i>
+                      <small>{job.saved ? " Saved" : " Save"}</small>
                     </button>
 
                     <br />
 
+                    {/* APPLY */}
                     <button
-                      disabled={job.applied}
+                      className={`btn mt-2 ${
+                        job.applied ? "btn-success" : "btn-primary"
+                      }`}
                       onClick={() => applyJob(job.id, job.applied)}
+                      disabled={job.applied}
                     >
                       {job.applied ? "Applied" : "Apply"}
                     </button>
+
                   </div>
 
                 </div>
               </div>
             ))}
+
+            {/* PAGINATION */}
+            {lastPage > 1 && (
+              <div className="text-center mt-3">
+                <button disabled={page === 1} onClick={() => setPage(page - 1)}>
+                  Prev
+                </button>
+
+                <span className="mx-2">{page} / {lastPage}</span>
+
+                <button disabled={page === lastPage} onClick={() => setPage(page + 1)}>
+                  Next
+                </button>
+              </div>
+            )}
 
           </div>
 
