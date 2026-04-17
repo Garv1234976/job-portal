@@ -42,8 +42,6 @@ function JobList({ filters }) {
         page,
         search: filters?.search,
         location: filters?.location,
-
-        // ✅ IMPORTANT FIX
         category_id: query.category_id || filters?.category_id,
         sub_category_id: query.sub_category_id,
       },
@@ -54,6 +52,38 @@ function JobList({ filters }) {
       })
       .catch(() => setJobs([]))
       .finally(() => setLoading(false));
+  };
+
+  // ✅ SMART PAGINATION LOGIC
+  const getPagination = () => {
+    const pages = [];
+
+    if (lastPage <= 7) {
+      for (let i = 1; i <= lastPage; i++) {
+        pages.push(i);
+      }
+    } else {
+      pages.push(1);
+
+      if (page > 4) {
+        pages.push("...");
+      }
+
+      const start = Math.max(2, page - 1);
+      const end = Math.min(lastPage - 1, page + 1);
+
+      for (let i = start; i <= end; i++) {
+        pages.push(i);
+      }
+
+      if (page < lastPage - 3) {
+        pages.push("...");
+      }
+
+      pages.push(lastPage);
+    }
+
+    return pages;
   };
 
   return (
@@ -87,28 +117,55 @@ function JobList({ filters }) {
           <JobCard key={job.id} job={job} />
         ))}
 
-      {/* PAGINATION */}
+      {/* ✅ SMART PAGINATION */}
       {lastPage > 1 && (
-        <div className="text-center mt-4">
+        <div className="d-flex justify-content-center mt-4 flex-wrap gap-2">
 
+          {/* PREV */}
           <button
-            className="btn btn-light me-2"
+            className="btn btn-light border"
             disabled={page === 1}
-            onClick={() => setPage((prev) => prev - 1)}
+            onClick={() => {
+              setPage(page - 1);
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
           >
-            ← Prev
+            ‹
           </button>
 
-          <span className="mx-2 fw-semibold">
-            Page {page} of {lastPage}
-          </span>
+          {/* PAGE NUMBERS */}
+          {getPagination().map((p, i) => (
+            <button
+              key={i}
+              disabled={p === "..."}
+              className={`btn ${
+                page === p
+                  ? "btn-dark"
+                  : p === "..."
+                  ? "btn-light border disabled"
+                  : "btn-light border"
+              }`}
+              onClick={() => {
+                if (typeof p === "number") {
+                  setPage(p);
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                }
+              }}
+            >
+              {p}
+            </button>
+          ))}
 
+          {/* NEXT */}
           <button
-            className="btn btn-light ms-2"
+            className="btn btn-light border"
             disabled={page === lastPage}
-            onClick={() => setPage((prev) => prev + 1)}
+            onClick={() => {
+              setPage(page + 1);
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
           >
-            Next →
+            ›
           </button>
 
         </div>
