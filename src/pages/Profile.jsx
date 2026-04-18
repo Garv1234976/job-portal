@@ -20,6 +20,7 @@ function Profile() {
   const [loading, setLoading] = useState(true);
   const [editMode, setEditMode] = useState(false);
 
+  // ✅ SAFE JSON PARSER
   const parseJSON = (data, fallback = []) => {
     try {
       if (!data) return fallback;
@@ -33,6 +34,7 @@ function Profile() {
     fetchProfile();
   }, []);
 
+  // ✅ FETCH PROFILE (FIXED)
   const fetchProfile = async () => {
     try {
       const res = await API.get("/profile");
@@ -42,9 +44,10 @@ function Profile() {
 
       setForm({
         ...data,
-        experience_details: parseJSON(data.experience_details),
         skills: parseJSON(data.skills),
         qualification: parseJSON(data.qualification),
+        experience_details: parseJSON(data.experience_details),
+        type: data.type || "",
       });
 
       setLoading(false);
@@ -53,25 +56,26 @@ function Profile() {
     }
   };
 
+  // ✅ UPDATE PROFILE (FIXED)
   const handleUpdate = async () => {
     try {
-      // ✅ VALIDATION
+      // VALIDATION
       if (!form.full_name) {
-        return Swal.fire("Error", "Full name is required", "error");
+        return Swal.fire("Error", "Full name required", "error");
       }
 
-      if (!form.skills || form.skills.length === 0) {
+      if (!form.skills?.length) {
         return Swal.fire("Error", "Select at least 1 skill", "error");
       }
 
       if (form.type === "experienced") {
         if (!form.experience_details?.length) {
-          return Swal.fire("Error", "Add experience details", "error");
+          return Swal.fire("Error", "Add experience", "error");
         }
 
         for (let exp of form.experience_details) {
           if (!exp.job_profile || !exp.years) {
-            return Swal.fire("Error", "Fill all experience fields", "error");
+            return Swal.fire("Error", "Fill experience fields", "error");
           }
         }
       }
@@ -106,6 +110,7 @@ function Profile() {
       Swal.fire("Success", "Profile updated", "success");
       setEditMode(false);
       fetchProfile();
+
     } catch {
       Swal.fire("Error", "Update failed", "error");
     }
@@ -119,7 +124,7 @@ function Profile() {
 
       <div className="card p-4 shadow">
 
-        {/* NAME */}
+        {/* FULL NAME */}
         <div className="mb-3">
           <label>Full Name</label>
           {editMode ? (
@@ -141,7 +146,7 @@ function Profile() {
           {editMode ? (
             <input
               className="form-control"
-              value={form.skills || ""}
+              value={form.skills?.join(",") || ""}
               onChange={(e) =>
                 setForm({ ...form, skills: e.target.value.split(",") })
               }
@@ -156,6 +161,7 @@ function Profile() {
         {/* EXPERIENCE TYPE */}
         <div className="mb-3">
           <label>Experience</label>
+
           {editMode ? (
             <select
               className="form-control"
@@ -189,12 +195,12 @@ function Profile() {
 
         {/* EXPERIENCE DETAILS */}
         {editMode && form.type === "experienced" && (
-          <div>
+          <div className="mb-3">
             {form.experience_details.map((exp, index) => (
               <div key={index} className="d-flex mb-2">
                 <input
                   className="form-control me-2"
-                  placeholder="Job"
+                  placeholder="Job Profile"
                   value={exp.job_profile}
                   onChange={(e) => {
                     const updated = [...form.experience_details];
@@ -217,11 +223,11 @@ function Profile() {
           </div>
         )}
 
-        {/* VIEW EXPERIENCE */}
+        {/* EXPERIENCE VIEW */}
         {!editMode && (form.type || user.type) === "experienced" && (
-          <div className="form-control">
+          <div className="form-control mb-3">
             {parseJSON(form.experience_details).map(
-              (e) => `${e.job_profile} (${e.years})`
+              (e) => `${e.job_profile} (${e.years} yrs)`
             ).join(", ")}
           </div>
         )}
@@ -239,19 +245,25 @@ function Profile() {
               }
             />
           ) : user.cv ? (
-            <a href={`https://server.budes.online/public/${user.cv}`} target="_blank">
+            <a
+              href={`https://server.budes.online/public/${user.cv}`}
+              target="_blank"
+              rel="noreferrer"
+            >
               View CV
             </a>
           ) : (
-            "No CV"
+            "No CV uploaded"
           )}
         </div>
 
+        {/* SAVE */}
         {editMode && (
           <button className="btn btn-success" onClick={handleUpdate}>
-            Save
+            Save Changes
           </button>
         )}
+
       </div>
 
       <Footer />
