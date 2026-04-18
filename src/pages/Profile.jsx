@@ -298,7 +298,7 @@ function Profile() {
                     <div className="form-control bg-light">
                       {user.cv ? (
                         <a
-                          href={`https://server.budes.online/storage/${user.cv}`}
+                          href={`https://server.budes.online/public/${user.cv}`}
                           target="_blank"
                         >
                           View CV
