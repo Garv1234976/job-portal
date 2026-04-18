@@ -136,13 +136,11 @@ function Profile() {
 
   return (
     <div className="container-xxl bg-white p-0">
-
       <Navbar />
 
       <div className="container py-5">
         <div className="card shadow-lg p-4 rounded-4 border-0">
           <div className="row align-items-center">
-
             <div className="col-md-3 text-center">
               <img
                 src="/assets/img/default.jpg"
@@ -153,7 +151,6 @@ function Profile() {
             </div>
 
             <div className="col-md-9">
-
               <div className="d-flex justify-content-between align-items-center mb-3">
                 <div className="w-50">
                   <label className="form-label fw-semibold">
@@ -185,7 +182,6 @@ function Profile() {
               <hr />
 
               <div className="row g-3">
-
                 {/* LOCATION */}
                 <div className="col-md-6">
                   <label className="form-label fw-semibold">
@@ -303,18 +299,40 @@ function Profile() {
                       }}
                     />
                   ) : (
-                    <div className="form-control bg-light">
-                      {getSkills()}
-                    </div>
+                    <div className="form-control bg-light">{getSkills()}</div>
                   )}
                 </div>
 
                 {/* EXPERIENCE */}
                 <div className="col-md-6">
+                  {/* EXPERIENCE */}
                   <label className="form-label fw-semibold">
                     <FaBriefcase className="me-2 text-secondary" />
                     Experience
                   </label>
+
+                  {editMode ? (
+                    <select
+                      className="form-select"
+                      value={form.experience_type || ""}
+                      onChange={(e) =>
+                        setForm({
+                          ...form,
+                          experience_type: e.target.value,
+                        })
+                      }
+                    >
+                      <option value="">Select Experience</option>
+                      <option value="fresher">Fresher</option>
+                      <option value="experienced">Experienced</option>
+                    </select>
+                  ) : (
+                    <div className="form-control bg-light">
+                      {form.experience_type === "experienced"
+                        ? "Experienced"
+                        : "Fresher"}
+                    </div>
+                  )}
 
                   {editMode ? (
                     <input
@@ -347,9 +365,7 @@ function Profile() {
 
                 {/* ✅ CV FIELD ADDED */}
                 <div className="col-md-6">
-                  <label className="form-label fw-semibold">
-                    Upload CV
-                  </label>
+                  <label className="form-label fw-semibold">Upload CV</label>
 
                   {editMode ? (
                     <>
@@ -378,8 +394,6 @@ function Profile() {
                           </a>
                         </small>
                       )}
-
-
                     </>
                   ) : (
                     <div className="form-control bg-light">
@@ -390,11 +404,12 @@ function Profile() {
                         >
                           View CV
                         </a>
-                      ) : "No CV uploaded"}
+                      ) : (
+                        "No CV uploaded"
+                      )}
                     </div>
                   )}
                 </div>
-
               </div>
 
               {editMode && (
@@ -405,7 +420,6 @@ function Profile() {
                   Save Changes
                 </button>
               )}
-
             </div>
           </div>
         </div>
