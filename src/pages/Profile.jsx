@@ -103,6 +103,11 @@ function Profile() {
           } else if (form.cv === null) {
             formData.append("cv", "");
           }
+        } else if (key === "experience_details") {
+          formData.append(
+            "experience_details",
+            JSON.stringify(form.experience_details || []),
+          );
         } else if (Array.isArray(form[key])) {
           form[key].forEach((item, i) => {
             formData.append(`${key}[${i}]`, item);
@@ -334,8 +339,9 @@ function Profile() {
                     </select>
                   ) : (
                     <div className="form-control bg-light">
-                      {form.type
-                        ? form.type.charAt(0).toUpperCase() + form.type.slice(1)
+                      {form.type || user.type
+                        ? (form.type || user.type).charAt(0).toUpperCase() +
+                          (form.type || user.type).slice(1)
                         : "Not selected"}
                     </div>
                   )}
