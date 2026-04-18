@@ -304,38 +304,33 @@ function Profile() {
                 </div>
 
                 {/* EXPERIENCE */}
+                {/* EXPERIENCE */}
                 <div className="col-md-6">
-                  <div className="form-control bg-light">
-                    {form.experience_type === "experienced"
-                      ? "Experienced"
-                      : "Fresher"}
-                  </div>
+                  <label className="form-label fw-semibold">
+                    <FaBriefcase className="me-2 text-secondary" />
+                    Experience
+                  </label>
 
                   {editMode ? (
-                    <input
-                      className="form-control"
-                      value={
-                        Array.isArray(form.experience_details)
-                          ? form.experience_details
-                              .map((e) => e.job_profile || "")
-                              .join(", ")
-                          : ""
-                      }
+                    <select
+                      className="form-select"
+                      value={form.experience_type || ""}
                       onChange={(e) =>
                         setForm({
                           ...form,
-                          experience_details: [
-                            {
-                              job_profile: e.target.value,
-                              years: 0,
-                            },
-                          ],
+                          experience_type: e.target.value,
                         })
                       }
-                    />
+                    >
+                      <option value="">Select Experience</option>
+                      <option value="fresher">Fresher</option>
+                      <option value="experienced">Experienced</option>
+                    </select>
                   ) : (
                     <div className="form-control bg-light">
-                      {getExperience()}
+                      {form.experience_type === "experienced"
+                        ? "Experienced"
+                        : "Fresher"}
                     </div>
                   )}
                 </div>
