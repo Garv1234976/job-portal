@@ -3,6 +3,9 @@ import { useLocation } from "react-router-dom";
 import API from "../services/api";
 import JobCard from "./JobCard";
 
+// ✅ React Icons
+import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+
 function JobList({ filters }) {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -32,29 +35,44 @@ function JobList({ filters }) {
     fetchJobs();
   }, [page, filters, location.search]);
 
+  // ✅ EXTRA: ensure fetch when filters update
+  useEffect(() => {
+    if (filters) {
+      fetchJobs();
+    }
+  }, [filters]);
+
   const fetchJobs = () => {
     setLoading(true);
 
     const query = getQueryParams();
 
+    // ✅ Debug
+    console.log("Filters:", filters);
+    console.log("Query Params:", query);
+
     API.get("/jobs", {
       params: {
         page,
-        search: filters?.search,
-        location: filters?.location,
-        category_id: query.category_id || filters?.category_id,
-        sub_category_id: query.sub_category_id,
+        search: filters?.search || "",
+        location: filters?.location || "",
+
+        // ✅ FIXED CATEGORY LOGIC
+        category_id: query.category_id ? query.category_id : undefined,
+        sub_category_id: query.sub_category_id
+          ? query.sub_category_id
+          : filters?.sub_category_id || undefined,
       },
     })
       .then((res) => {
-        setJobs(res.data.data.data || []);
-        setLastPage(res.data.data.last_page || 1);
+        setJobs(res?.data?.data?.data || []);
+        setLastPage(res?.data?.data?.last_page || 1);
       })
       .catch(() => setJobs([]))
       .finally(() => setLoading(false));
   };
 
-  // ✅ SMART PAGINATION LOGIC
+  // ✅ SMART PAGINATION
   const getPagination = () => {
     const pages = [];
 
@@ -117,20 +135,20 @@ function JobList({ filters }) {
           <JobCard key={job.id} job={job} />
         ))}
 
-      {/* ✅ SMART PAGINATION */}
+      {/* PAGINATION */}
       {lastPage > 1 && (
         <div className="d-flex justify-content-center mt-4 flex-wrap gap-2">
 
           {/* PREV */}
           <button
-            className="btn btn-light border"
+            className="btn btn-light border d-flex align-items-center"
             disabled={page === 1}
             onClick={() => {
               setPage(page - 1);
               window.scrollTo({ top: 0, behavior: "smooth" });
             }}
           >
-            ‹
+            <FaChevronLeft />
           </button>
 
           {/* PAGE NUMBERS */}
@@ -158,14 +176,14 @@ function JobList({ filters }) {
 
           {/* NEXT */}
           <button
-            className="btn btn-light border"
+            className="btn btn-light border d-flex align-items-center"
             disabled={page === lastPage}
             onClick={() => {
               setPage(page + 1);
               window.scrollTo({ top: 0, behavior: "smooth" });
             }}
           >
-            ›
+            <FaChevronRight />
           </button>
 
         </div>
