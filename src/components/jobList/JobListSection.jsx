@@ -10,6 +10,8 @@ function JobListSection() {
   const [search, setSearch] = useState("");
   const [locationInput, setLocationInput] = useState("");
 
+  const [locations, setLocations] = useState([]); // ✅ NEW
+
   const [jobType, setJobType] = useState("");
   const [salary, setSalary] = useState("");
   const [experience, setExperience] = useState(0);
@@ -28,6 +30,15 @@ function JobListSection() {
       sub_category_id: params.get("sub_category_id"),
     };
   };
+
+  // 🔁 Load locations
+  useEffect(() => {
+    API.get("/filters")
+      .then((res) => {
+        setLocations(res.data?.locations || []);
+      })
+      .catch(() => setLocations([]));
+  }, []);
 
   // 🔁 Reset page when URL changes
   useEffect(() => {
@@ -58,39 +69,30 @@ function JobListSection() {
       },
     })
       .then((res) => {
-        setJobs(res.data.data.data || []);
-        setLastPage(res.data.data.last_page || 1);
+        setJobs(res?.data?.data?.data || []);
+        setLastPage(res?.data?.data?.last_page || 1);
       })
       .catch(() => setJobs([]))
       .finally(() => setLoading(false));
   };
 
-  // ✅ SMART PAGINATION FUNCTION
+  // ✅ SMART PAGINATION
   const getPagination = () => {
     const pages = [];
 
     if (lastPage <= 7) {
-      for (let i = 1; i <= lastPage; i++) {
-        pages.push(i);
-      }
+      for (let i = 1; i <= lastPage; i++) pages.push(i);
     } else {
       pages.push(1);
 
-      if (page > 4) {
-        pages.push("...");
-      }
+      if (page > 4) pages.push("...");
 
       const start = Math.max(2, page - 1);
       const end = Math.min(lastPage - 1, page + 1);
 
-      for (let i = start; i <= end; i++) {
-        pages.push(i);
-      }
+      for (let i = start; i <= end; i++) pages.push(i);
 
-      if (page < lastPage - 3) {
-        pages.push("...");
-      }
-
+      if (page < lastPage - 3) pages.push("...");
       pages.push(lastPage);
     }
 
@@ -143,16 +145,19 @@ function JobListSection() {
                 Apply Filters
               </button>
 
-              <button className="btn btn-outline-secondary w-100 mt-2" onClick={()=>{
-                setJobType("");
-                setSalary("");
-                setExperience(0);
-                setSearch("");
-                setLocationInput("");
-                setSavedFilter("");
-                setPage(1);
-                fetchJobs(1);
-              }}>
+              <button
+                className="btn btn-outline-secondary w-100 mt-2"
+                onClick={() => {
+                  setJobType("");
+                  setSalary("");
+                  setExperience(0);
+                  setSearch("");
+                  setLocationInput("");
+                  setSavedFilter("");
+                  setPage(1);
+                  fetchJobs(1);
+                }}
+              >
                 Reset
               </button>
 
@@ -164,25 +169,56 @@ function JobListSection() {
 
             {/* SEARCH */}
             <div className="row mb-3">
+
+              {/* SEARCH TEXT */}
               <div className="col-md-5">
-                <input className="form-control" placeholder="Search jobs..."
+                <input
+                  className="form-control"
+                  placeholder="Search jobs..."
                   value={search}
                   onChange={(e)=>setSearch(e.target.value)}
                 />
               </div>
 
+              {/* LOCATION DROPDOWN */}
               <div className="col-md-5">
-                <input className="form-control" placeholder="Location"
+                <select
+                  className="form-select"
                   value={locationInput}
-                  onChange={(e)=>setLocationInput(e.target.value)}
-                />
+                  onChange={(e) => {
+                    const value = e.target.value;
+
+                    if (value === locationInput) {
+                      setLocationInput("");
+                    } else {
+                      setLocationInput(value);
+                    }
+                  }}
+                >
+                  <option value="">All Locations</option>
+
+                  {locationInput && (
+                    <option value="">❌ Clear Selection</option>
+                  )}
+
+                  {locations.map((loc, i) => (
+                    <option key={i} value={loc}>
+                      {loc}
+                    </option>
+                  ))}
+                </select>
               </div>
 
+              {/* BUTTON */}
               <div className="col-md-2">
-                <button className="btn btn-primary w-100" onClick={()=>fetchJobs(1)}>
+                <button
+                  className="btn btn-primary w-100"
+                  onClick={()=>fetchJobs(1)}
+                >
                   Search
                 </button>
               </div>
+
             </div>
 
             {/* JOB LIST */}
@@ -194,53 +230,35 @@ function JobListSection() {
                 <JobCard key={job.id} job={job} />
               ))}
 
-            {/* ✅ SMART PAGINATION */}
+            {/* PAGINATION */}
             {lastPage > 1 && (
               <div className="d-flex justify-content-center mt-4 flex-wrap gap-2">
 
-                {/* PREV */}
                 <button
                   className="btn btn-light border"
                   disabled={page === 1}
-                  onClick={() => {
-                    setPage(page - 1);
-                    window.scrollTo({ top: 0, behavior: "smooth" });
-                  }}
+                  onClick={() => setPage(page - 1)}
                 >
                   ‹
                 </button>
 
-                {/* PAGES */}
                 {getPagination().map((p, i) => (
                   <button
                     key={i}
                     disabled={p === "..."}
                     className={`btn ${
-                      page === p
-                        ? "btn-dark"
-                        : p === "..."
-                        ? "btn-light border disabled"
-                        : "btn-light border"
+                      page === p ? "btn-dark" : "btn-light border"
                     }`}
-                    onClick={() => {
-                      if (typeof p === "number") {
-                        setPage(p);
-                        window.scrollTo({ top: 0, behavior: "smooth" });
-                      }
-                    }}
+                    onClick={() => typeof p === "number" && setPage(p)}
                   >
                     {p}
                   </button>
                 ))}
 
-                {/* NEXT */}
                 <button
                   className="btn btn-light border"
                   disabled={page === lastPage}
-                  onClick={() => {
-                    setPage(page + 1);
-                    window.scrollTo({ top: 0, behavior: "smooth" });
-                  }}
+                  onClick={() => setPage(page + 1)}
                 >
                   ›
                 </button>

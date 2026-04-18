@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import API from "../services/api";
+import { FaTimes } from "react-icons/fa";
 
 function SearchBar({ onSearch }) {
   const [keyword, setKeyword] = useState("");
@@ -34,13 +35,14 @@ function SearchBar({ onSearch }) {
   };
 
   return (
-    <div className="container-fluid bg-primary mb-5" style={{ padding: "35px" }}>
+    <div
+      className="container-fluid bg-primary mb-5"
+      style={{ padding: "35px" }}
+    >
       <div className="container">
         <div className="row g-2">
-
           <div className="col-md-10">
             <div className="row g-2">
-
               {/* KEYWORD */}
               <div className="col-md-4">
                 <input
@@ -49,6 +51,21 @@ function SearchBar({ onSearch }) {
                   value={keyword}
                   onChange={(e) => setKeyword(e.target.value)}
                 />
+                {keyword && (
+                  <span
+                    onClick={() => setKeyword("")}
+                    style={{
+                      position: "absolute",
+                      right: "15px",
+                      top: "50%",
+                      transform: "translateY(-50%)",
+                      cursor: "pointer",
+                      color: "#999",
+                    }}
+                  >
+                    <FaTimes />
+                  </span>
+                )}
               </div>
 
               {/* CATEGORY */}
@@ -87,7 +104,6 @@ function SearchBar({ onSearch }) {
                   ))}
                 </select>
               </div>
-
             </div>
           </div>
 
@@ -101,7 +117,6 @@ function SearchBar({ onSearch }) {
               Search
             </button>
           </div>
-
         </div>
       </div>
     </div>
