@@ -95,6 +95,11 @@ function Profile() {
   const handleUpdate = async () => {
     try {
       const formData = new FormData();
+      if (key === "photo") {
+        if (form.photo instanceof File) {
+          formData.append("photo", form.photo);
+        }
+      }
 
       Object.keys(form).forEach((key) => {
         if (key === "cv") {
@@ -139,18 +144,33 @@ function Profile() {
       <div className="container py-5">
         <div className="card shadow-lg p-4 rounded-4 border-0">
           <div className="row align-items-center">
-
             <div className="col-md-3 text-center">
               <img
-                src="/assets/img/default.jpg"
+                src={
+                  form.photo instanceof File
+                    ? URL.createObjectURL(form.photo)
+                    : user.photo
+                      ? `https://server.budes.online/public/${user.photo}`
+                      : "/assets/img/default.jpg"
+                }
                 className="rounded-circle"
-                style={{ width: 120, height: 120 }}
+                style={{ width: 120, height: 120, objectFit: "cover" }}
                 alt="profile"
               />
+
+              {editMode && (
+                <input
+                  type="file"
+                  className="form-control mt-2"
+                  accept="image/*"
+                  onChange={(e) =>
+                    setForm({ ...form, photo: e.target.files[0] })
+                  }
+                />
+              )}
             </div>
 
             <div className="col-md-9">
-
               {/* NAME */}
               <div className="d-flex justify-content-between align-items-center mb-3">
                 <div className="w-50">
@@ -183,7 +203,6 @@ function Profile() {
               <hr />
 
               <div className="row g-3">
-
                 {/* LOCATION */}
                 <div className="col-md-6">
                   <label className="form-label fw-semibold">
@@ -301,9 +320,7 @@ function Profile() {
                       }}
                     />
                   ) : (
-                    <div className="form-control bg-light">
-                      {getSkills()}
-                    </div>
+                    <div className="form-control bg-light">{getSkills()}</div>
                   )}
                 </div>
 
@@ -364,7 +381,6 @@ function Profile() {
                     "No CV uploaded"
                   )}
                 </div>
-
               </div>
 
               {editMode && (
@@ -375,7 +391,6 @@ function Profile() {
                   Save Changes
                 </button>
               )}
-
             </div>
           </div>
         </div>
