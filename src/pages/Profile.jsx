@@ -305,34 +305,13 @@ function Profile() {
 
                 {/* EXPERIENCE */}
                 <div className="col-md-6">
-                  {/* EXPERIENCE */}
-                  <label className="form-label fw-semibold">
-                    <FaBriefcase className="me-2 text-secondary" />
-                    Experience
-                  </label>
+                  <div className="form-control bg-light">
+                    {form.experience_type === "experienced"
+                      ? "Experienced"
+                      : "Fresher"}
+                  </div>
 
-                  {editMode ? (
-                    <select
-                      className="form-select"
-                      value={form.experience_type || ""}
-                      onChange={(e) =>
-                        setForm({
-                          ...form,
-                          experience_type: e.target.value,
-                        })
-                      }
-                    >
-                      <option value="">Select Experience</option>
-                      <option value="fresher">Fresher</option>
-                      <option value="experienced">Experienced</option>
-                    </select>
-                  ) : (
-                    <div className="form-control bg-light">
-                      {form.experience_type === "experienced"
-                        ? "Experienced"
-                        : "Fresher"}
-                    </div>
-                  )}
+                  <div className="form-control bg-light">{getExperience()}</div>
 
                   {editMode ? (
                     <input
