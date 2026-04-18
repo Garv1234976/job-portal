@@ -91,31 +91,9 @@ function Profile() {
     return q.join(", ");
   };
 
-  // ✅ ONLY UPDATED: handleUpdate with FormData
   const handleUpdate = async () => {
     try {
-      const formData = new FormData();
-
-      Object.keys(form).forEach((key) => {
-        if (key === "cv") {
-          if (form.cv instanceof File) {
-            formData.append("cv", form.cv);
-          } else if (form.cv === null) {
-            formData.append("cv", "");
-          }
-        } else if (Array.isArray(form[key])) {
-          form[key].forEach((item, i) => {
-            formData.append(`${key}[${i}]`, item);
-          });
-        } else {
-          formData.append(key, form[key] ?? "");
-        }
-      });
-
-      await API.post("/update-profile", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-
+      await API.post("/update-profile", form);
       Swal.fire("Success", "Profile updated", "success");
       setEditMode(false);
       fetchProfile();
@@ -137,8 +115,10 @@ function Profile() {
   return (
     <div className="container-xxl bg-white p-0">
 
+      {/* ✅ NAVBAR */}
       <Navbar />
 
+      {/* ✅ PROFILE CONTENT */}
       <div className="container py-5">
         <div className="card shadow-lg p-4 rounded-4 border-0">
           <div className="row align-items-center">
@@ -345,56 +325,6 @@ function Profile() {
                   )}
                 </div>
 
-                {/* ✅ CV FIELD ADDED */}
-                <div className="col-md-6">
-                  <label className="form-label fw-semibold">
-                    Upload CV
-                  </label>
-
-                  {editMode ? (
-                    <>
-                      <input
-                        type="file"
-                        className="form-control"
-                        onChange={(e) =>
-                          setForm({ ...form, cv: e.target.files[0] })
-                        }
-                      />
-
-                      {form.cv && (
-                        <small className="text-success d-block mt-1">
-                          {form.cv.name}
-                        </small>
-                      )}
-
-                      {user.cv && !form.cv && (
-                        <small className="text-muted d-block mt-1">
-                          Current:{" "}
-                          <a
-                            href={`https://server.budes.online/public/${user.cv}`}
-                            target="_blank"
-                          >
-                            View CV
-                          </a>
-                        </small>
-                      )}
-
-
-                    </>
-                  ) : (
-                    <div className="form-control bg-light">
-                      {user.cv ? (
-                        <a
-                          href={`https://server.budes.online/public/${user.cv}`}
-                          target="_blank"
-                        >
-                          View CV
-                        </a>
-                      ) : "No CV uploaded"}
-                    </div>
-                  )}
-                </div>
-
               </div>
 
               {editMode && (
@@ -411,7 +341,9 @@ function Profile() {
         </div>
       </div>
 
+      {/* ✅ FOOTER */}
       <Footer />
+
     </div>
   );
 }
