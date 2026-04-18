@@ -304,6 +304,7 @@ function Profile() {
                 </div>
 
                 {/* EXPERIENCE */}
+                {/* EXPERIENCE TYPE */}
                 <div className="col-md-6">
                   <label className="form-label fw-semibold">
                     <FaBriefcase className="me-2 text-secondary" />
@@ -312,24 +313,28 @@ function Profile() {
 
                   {editMode ? (
                     <select
-                      className="form-select"
-                      value={form.experience_details || ""}
+                      className="form-control"
+                      value={form.type || ""}
                       onChange={(e) =>
                         setForm({
                           ...form,
-                          experience_details: e.target.value,
+                          type: e.target.value,
+                          experience_details:
+                            e.target.value === "experienced"
+                              ? form.experience_details?.length
+                                ? form.experience_details
+                                : [{ job_profile: "", years: "" }]
+                              : [],
                         })
                       }
                     >
-                      <option value="">Select Experience</option>
+                      <option value="">Select</option>
                       <option value="fresher">Fresher</option>
                       <option value="experienced">Experienced</option>
                     </select>
                   ) : (
                     <div className="form-control bg-light">
-                      {form.experience_type === "experienced"
-                        ? "Experienced"
-                        : "Fresher"}
+                      {form.type === "experienced" ? "Experienced" : "Fresher"}
                     </div>
                   )}
                 </div>
