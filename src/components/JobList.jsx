@@ -42,8 +42,8 @@ function JobList({ filters }) {
         page,
         search: filters?.search,
         location: filters?.location,
-        category_id: query.category_id || filters?.category_id,
-        sub_category_id: query.sub_category_id,
+        sub_category_id: filters?.sub_category_id, // ✅ FIX
+        category_id: query.category_id,
       },
     })
       .then((res) => {

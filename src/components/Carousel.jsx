@@ -25,7 +25,7 @@ function Carousel() {
             <div className="col-lg-7">
 
               <h1 className="display-4 fw-bold mb-4">
-                Find Your Dream Job with <span className="text-success">Business Buddies</span>
+                <span className="text-success">Find Your Dream Job with</span> <span className="text-success">Business Buddies</span>
               </h1>
 
               <p className="fs-5 mb-4">

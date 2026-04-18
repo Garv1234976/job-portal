@@ -13,7 +13,6 @@ export default function RecruiterSidebar({ handlePostJob }) {
     { name: "Plans", icon: "fa-credit-card", path: "/recruiter/plans" },
   ];
 
-  // ✅ Better active check (handles sub routes also)
   const isActive = (path) => {
     return location.pathname.startsWith(path);
   };
@@ -48,7 +47,6 @@ export default function RecruiterSidebar({ handlePostJob }) {
                 <span>{item.name}</span>
               </div>
 
-              {/* 👉 Optional indicator */}
               {item.path && isActive(item.path) && (
                 <i className="fa fa-chevron-right small"></i>
               )}
