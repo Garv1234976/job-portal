@@ -8,9 +8,12 @@ function JobListSection() {
   const [loading, setLoading] = useState(true);
 
   const [search, setSearch] = useState("");
-  const [locationInput, setLocationInput] = useState("");
 
-  const [locations, setLocations] = useState([]); // ✅ NEW
+  // 🔥 UPDATED LOCATION STATE
+  const [locationInput, setLocationInput] = useState("");
+  const [locationMode, setLocationMode] = useState("select"); // select | input
+
+  const [locations, setLocations] = useState([]);
 
   const [jobType, setJobType] = useState("");
   const [salary, setSalary] = useState("");
@@ -22,7 +25,6 @@ function JobListSection() {
 
   const location = useLocation();
 
-  // ✅ GET QUERY PARAMS
   const getQueryParams = () => {
     const params = new URLSearchParams(location.search);
     return {
@@ -31,7 +33,7 @@ function JobListSection() {
     };
   };
 
-  // 🔁 Load locations
+  // Load locations
   useEffect(() => {
     API.get("/filters")
       .then((res) => {
@@ -40,12 +42,10 @@ function JobListSection() {
       .catch(() => setLocations([]));
   }, []);
 
-  // 🔁 Reset page when URL changes
   useEffect(() => {
     setPage(1);
   }, [location.search]);
 
-  // 🔁 Fetch jobs
   useEffect(() => {
     fetchJobs();
   }, [page, location.search]);
@@ -59,7 +59,7 @@ function JobListSection() {
       params: {
         page: customPage,
         search,
-        location: locationInput,
+        location: locationInput, // same param
         salary,
         type: jobType,
         experience,
@@ -76,7 +76,6 @@ function JobListSection() {
       .finally(() => setLoading(false));
   };
 
-  // ✅ SMART PAGINATION
   const getPagination = () => {
     const pages = [];
 
@@ -84,7 +83,6 @@ function JobListSection() {
       for (let i = 1; i <= lastPage; i++) pages.push(i);
     } else {
       pages.push(1);
-
       if (page > 4) pages.push("...");
 
       const start = Math.max(2, page - 1);
@@ -107,7 +105,7 @@ function JobListSection() {
 
         <div className="row">
 
-          {/* SIDEBAR */}
+          {/* SIDEBAR (UNCHANGED) */}
           <div className="col-md-3">
             <div className="bg-white p-3 shadow-sm rounded">
 
@@ -122,6 +120,7 @@ function JobListSection() {
               <hr />
 
               <h6>Work Mode</h6>
+              <div><input type="radio" checked={jobType === ""} onChange={() => setJobType("")}/> All Jobs</div>
               <div><input type="radio" value="WFH" checked={jobType==="WFH"} onChange={(e)=>setJobType(e.target.value)}/> WFH</div>
               <div><input type="radio" value="remote" checked={jobType==="remote"} onChange={(e)=>setJobType(e.target.value)}/> Remote</div>
               <div><input type="radio" value="hybrid" checked={jobType==="hybrid"} onChange={(e)=>setJobType(e.target.value)}/> Hybrid</div>
@@ -167,10 +166,9 @@ function JobListSection() {
           {/* JOB LIST */}
           <div className="col-md-9">
 
-            {/* SEARCH */}
             <div className="row mb-3">
 
-              {/* SEARCH TEXT */}
+              {/* SEARCH */}
               <div className="col-md-5">
                 <input
                   className="form-control"
@@ -180,44 +178,43 @@ function JobListSection() {
                 />
               </div>
 
-              {/* LOCATION DROPDOWN */}
+              {/* 🔥 UPDATED LOCATION UI */}
               <div className="col-md-5">
-                <select
-                  className="form-select"
-                  value={locationInput}
-                  onChange={(e) => {
-                    const value = e.target.value;
 
-                    if (value === locationInput) {
-                      setLocationInput("");
-                    } else {
-                      setLocationInput(value);
-                    }
-                  }}
+                {/* DROPDOWN */}
+                <select
+                  className="form-select mb-2"
+                  value={locationMode === "select" ? locationInput : ""}
+                  onClick={() => setLocationMode("select")} // ✅ auto select
+                  onChange={(e) => setLocationInput(e.target.value)}
                 >
                   <option value="">All Locations</option>
-
                   {locations.map((loc, i) => (
-                    <option key={i} value={loc}>
-                      {loc}
-                    </option>
+                    <option key={i} value={loc}>{loc}</option>
                   ))}
                 </select>
+
+                {/* INPUT */}
+                <input
+                  className="form-control"
+                  placeholder="Enter location..."
+                  value={locationMode === "input" ? locationInput : ""}
+                  onClick={() => setLocationMode("input")} // ✅ auto select
+                  onChange={(e) => setLocationInput(e.target.value)}
+                />
+
               </div>
 
               {/* BUTTON */}
               <div className="col-md-2">
-                <button
-                  className="btn btn-primary w-100"
-                  onClick={()=>fetchJobs(1)}
-                >
+                <button className="btn btn-primary w-100" onClick={()=>fetchJobs(1)}>
                   Search
                 </button>
               </div>
 
             </div>
 
-            {/* JOB LIST */}
+            {/* JOBS */}
             {loading && <p>Loading jobs...</p>}
             {!loading && jobs.length === 0 && <p>No jobs found</p>}
 
@@ -234,17 +231,13 @@ function JobListSection() {
                   className="btn btn-light border"
                   disabled={page === 1}
                   onClick={() => setPage(page - 1)}
-                >
-                  ‹
-                </button>
+                >‹</button>
 
                 {getPagination().map((p, i) => (
                   <button
                     key={i}
                     disabled={p === "..."}
-                    className={`btn ${
-                      page === p ? "btn-dark" : "btn-light border"
-                    }`}
+                    className={`btn ${page === p ? "btn-dark" : "btn-light border"}`}
                     onClick={() => typeof p === "number" && setPage(p)}
                   >
                     {p}
@@ -255,9 +248,7 @@ function JobListSection() {
                   className="btn btn-light border"
                   disabled={page === lastPage}
                   onClick={() => setPage(page + 1)}
-                >
-                  ›
-                </button>
+                >›</button>
 
               </div>
             )}
