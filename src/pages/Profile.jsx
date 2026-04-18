@@ -303,7 +303,7 @@ function Profile() {
                   )}
                 </div>
 
-                {/* EXPERIENCE */}
+                {/* EXPERIENCE TYPE */}
                 {/* EXPERIENCE TYPE */}
                 <div className="col-md-6">
                   <label className="form-label fw-semibold">
@@ -334,10 +334,109 @@ function Profile() {
                     </select>
                   ) : (
                     <div className="form-control bg-light">
-                      {form.type === "experienced" ? "Experienced" : "Fresher"}
+                      {form.type
+                        ? form.type.charAt(0).toUpperCase() + form.type.slice(1)
+                        : "Not selected"}
                     </div>
                   )}
                 </div>
+
+                {/* EXPERIENCE DETAILS */}
+                {editMode && form.type === "experienced" && (
+                  <div className="col-12 mt-3 p-3 border rounded">
+                    <h6 className="mb-3">Experience Details</h6>
+
+                    {form.experience_details?.map((exp, index) => (
+                      <div key={index} className="row mb-2">
+                        {/* Job Profile */}
+                        <div className="col-md-5">
+                          <input
+                            type="text"
+                            placeholder="Job Profile"
+                            className="form-control"
+                            value={exp.job_profile}
+                            onChange={(e) => {
+                              const updated = [...form.experience_details];
+                              updated[index].job_profile = e.target.value;
+                              setForm({ ...form, experience_details: updated });
+                            }}
+                          />
+                        </div>
+
+                        {/* Years */}
+                        <div className="col-md-5">
+                          <input
+                            type="number"
+                            placeholder="Years"
+                            className="form-control"
+                            value={exp.years}
+                            onChange={(e) => {
+                              const updated = [...form.experience_details];
+                              updated[index].years = e.target.value;
+                              setForm({ ...form, experience_details: updated });
+                            }}
+                          />
+                        </div>
+
+                        {/* Remove Button */}
+                        <div className="col-md-2">
+                          {index > 0 && (
+                            <button
+                              type="button"
+                              className="btn btn-danger w-100"
+                              onClick={() => {
+                                const updated = form.experience_details.filter(
+                                  (_, i) => i !== index,
+                                );
+                                setForm({
+                                  ...form,
+                                  experience_details: updated,
+                                });
+                              }}
+                            >
+                              ✕
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+
+                    {/* ADD MORE */}
+                    <button
+                      type="button"
+                      className="btn btn-primary mt-2"
+                      onClick={() =>
+                        setForm({
+                          ...form,
+                          experience_details: [
+                            ...form.experience_details,
+                            { job_profile: "", years: "" },
+                          ],
+                        })
+                      }
+                    >
+                      + Add More
+                    </button>
+                  </div>
+                )}
+
+                {/* EXPERIENCE DISPLAY (VIEW MODE) */}
+                {!editMode && form.type === "experienced" && (
+                  <div className="col-12 mt-3">
+                    <div className="form-control bg-light">
+                      {form.experience_details?.length
+                        ? form.experience_details
+                            .map(
+                              (e) =>
+                                `${e.job_profile || ""} ${
+                                  e.years ? `(${e.years} yrs)` : ""
+                                }`,
+                            )
+                            .join(", ")
+                        : "No experience details"}
+                    </div>
+                  </div>
+                )}
 
                 {/* ✅ CV FIELD ADDED */}
                 <div className="col-md-6">
