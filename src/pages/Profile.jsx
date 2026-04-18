@@ -28,6 +28,16 @@ function Profile() {
     { value: "Post Graduate", label: "Post Graduate" },
   ];
 
+  const skillOptions = [
+    { value: "PHP", label: "PHP" },
+    { value: "Laravel", label: "Laravel" },
+    { value: "React", label: "React" },
+    { value: "Vue", label: "Vue" },
+    { value: "JavaScript", label: "JavaScript" },
+    { value: "Node.js", label: "Node.js" },
+    { value: "MySQL", label: "MySQL" },
+  ];
+
   useEffect(() => {
     fetchProfile();
   }, []);
@@ -61,64 +71,56 @@ function Profile() {
     }
   };
 
-  const getExperience = () => {
-    const exp = parseJSON(user.experience_details, []);
-    if (!exp.length) return "Fresher";
-
-    return (
-      exp
-        .map((e) => {
-          if (!e.job_profile && !e.years) return null;
-          if (e.job_profile && e.years)
-            return `${e.job_profile} (${e.years} yrs)`;
-          if (e.job_profile) return e.job_profile;
-          return null;
-        })
-        .filter(Boolean)
-        .join(", ") || "Fresher"
-    );
-  };
-
   const getSkills = () => {
     const skills = parseJSON(user.skills, []);
-    if (!skills.length) return "Add skills";
-    return skills.join(", ");
+    return skills.length ? skills.join(", ") : "Add skills";
   };
 
   const getQualification = () => {
     const q = parseJSON(user.qualification, []);
-    if (!q.length) return "Add qualification";
-    return q.join(", ");
+    return q.length ? q.join(", ") : "Add qualification";
   };
 
+  const getExperience = () => {
+    const exp = parseJSON(user.experience_details, []);
+    if (!exp.length) return "Fresher";
+    return exp.map(e => e.job_profile).join(", ");
+  };
+
+  // ✅ UPDATED HANDLE UPDATE (FORMDATA)
   const handleUpdate = async () => {
     try {
-      await API.post("/update-profile", form);
+      const formData = new FormData();
+
+      Object.keys(form).forEach((key) => {
+        if (key === "cv" && form.cv) {
+          formData.append("cv", form.cv);
+        } else if (Array.isArray(form[key])) {
+          form[key].forEach((item, i) => {
+            formData.append(`${key}[${i}]`, item);
+          });
+        } else {
+          formData.append(key, form[key] ?? "");
+        }
+      });
+
+      await API.post("/update-profile", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
       Swal.fire("Success", "Profile updated", "success");
       setEditMode(false);
       fetchProfile();
+
     } catch {
       Swal.fire("Error", "Update failed", "error");
     }
   };
 
-  const skillOptions = [
-    { value: "PHP", label: "PHP" },
-    { value: "Laravel", label: "Laravel" },
-    { value: "React", label: "React" },
-    { value: "Vue", label: "Vue" },
-    { value: "JavaScript", label: "JavaScript" },
-    { value: "Node.js", label: "Node.js" },
-    { value: "MySQL", label: "MySQL" },
-  ];
-
   return (
     <div className="container-xxl bg-white p-0">
-
-      {/* ✅ NAVBAR */}
       <Navbar />
 
-      {/* ✅ PROFILE CONTENT */}
       <div className="container py-5">
         <div className="card shadow-lg p-4 rounded-4 border-0">
           <div className="row align-items-center">
@@ -134,7 +136,8 @@ function Profile() {
 
             <div className="col-md-9">
 
-              <div className="d-flex justify-content-between align-items-center mb-3">
+              {/* NAME */}
+              <div className="d-flex justify-content-between mb-3">
                 <div className="w-50">
                   <label className="form-label fw-semibold">
                     <FaUserEdit className="me-2 text-primary" />
@@ -168,11 +171,9 @@ function Profile() {
 
                 {/* LOCATION */}
                 <div className="col-md-6">
-                  <label className="form-label fw-semibold">
-                    <FaMapMarkerAlt className="me-2 text-primary" />
-                    Location
+                  <label className="form-label">
+                    <FaMapMarkerAlt /> Location
                   </label>
-
                   {editMode ? (
                     <input
                       className="form-control"
@@ -190,11 +191,9 @@ function Profile() {
 
                 {/* PHONE */}
                 <div className="col-md-6">
-                  <label className="form-label fw-semibold">
-                    <FaPhone className="me-2 text-success" />
-                    Phone
+                  <label className="form-label">
+                    <FaPhone /> Phone
                   </label>
-
                   {editMode ? (
                     <input
                       className="form-control"
@@ -212,36 +211,27 @@ function Profile() {
 
                 {/* EMAIL */}
                 <div className="col-md-6">
-                  <label className="form-label fw-semibold">
-                    <FaEnvelope className="me-2 text-danger" />
-                    Email
+                  <label className="form-label">
+                    <FaEnvelope /> Email
                   </label>
                   <div className="form-control bg-light">{user.email}</div>
                 </div>
 
                 {/* QUALIFICATION */}
                 <div className="col-md-6">
-                  <label className="form-label fw-semibold">
-                    <FaGraduationCap className="me-2 text-warning" />
-                    Qualification
+                  <label className="form-label">
+                    <FaGraduationCap /> Qualification
                   </label>
 
                   {editMode ? (
                     <Select
                       isMulti
-                      value={
-                        Array.isArray(form.qualification)
-                          ? form.qualification.map((q) => ({
-                              value: q,
-                              label: q,
-                            }))
-                          : []
-                      }
+                      value={(form.qualification || []).map(q => ({ value: q, label: q }))}
                       options={qualificationOptions}
                       onChange={(selected) =>
                         setForm({
                           ...form,
-                          qualification: selected.map((i) => i.value),
+                          qualification: selected.map(i => i.value),
                         })
                       }
                     />
@@ -254,33 +244,21 @@ function Profile() {
 
                 {/* SKILLS */}
                 <div className="col-md-6">
-                  <label className="form-label fw-semibold">
-                    <FaTools className="me-2 text-info" />
-                    Skills (Max 5)
+                  <label className="form-label">
+                    <FaTools /> Skills
                   </label>
 
                   {editMode ? (
                     <Select
                       isMulti
-                      value={
-                        Array.isArray(form.skills)
-                          ? form.skills.map((s) => ({
-                              value: s,
-                              label: s,
-                            }))
-                          : []
-                      }
+                      value={(form.skills || []).map(s => ({ value: s, label: s }))}
                       options={skillOptions}
-                      onChange={(selected) => {
-                        if (selected.length <= 5) {
-                          setForm({
-                            ...form,
-                            skills: selected.map((i) => i.value),
-                          });
-                        } else {
-                          Swal.fire("Error", "Only 5 skills allowed", "error");
-                        }
-                      }}
+                      onChange={(selected) =>
+                        setForm({
+                          ...form,
+                          skills: selected.map(i => i.value),
+                        })
+                      }
                     />
                   ) : (
                     <div className="form-control bg-light">
@@ -289,38 +267,43 @@ function Profile() {
                   )}
                 </div>
 
-                {/* EXPERIENCE */}
+                {/* CV UPLOAD */}
                 <div className="col-md-6">
-                  <label className="form-label fw-semibold">
-                    <FaBriefcase className="me-2 text-secondary" />
-                    Experience
-                  </label>
+                  <label className="form-label">Upload CV</label>
 
                   {editMode ? (
-                    <input
-                      className="form-control"
-                      value={
-                        Array.isArray(form.experience_details)
-                          ? form.experience_details
-                              .map((e) => e.job_profile || "")
-                              .join(", ")
-                          : ""
-                      }
-                      onChange={(e) =>
-                        setForm({
-                          ...form,
-                          experience_details: [
-                            {
-                              job_profile: e.target.value,
-                              years: 0,
-                            },
-                          ],
-                        })
-                      }
-                    />
+                    <>
+                      <input
+                        type="file"
+                        className="form-control"
+                        onChange={(e) =>
+                          setForm({ ...form, cv: e.target.files[0] })
+                        }
+                      />
+
+                      {user.cv && (
+                        <small>
+                          Current:{" "}
+                          <a
+                            href={`https://server.budes.online/storage/${user.cv}`}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            View CV
+                          </a>
+                        </small>
+                      )}
+                    </>
                   ) : (
                     <div className="form-control bg-light">
-                      {getExperience()}
+                      {user.cv ? (
+                        <a
+                          href={`https://server.budes.online/storage/${user.cv}`}
+                          target="_blank"
+                        >
+                          View CV
+                        </a>
+                      ) : "No CV uploaded"}
                     </div>
                   )}
                 </div>
@@ -328,10 +311,7 @@ function Profile() {
               </div>
 
               {editMode && (
-                <button
-                  className="btn btn-success mt-4 px-4"
-                  onClick={handleUpdate}
-                >
+                <button className="btn btn-success mt-4" onClick={handleUpdate}>
                   Save Changes
                 </button>
               )}
@@ -341,9 +321,7 @@ function Profile() {
         </div>
       </div>
 
-      {/* ✅ FOOTER */}
       <Footer />
-
     </div>
   );
 }
