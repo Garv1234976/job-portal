@@ -3,7 +3,7 @@ import API from "../services/api";
 
 function SearchBar({ onSearch }) {
   const [keyword, setKeyword] = useState("");
-  const [categoryId, setCategoryId] = useState(""); // only subcategory id
+  const [categoryId, setCategoryId] = useState(""); // subcategory id
   const [location, setLocation] = useState("");
 
   const [categories, setCategories] = useState([]);
@@ -28,7 +28,7 @@ function SearchBar({ onSearch }) {
 
     onSearch({
       search: keyword,
-      category_id: categoryId, // ✅ subcategory id
+      sub_category_id: categoryId, // ✅ FIXED HERE
       location,
     });
   };
@@ -41,7 +41,7 @@ function SearchBar({ onSearch }) {
           <div className="col-md-10">
             <div className="row g-2">
 
-              {/* 🔍 KEYWORD */}
+              {/* KEYWORD */}
               <div className="col-md-4">
                 <input
                   className="form-control border-0"
@@ -51,7 +51,7 @@ function SearchBar({ onSearch }) {
                 />
               </div>
 
-              {/* 📂 CATEGORY + SUBCATEGORY (GROUPED) */}
+              {/* CATEGORY */}
               <div className="col-md-4">
                 <select
                   className="form-select border-0"
@@ -69,11 +69,10 @@ function SearchBar({ onSearch }) {
                       ))}
                     </optgroup>
                   ))}
-
                 </select>
               </div>
 
-              {/* 📍 LOCATION */}
+              {/* LOCATION */}
               <div className="col-md-4">
                 <select
                   className="form-select border-0"
@@ -81,20 +80,18 @@ function SearchBar({ onSearch }) {
                   onChange={(e) => setLocation(e.target.value)}
                 >
                   <option value="">All Locations</option>
-
                   {locations.map((loc, i) => (
                     <option key={i} value={loc}>
                       {loc}
                     </option>
                   ))}
-
                 </select>
               </div>
 
             </div>
           </div>
 
-          {/* 🔘 BUTTON */}
+          {/* BUTTON */}
           <div className="col-md-2">
             <button
               type="button"
