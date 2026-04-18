@@ -9,9 +9,8 @@ function JobListSection() {
 
   const [search, setSearch] = useState("");
 
-  // 🔥 UPDATED LOCATION STATE
   const [locationInput, setLocationInput] = useState("");
-  const [locationMode, setLocationMode] = useState("select"); // select | input
+  const [locationMode, setLocationMode] = useState("select");
 
   const [locations, setLocations] = useState([]);
 
@@ -33,12 +32,9 @@ function JobListSection() {
     };
   };
 
-  // Load locations
   useEffect(() => {
     API.get("/filters")
-      .then((res) => {
-        setLocations(res.data?.locations || []);
-      })
+      .then((res) => setLocations(res.data?.locations || []))
       .catch(() => setLocations([]));
   }, []);
 
@@ -59,7 +55,7 @@ function JobListSection() {
       params: {
         page: customPage,
         search,
-        location: locationInput, // same param
+        location: locationInput,
         salary,
         type: jobType,
         experience,
@@ -84,12 +80,9 @@ function JobListSection() {
     } else {
       pages.push(1);
       if (page > 4) pages.push("...");
-
       const start = Math.max(2, page - 1);
       const end = Math.min(lastPage - 1, page + 1);
-
       for (let i = start; i <= end; i++) pages.push(i);
-
       if (page < lastPage - 3) pages.push("...");
       pages.push(lastPage);
     }
@@ -105,38 +98,108 @@ function JobListSection() {
 
         <div className="row">
 
-          {/* SIDEBAR (UNCHANGED) */}
+          {/* SIDEBAR */}
           <div className="col-md-3">
             <div className="bg-white p-3 shadow-sm rounded">
 
               <h5>All Filters</h5>
               <hr />
 
+              {/* SAVED */}
               <h6>Saved Jobs</h6>
-              <div><input type="radio" checked={savedFilter === ""} onChange={() => setSavedFilter("")}/> All Jobs</div>
-              <div><input type="radio" checked={savedFilter === "saved"} onChange={() => setSavedFilter("saved")}/> Saved Jobs</div>
-              <div><input type="radio" checked={savedFilter === "unsaved"} onChange={() => setSavedFilter("unsaved")}/> Unsaved Jobs</div>
+
+              {[
+                { label: "All Jobs", value: "" },
+                { label: "Saved Jobs", value: "saved" },
+                { label: "Unsaved Jobs", value: "unsaved" }
+              ].map((item, i) => (
+                <div
+                  key={i}
+                  className="form-check"
+                  style={{ cursor: "pointer" }}
+                  onClick={() => setSavedFilter(item.value)}
+                >
+                  <input
+                    type="radio"
+                    className="form-check-input"
+                    checked={savedFilter === item.value}
+                    readOnly
+                  />
+                  <label className="form-check-label">
+                    {item.label}
+                  </label>
+                </div>
+              ))}
 
               <hr />
 
+              {/* WORK MODE */}
               <h6>Work Mode</h6>
-              <div><input type="radio" checked={jobType === ""} onChange={() => setJobType("")}/> All Jobs</div>
-              <div><input type="radio" value="WFH" checked={jobType==="WFH"} onChange={(e)=>setJobType(e.target.value)}/> WFH</div>
-              <div><input type="radio" value="remote" checked={jobType==="remote"} onChange={(e)=>setJobType(e.target.value)}/> Remote</div>
-              <div><input type="radio" value="hybrid" checked={jobType==="hybrid"} onChange={(e)=>setJobType(e.target.value)}/> Hybrid</div>
+
+              {[
+                { label: "All Jobs", value: "" },
+                { label: "WFH", value: "WFH" },
+                { label: "Remote", value: "remote" },
+                { label: "Hybrid", value: "hybrid" }
+              ].map((item, i) => (
+                <div
+                  key={i}
+                  className="form-check"
+                  style={{ cursor: "pointer" }}
+                  onClick={() => setJobType(item.value)}
+                >
+                  <input
+                    type="radio"
+                    className="form-check-input"
+                    checked={jobType === item.value}
+                    readOnly
+                  />
+                  <label className="form-check-label">
+                    {item.label}
+                  </label>
+                </div>
+              ))}
 
               <hr />
 
+              {/* EXPERIENCE */}
               <h6>Experience</h6>
               <div>Selected: {experience} Years</div>
-              <input type="range" min="0" max="10" value={experience} onChange={(e)=>setExperience(e.target.value)} />
+              <input
+                type="range"
+                min="0"
+                max="10"
+                value={experience}
+                onChange={(e) => setExperience(e.target.value)}
+              />
 
               <hr />
 
+              {/* SALARY */}
               <h6>Salary</h6>
-              <div><input type="radio" value="0-3" checked={salary==="0-3"} onChange={(e)=>setSalary(e.target.value)}/> 0-3 Lakhs</div>
-              <div><input type="radio" value="3-6" checked={salary==="3-6"} onChange={(e)=>setSalary(e.target.value)}/> 3-6 Lakhs</div>
-              <div><input type="radio" value="6-10" checked={salary==="6-10"} onChange={(e)=>setSalary(e.target.value)}/> 6-10 Lakhs</div>
+
+              {[
+                { label: "0-3 Lakhs", value: "0-3" },
+                { label: "3-6 Lakhs", value: "3-6" },
+                { label: "6-10 Lakhs", value: "6-10" }
+              ].map((item, i) => (
+                <div
+                  key={i}
+                  className="form-check"
+                  style={{ cursor: "pointer" }}
+                  onClick={() => setSalary(item.value)}
+                >
+                  <input
+                    type="radio"
+                    className="form-check-input"
+                    checked={salary === item.value}
+                    readOnly
+                  />
+                  <label className="form-check-label">
+                    {item.label}
+                  </label>
+                </div>
+              ))}
 
               <hr />
 
@@ -168,7 +231,6 @@ function JobListSection() {
 
             <div className="row mb-3">
 
-              {/* SEARCH */}
               <div className="col-md-5">
                 <input
                   className="form-control"
@@ -178,34 +240,19 @@ function JobListSection() {
                 />
               </div>
 
-              {/* 🔥 UPDATED LOCATION UI */}
               <div className="col-md-5">
-
-                {/* DROPDOWN */}
                 <select
-                  className="form-select mb-2"
-                  value={locationMode === "select" ? locationInput : ""}
-                  onClick={() => setLocationMode("select")} // ✅ auto select
-                  onChange={(e) => setLocationInput(e.target.value)}
+                  className="form-select"
+                  value={locationInput}
+                  onChange={(e)=>setLocationInput(e.target.value)}
                 >
                   <option value="">All Locations</option>
                   {locations.map((loc, i) => (
                     <option key={i} value={loc}>{loc}</option>
                   ))}
                 </select>
-
-                {/* INPUT */}
-                <input
-                  className="form-control"
-                  placeholder="Enter location..."
-                  value={locationMode === "input" ? locationInput : ""}
-                  onClick={() => setLocationMode("input")} // ✅ auto select
-                  onChange={(e) => setLocationInput(e.target.value)}
-                />
-
               </div>
 
-              {/* BUTTON */}
               <div className="col-md-2">
                 <button className="btn btn-primary w-100" onClick={()=>fetchJobs(1)}>
                   Search
@@ -214,16 +261,13 @@ function JobListSection() {
 
             </div>
 
-            {/* JOBS */}
             {loading && <p>Loading jobs...</p>}
             {!loading && jobs.length === 0 && <p>No jobs found</p>}
 
-            {!loading &&
-              jobs.map((job) => (
-                <JobCard key={job.id} job={job} />
-              ))}
+            {!loading && jobs.map((job) => (
+              <JobCard key={job.id} job={job} />
+            ))}
 
-            {/* PAGINATION */}
             {lastPage > 1 && (
               <div className="d-flex justify-content-center mt-4 flex-wrap gap-2">
 
