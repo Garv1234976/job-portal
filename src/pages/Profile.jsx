@@ -53,15 +53,6 @@ function Profile() {
     }
   };
 
-  if (loading)
-    return (
-      <>
-        <Navbar />
-        <p className="text-center mt-5">Loading...</p>
-        <Footer />
-      </>
-    );
-
   const parseJSON = (data, fallback = []) => {
     try {
       if (!data) return fallback;
@@ -87,14 +78,18 @@ function Profile() {
     return exp.map(e => e.job_profile).join(", ");
   };
 
-  // ✅ UPDATED HANDLE UPDATE (FORMDATA)
+  // ✅ UPDATED HANDLE UPDATE (FORMDATA + CV)
   const handleUpdate = async () => {
     try {
       const formData = new FormData();
 
       Object.keys(form).forEach((key) => {
-        if (key === "cv" && form.cv) {
-          formData.append("cv", form.cv);
+        if (key === "cv") {
+          if (form.cv instanceof File) {
+            formData.append("cv", form.cv);
+          } else if (form.cv === null) {
+            formData.append("cv", "");
+          }
         } else if (Array.isArray(form[key])) {
           form[key].forEach((item, i) => {
             formData.append(`${key}[${i}]`, item);
@@ -111,11 +106,19 @@ function Profile() {
       Swal.fire("Success", "Profile updated", "success");
       setEditMode(false);
       fetchProfile();
-
     } catch {
       Swal.fire("Error", "Update failed", "error");
     }
   };
+
+  if (loading)
+    return (
+      <>
+        <Navbar />
+        <p className="text-center mt-5">Loading...</p>
+        <Footer />
+      </>
+    );
 
   return (
     <div className="container-xxl bg-white p-0">
@@ -267,9 +270,9 @@ function Profile() {
                   )}
                 </div>
 
-                {/* CV UPLOAD */}
+                {/* 🔥 CV SECTION WITH FULL EDIT OPTIONS */}
                 <div className="col-md-6">
-                  <label className="form-label">Upload CV</label>
+                  <label className="form-label fw-semibold">Upload CV</label>
 
                   {editMode ? (
                     <>
@@ -281,29 +284,53 @@ function Profile() {
                         }
                       />
 
-                      {user.cv && (
-                        <small>
-                          Current:{" "}
-                          <a
-                            href={`https://server.budes.online/storage/${user.cv}`}
-                            target="_blank"
-                            rel="noreferrer"
-                          >
-                            View CV
-                          </a>
+                      {form.cv && (
+                        <small className="text-success d-block mt-1">
+                          Selected: {form.cv.name}
                         </small>
+                      )}
+
+                      {user.cv && !form.cv && (
+                        <div className="mt-2">
+                          <small>
+                            Current:{" "}
+                            <a
+                              href={`https://server.budes.online/storage/${user.cv}`}
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              View CV
+                            </a>
+                          </small>
+                        </div>
+                      )}
+
+                      {user.cv && (
+                        <button
+                          type="button"
+                          className="btn btn-sm btn-outline-danger mt-2"
+                          onClick={() => {
+                            setForm({ ...form, cv: null });
+                            setUser({ ...user, cv: null });
+                          }}
+                        >
+                          Remove CV
+                        </button>
                       )}
                     </>
                   ) : (
                     <div className="form-control bg-light">
                       {user.cv ? (
                         <a
-                          href={`https://server.budes.online/public/${user.cv}`}
+                          href={`https://server.budes.online/storage/${user.cv}`}
                           target="_blank"
+                          rel="noreferrer"
                         >
                           View CV
                         </a>
-                      ) : "No CV uploaded"}
+                      ) : (
+                        "No CV uploaded"
+                      )}
                     </div>
                   )}
                 </div>
