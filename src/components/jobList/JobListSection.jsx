@@ -197,10 +197,6 @@ function JobListSection() {
                 >
                   <option value="">All Locations</option>
 
-                  {locationInput && (
-                    <option value="">❌ Clear Selection</option>
-                  )}
-
                   {locations.map((loc, i) => (
                     <option key={i} value={loc}>
                       {loc}
