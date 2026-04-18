@@ -20,43 +20,6 @@ function Profile() {
   const [loading, setLoading] = useState(true);
   const [editMode, setEditMode] = useState(false);
 
-  const qualificationOptions = [
-    { value: "10th", label: "10th" },
-    { value: "12th", label: "12th" },
-    { value: "Diploma", label: "Diploma" },
-    { value: "Graduate", label: "Graduate" },
-    { value: "Post Graduate", label: "Post Graduate" },
-  ];
-
-  useEffect(() => {
-    fetchProfile();
-  }, []);
-
-  const fetchProfile = async () => {
-    try {
-      const res = await API.get("/profile");
-      setForm(res.data.data);
-     setUser(data);
-
-setForm({
-  ...data,
-  experience_details: parseJSON(data.experience_details),
-});
-      setLoading(false);
-    } catch {
-      setLoading(false);
-    }
-  };
-
-  if (loading)
-    return (
-      <>
-        <Navbar />
-        <p className="text-center mt-5">Loading...</p>
-        <Footer />
-      </>
-    );
-
   const parseJSON = (data, fallback = []) => {
     try {
       if (!data) return fallback;
@@ -66,39 +29,53 @@ setForm({
     }
   };
 
-  const getExperience = () => {
-    const exp = parseJSON(user.experience_details, []);
-    if (!exp.length) return "Fresher";
+  useEffect(() => {
+    fetchProfile();
+  }, []);
 
-    return (
-      exp
-        .map((e) => {
-          if (!e.job_profile && !e.years) return null;
-          if (e.job_profile && e.years)
-            return `${e.job_profile} (${e.years} yrs)`;
-          if (e.job_profile) return e.job_profile;
-          return null;
-        })
-        .filter(Boolean)
-        .join(", ") || "Fresher"
-    );
+  const fetchProfile = async () => {
+    try {
+      const res = await API.get("/profile");
+      const data = res.data.data;
+
+      setUser(data);
+
+      setForm({
+        ...data,
+        experience_details: parseJSON(data.experience_details),
+        skills: parseJSON(data.skills),
+        qualification: parseJSON(data.qualification),
+      });
+
+      setLoading(false);
+    } catch {
+      setLoading(false);
+    }
   };
 
-  const getSkills = () => {
-    const skills = parseJSON(user.skills, []);
-    if (!skills.length) return "Add skills";
-    return skills.join(", ");
-  };
-
-  const getQualification = () => {
-    const q = parseJSON(user.qualification, []);
-    if (!q.length) return "Add qualification";
-    return q.join(", ");
-  };
-
-  // ✅ ONLY UPDATED: handleUpdate with FormData
   const handleUpdate = async () => {
     try {
+      // ✅ VALIDATION
+      if (!form.full_name) {
+        return Swal.fire("Error", "Full name is required", "error");
+      }
+
+      if (!form.skills || form.skills.length === 0) {
+        return Swal.fire("Error", "Select at least 1 skill", "error");
+      }
+
+      if (form.type === "experienced") {
+        if (!form.experience_details?.length) {
+          return Swal.fire("Error", "Add experience details", "error");
+        }
+
+        for (let exp of form.experience_details) {
+          if (!exp.job_profile || !exp.years) {
+            return Swal.fire("Error", "Fill all experience fields", "error");
+          }
+        }
+      }
+
       const formData = new FormData();
 
       Object.keys(form).forEach((key) => {
@@ -111,7 +88,7 @@ setForm({
         } else if (key === "experience_details") {
           formData.append(
             "experience_details",
-            JSON.stringify(form.experience_details || []),
+            JSON.stringify(form.experience_details || [])
           );
         } else if (Array.isArray(form[key])) {
           form[key].forEach((item, i) => {
@@ -134,381 +111,147 @@ setForm({
     }
   };
 
-  const skillOptions = [
-    { value: "PHP", label: "PHP" },
-    { value: "Laravel", label: "Laravel" },
-    { value: "React", label: "React" },
-    { value: "Vue", label: "Vue" },
-    { value: "JavaScript", label: "JavaScript" },
-    { value: "Node.js", label: "Node.js" },
-    { value: "MySQL", label: "MySQL" },
-  ];
+  if (loading) return <p className="text-center mt-5">Loading...</p>;
 
   return (
-    <div className="container-xxl bg-white p-0">
+    <div className="container py-5">
       <Navbar />
 
-      <div className="container py-5">
-        <div className="card shadow-lg p-4 rounded-4 border-0">
-          <div className="row align-items-center">
-            <div className="col-md-3 text-center">
-              <img
-                src="/assets/img/default.jpg"
-                className="rounded-circle"
-                style={{ width: 120, height: 120 }}
-                alt="profile"
-              />
+      <div className="card p-4 shadow">
+
+        {/* NAME */}
+        <div className="mb-3">
+          <label>Full Name</label>
+          {editMode ? (
+            <input
+              className="form-control"
+              value={form.full_name || ""}
+              onChange={(e) =>
+                setForm({ ...form, full_name: e.target.value })
+              }
+            />
+          ) : (
+            <div className="form-control">{user.full_name}</div>
+          )}
+        </div>
+
+        {/* SKILLS */}
+        <div className="mb-3">
+          <label>Skills</label>
+          {editMode ? (
+            <input
+              className="form-control"
+              value={form.skills || ""}
+              onChange={(e) =>
+                setForm({ ...form, skills: e.target.value.split(",") })
+              }
+            />
+          ) : (
+            <div className="form-control">
+              {parseJSON(user.skills).join(", ")}
             </div>
+          )}
+        </div>
 
-            <div className="col-md-9">
-              <div className="d-flex justify-content-between align-items-center mb-3">
-                <div className="w-50">
-                  <label className="form-label fw-semibold">
-                    <FaUserEdit className="me-2 text-primary" />
-                    Full Name
-                  </label>
+        {/* EXPERIENCE TYPE */}
+        <div className="mb-3">
+          <label>Experience</label>
+          {editMode ? (
+            <select
+              className="form-control"
+              value={form.type || ""}
+              onChange={(e) =>
+                setForm({
+                  ...form,
+                  type: e.target.value,
+                  experience_details:
+                    e.target.value === "experienced"
+                      ? form.experience_details?.length
+                        ? form.experience_details
+                        : [{ job_profile: "", years: "" }]
+                      : [],
+                })
+              }
+            >
+              <option value="">Select</option>
+              <option value="fresher">Fresher</option>
+              <option value="experienced">Experienced</option>
+            </select>
+          ) : (
+            <div className="form-control">
+              {(form.type || user.type)
+                ? (form.type || user.type).charAt(0).toUpperCase() +
+                  (form.type || user.type).slice(1)
+                : "Not selected"}
+            </div>
+          )}
+        </div>
 
-                  {editMode ? (
-                    <input
-                      className="form-control"
-                      value={form.full_name || ""}
-                      onChange={(e) =>
-                        setForm({ ...form, full_name: e.target.value })
-                      }
-                    />
-                  ) : (
-                    <div className="form-control bg-light">
-                      {user.full_name || user.name}
-                    </div>
-                  )}
-                </div>
-
-                <FaUserEdit
-                  style={{ cursor: "pointer" }}
-                  onClick={() => setEditMode(!editMode)}
+        {/* EXPERIENCE DETAILS */}
+        {editMode && form.type === "experienced" && (
+          <div>
+            {form.experience_details.map((exp, index) => (
+              <div key={index} className="d-flex mb-2">
+                <input
+                  className="form-control me-2"
+                  placeholder="Job"
+                  value={exp.job_profile}
+                  onChange={(e) => {
+                    const updated = [...form.experience_details];
+                    updated[index].job_profile = e.target.value;
+                    setForm({ ...form, experience_details: updated });
+                  }}
+                />
+                <input
+                  className="form-control"
+                  placeholder="Years"
+                  value={exp.years}
+                  onChange={(e) => {
+                    const updated = [...form.experience_details];
+                    updated[index].years = e.target.value;
+                    setForm({ ...form, experience_details: updated });
+                  }}
                 />
               </div>
-
-              <hr />
-
-              <div className="row g-3">
-                {/* LOCATION */}
-                <div className="col-md-6">
-                  <label className="form-label fw-semibold">
-                    <FaMapMarkerAlt className="me-2 text-primary" />
-                    Location
-                  </label>
-
-                  {editMode ? (
-                    <input
-                      className="form-control"
-                      value={form.preferred_location || ""}
-                      onChange={(e) =>
-                        setForm({ ...form, preferred_location: e.target.value })
-                      }
-                    />
-                  ) : (
-                    <div className="form-control bg-light">
-                      {user.preferred_location || "Add location"}
-                    </div>
-                  )}
-                </div>
-
-                {/* PHONE */}
-                <div className="col-md-6">
-                  <label className="form-label fw-semibold">
-                    <FaPhone className="me-2 text-success" />
-                    Phone
-                  </label>
-
-                  {editMode ? (
-                    <input
-                      className="form-control"
-                      value={form.phone || ""}
-                      onChange={(e) =>
-                        setForm({ ...form, phone: e.target.value })
-                      }
-                    />
-                  ) : (
-                    <div className="form-control bg-light">
-                      {user.phone || "Add phone"}
-                    </div>
-                  )}
-                </div>
-
-                {/* EMAIL */}
-                <div className="col-md-6">
-                  <label className="form-label fw-semibold">
-                    <FaEnvelope className="me-2 text-danger" />
-                    Email
-                  </label>
-                  <div className="form-control bg-light">{user.email}</div>
-                </div>
-
-                {/* QUALIFICATION */}
-                <div className="col-md-6">
-                  <label className="form-label fw-semibold">
-                    <FaGraduationCap className="me-2 text-warning" />
-                    Qualification
-                  </label>
-
-                  {editMode ? (
-                    <Select
-                      isMulti
-                      value={
-                        Array.isArray(form.qualification)
-                          ? form.qualification.map((q) => ({
-                              value: q,
-                              label: q,
-                            }))
-                          : []
-                      }
-                      options={qualificationOptions}
-                      onChange={(selected) =>
-                        setForm({
-                          ...form,
-                          qualification: selected.map((i) => i.value),
-                        })
-                      }
-                    />
-                  ) : (
-                    <div className="form-control bg-light">
-                      {getQualification()}
-                    </div>
-                  )}
-                </div>
-
-                {/* SKILLS */}
-                <div className="col-md-6">
-                  <label className="form-label fw-semibold">
-                    <FaTools className="me-2 text-info" />
-                    Skills (Max 5)
-                  </label>
-
-                  {editMode ? (
-                    <Select
-                      isMulti
-                      value={
-                        Array.isArray(form.skills)
-                          ? form.skills.map((s) => ({
-                              value: s,
-                              label: s,
-                            }))
-                          : []
-                      }
-                      options={skillOptions}
-                      onChange={(selected) => {
-                        if (selected.length <= 5) {
-                          setForm({
-                            ...form,
-                            skills: selected.map((i) => i.value),
-                          });
-                        } else {
-                          Swal.fire("Error", "Only 5 skills allowed", "error");
-                        }
-                      }}
-                    />
-                  ) : (
-                    <div className="form-control bg-light">{getSkills()}</div>
-                  )}
-                </div>
-
-                {/* EXPERIENCE TYPE */}
-                {/* EXPERIENCE TYPE */}
-                <div className="col-md-6">
-                  <label className="form-label fw-semibold">
-                    <FaBriefcase className="me-2 text-secondary" />
-                    Experience
-                  </label>
-
-                  {editMode ? (
-                    <select
-                      className="form-control"
-                      value={form.type || ""}
-                      onChange={(e) =>
-                        setForm({
-                          ...form,
-                          type: e.target.value,
-                          experience_details:
-                            e.target.value === "experienced"
-                              ? form.experience_details?.length
-                                ? form.experience_details
-                                : [{ job_profile: "", years: "" }]
-                              : [],
-                        })
-                      }
-                    >
-                      <option value="">Select</option>
-                      <option value="fresher">Fresher</option>
-                      <option value="experienced">Experienced</option>
-                    </select>
-                  ) : (
-                    <div className="form-control bg-light">
-                      {form.type || user.type
-                        ? (form.type || user.type).charAt(0).toUpperCase() +
-                          (form.type || user.type).slice(1)
-                        : "Not selected"}
-                    </div>
-                  )}
-                </div>
-
-                {/* EXPERIENCE DETAILS */}
-                {editMode && form.type === "experienced" && (
-                  <div className="col-12 mt-3 p-3 border rounded">
-                    <h6 className="mb-3">Experience Details</h6>
-
-                    {form.experience_details?.map((exp, index) => (
-                      <div key={index} className="row mb-2">
-                        {/* Job Profile */}
-                        <div className="col-md-5">
-                          <input
-                            type="text"
-                            placeholder="Job Profile"
-                            className="form-control"
-                            value={exp.job_profile}
-                            onChange={(e) => {
-                              const updated = [...form.experience_details];
-                              updated[index].job_profile = e.target.value;
-                              setForm({ ...form, experience_details: updated });
-                            }}
-                          />
-                        </div>
-
-                        {/* Years */}
-                        <div className="col-md-5">
-                          <input
-                            type="number"
-                            placeholder="Years"
-                            className="form-control"
-                            value={exp.years}
-                            onChange={(e) => {
-                              const updated = [...form.experience_details];
-                              updated[index].years = e.target.value;
-                              setForm({ ...form, experience_details: updated });
-                            }}
-                          />
-                        </div>
-
-                        {/* Remove Button */}
-                        <div className="col-md-2">
-                          {index > 0 && (
-                            <button
-                              type="button"
-                              className="btn btn-danger w-100"
-                              onClick={() => {
-                                const updated = form.experience_details.filter(
-                                  (_, i) => i !== index,
-                                );
-                                setForm({
-                                  ...form,
-                                  experience_details: updated,
-                                });
-                              }}
-                            >
-                              ✕
-                            </button>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-
-                    {/* ADD MORE */}
-                    <button
-                      type="button"
-                      className="btn btn-primary mt-2"
-                      onClick={() =>
-                        setForm({
-                          ...form,
-                          experience_details: [
-                            ...form.experience_details,
-                            { job_profile: "", years: "" },
-                          ],
-                        })
-                      }
-                    >
-                      + Add More
-                    </button>
-                  </div>
-                )}
-
-                {/* EXPERIENCE DISPLAY (VIEW MODE) */}
-                {!editMode && (form.type || user.type) === "experienced" && (
-                  <div className="col-12 mt-3">
-                    <div className="form-control bg-light">
-                      {form.experience_details?.length
-                        ? form.experience_details
-                            .map(
-                              (e) =>
-                                `${e.job_profile || ""} ${
-                                  e.years ? `(${e.years} yrs)` : ""
-                                }`,
-                            )
-                            .join(", ")
-                        : "No experience details"}
-                    </div>
-                  </div>
-                )}
-
-                {/* ✅ CV FIELD ADDED */}
-                <div className="col-md-6">
-                  <label className="form-label fw-semibold">Upload CV</label>
-
-                  {editMode ? (
-                    <>
-                      <input
-                        type="file"
-                        className="form-control"
-                        onChange={(e) =>
-                          setForm({ ...form, cv: e.target.files[0] })
-                        }
-                      />
-
-                      {form.cv && (
-                        <small className="text-success d-block mt-1">
-                          {form.cv.name}
-                        </small>
-                      )}
-
-                      {user.cv && !form.cv && (
-                        <small className="text-muted d-block mt-1">
-                          Current:{" "}
-                          <a
-                            href={`https://server.budes.online/public/${user.cv}`}
-                            target="_blank"
-                          >
-                            View CV
-                          </a>
-                        </small>
-                      )}
-                    </>
-                  ) : (
-                    <div className="form-control bg-light">
-                      {user.cv ? (
-                        <a
-                          href={`https://server.budes.online/public/${user.cv}`}
-                          target="_blank"
-                        >
-                          View CV
-                        </a>
-                      ) : (
-                        "No CV uploaded"
-                      )}
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              {editMode && (
-                <button
-                  className="btn btn-success mt-4 px-4"
-                  onClick={handleUpdate}
-                >
-                  Save Changes
-                </button>
-              )}
-            </div>
+            ))}
           </div>
+        )}
+
+        {/* VIEW EXPERIENCE */}
+        {!editMode && (form.type || user.type) === "experienced" && (
+          <div className="form-control">
+            {parseJSON(form.experience_details).map(
+              (e) => `${e.job_profile} (${e.years})`
+            ).join(", ")}
+          </div>
+        )}
+
+        {/* CV */}
+        <div className="mb-3">
+          <label>CV</label>
+
+          {editMode ? (
+            <input
+              type="file"
+              className="form-control"
+              onChange={(e) =>
+                setForm({ ...form, cv: e.target.files[0] })
+              }
+            />
+          ) : user.cv ? (
+            <a href={`https://server.budes.online/public/${user.cv}`} target="_blank">
+              View CV
+            </a>
+          ) : (
+            "No CV"
+          )}
         </div>
+
+        {editMode && (
+          <button className="btn btn-success" onClick={handleUpdate}>
+            Save
+          </button>
+        )}
       </div>
 
       <Footer />
