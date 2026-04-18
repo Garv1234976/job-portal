@@ -137,7 +137,7 @@ function JobListSection() {
               <h6>Work Mode</h6>
 
               {[
-                { label: "All Jobs", value: "" },
+                { label: "All Work Modes", value: "" },
                 { label: "WFH", value: "WFH" },
                 { label: "Remote", value: "remote" },
                 { label: "Hybrid", value: "hybrid" }
