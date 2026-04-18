@@ -432,7 +432,7 @@ setForm({
                 )}
 
                 {/* EXPERIENCE DISPLAY (VIEW MODE) */}
-                {!editMode && form.type === "experienced" && (
+                {!editMode && (form.type || user.type) === "experienced" && (
                   <div className="col-12 mt-3">
                     <div className="form-control bg-light">
                       {form.experience_details?.length
