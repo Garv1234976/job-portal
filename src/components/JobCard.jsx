@@ -2,6 +2,15 @@ import Swal from "sweetalert2";
 import API from "../services/api";
 import { useState, useEffect } from "react";
 
+// ✅ React Icons
+import {
+  FaBriefcase,
+  FaMapMarkerAlt,
+  FaClock,
+  FaBookmark,
+  FaRegBookmark
+} from "react-icons/fa";
+
 function JobCard({ job }) {
   const [applied, setApplied] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -89,18 +98,12 @@ function JobCard({ job }) {
             <h5 className="fw-bold mb-1">{job.job_title}</h5>
 
             {/* META */}
-            <div className="text-muted small mb-1">
-              <i className="fa-solid fa-briefcase me-1"></i>
-              {job.experience} Years
-
-              <span className="mx-2">|</span>
-
-              ₹ {job.salary_range}
-
-              <span className="mx-2">|</span>
-
-              <i className="fa-solid fa-location-dot me-1"></i>
-              {job.location}
+            <div className="text-muted small mb-1 d-flex flex-wrap align-items-center gap-2">
+              <span><FaBriefcase className="me-1" /> {job.experience} Years</span>
+              <span>|</span>
+              <span>₹ {job.salary_range}</span>
+              <span>|</span>
+              <span><FaMapMarkerAlt className="me-1" /> {job.location}</span>
             </div>
 
             {/* DESC */}
@@ -110,7 +113,7 @@ function JobCard({ job }) {
 
             {/* DATE */}
             <div className="text-muted small">
-              <i className="fa-regular fa-clock me-1"></i>
+              <FaClock className="me-1" />
               {getDaysAgo(job.created_at)}
             </div>
 
@@ -125,11 +128,11 @@ function JobCard({ job }) {
             className="btn btn-sm btn-light border mb-2"
             onClick={toggleSaveJob}
           >
-            <i
-              className={`fa ${
-                saved ? "fa-solid fa-bookmark text-primary" : "fa-regular fa-bookmark"
-              } me-1`}
-            ></i>
+            {saved ? (
+              <FaBookmark className="me-1 text-primary" />
+            ) : (
+              <FaRegBookmark className="me-1" />
+            )}
             {saving ? "Saving..." : saved ? "Saved" : "Save"}
           </button>
 
