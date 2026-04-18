@@ -91,9 +91,29 @@ function Profile() {
     return q.join(", ");
   };
 
+  // ✅ UPDATED: HANDLE UPDATE WITH CV
   const handleUpdate = async () => {
     try {
-      await API.post("/update-profile", form);
+      const formData = new FormData();
+
+      Object.keys(form).forEach((key) => {
+        if (key === "cv") {
+          if (form.cv instanceof File) {
+            formData.append("cv", form.cv);
+          }
+        } else if (Array.isArray(form[key])) {
+          form[key].forEach((item, i) => {
+            formData.append(`${key}[${i}]`, item);
+          });
+        } else {
+          formData.append(key, form[key] ?? "");
+        }
+      });
+
+      await API.post("/update-profile", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
       Swal.fire("Success", "Profile updated", "success");
       setEditMode(false);
       fetchProfile();
@@ -114,11 +134,8 @@ function Profile() {
 
   return (
     <div className="container-xxl bg-white p-0">
-
-      {/* ✅ NAVBAR */}
       <Navbar />
 
-      {/* ✅ PROFILE CONTENT */}
       <div className="container py-5">
         <div className="card shadow-lg p-4 rounded-4 border-0">
           <div className="row align-items-center">
@@ -134,6 +151,7 @@ function Profile() {
 
             <div className="col-md-9">
 
+              {/* NAME */}
               <div className="d-flex justify-content-between align-items-center mb-3">
                 <div className="w-50">
                   <label className="form-label fw-semibold">
@@ -310,10 +328,7 @@ function Profile() {
                         setForm({
                           ...form,
                           experience_details: [
-                            {
-                              job_profile: e.target.value,
-                              years: 0,
-                            },
+                            { job_profile: e.target.value, years: 0 },
                           ],
                         })
                       }
@@ -322,6 +337,31 @@ function Profile() {
                     <div className="form-control bg-light">
                       {getExperience()}
                     </div>
+                  )}
+                </div>
+
+                {/* ✅ CV FIELD ADDED */}
+                <div className="col-md-6">
+                  <label className="form-label fw-semibold">Upload CV</label>
+
+                  {editMode ? (
+                    <input
+                      type="file"
+                      className="form-control"
+                      onChange={(e) =>
+                        setForm({ ...form, cv: e.target.files[0] })
+                      }
+                    />
+                  ) : user.cv ? (
+                    <a
+                      href={`https://server.budes.online/public/${user.cv}`}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
+                      View CV
+                    </a>
+                  ) : (
+                    "No CV uploaded"
                   )}
                 </div>
 
@@ -341,9 +381,7 @@ function Profile() {
         </div>
       </div>
 
-      {/* ✅ FOOTER */}
       <Footer />
-
     </div>
   );
 }
