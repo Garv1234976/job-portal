@@ -311,8 +311,6 @@ function Profile() {
                       : "Fresher"}
                   </div>
 
-                  <div className="form-control bg-light">{getExperience()}</div>
-
                   {editMode ? (
                     <input
                       className="form-control"
