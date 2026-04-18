@@ -35,8 +35,13 @@ function Profile() {
   const fetchProfile = async () => {
     try {
       const res = await API.get("/profile");
-      setUser(res.data.data);
       setForm(res.data.data);
+     setUser(data);
+
+setForm({
+  ...data,
+  experience_details: parseJSON(data.experience_details),
+});
       setLoading(false);
     } catch {
       setLoading(false);
