@@ -304,7 +304,6 @@ function Profile() {
                 </div>
 
                 {/* EXPERIENCE */}
-                {/* EXPERIENCE */}
                 <div className="col-md-6">
                   <label className="form-label fw-semibold">
                     <FaBriefcase className="me-2 text-secondary" />
@@ -314,11 +313,11 @@ function Profile() {
                   {editMode ? (
                     <select
                       className="form-select"
-                      value={form.experience_type || ""}
+                      value={form.experience_details || ""}
                       onChange={(e) =>
                         setForm({
                           ...form,
-                          experience_type: e.target.value,
+                          experience_details: e.target.value,
                         })
                       }
                     >
