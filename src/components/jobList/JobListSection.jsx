@@ -168,7 +168,7 @@ function JobListSection() {
               <input
                 type="range"
                 min="0"
-                max="10"
+                max="30"
                 value={experience}
                 onChange={(e) => setExperience(e.target.value)}
               />
@@ -179,6 +179,7 @@ function JobListSection() {
               <h6>Salary</h6>
 
               {[
+                { label: "All Salaries", value: "" },
                 { label: "0-3 Lakhs", value: "0-3" },
                 { label: "3-6 Lakhs", value: "3-6" },
                 { label: "6-10 Lakhs", value: "6-10" }
