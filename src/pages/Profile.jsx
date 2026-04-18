@@ -95,13 +95,13 @@ function Profile() {
   const handleUpdate = async () => {
     try {
       const formData = new FormData();
-      if (key === "photo") {
+      Object.keys(form).forEach((key) => {
+         if (key === "photo") {
         if (form.photo instanceof File) {
           formData.append("photo", form.photo);
         }
       }
 
-      Object.keys(form).forEach((key) => {
         if (key === "cv") {
           if (form.cv instanceof File) {
             formData.append("cv", form.cv);
