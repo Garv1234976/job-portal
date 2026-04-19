@@ -17,6 +17,8 @@ function JobDetailSection() {
   const [job, setJob] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const [alreadyApplied, setAlreadyApplied] = useState(false); // ✅ NEW
+
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -34,7 +36,13 @@ function JobDetailSection() {
   const fetchJob = async () => {
     try {
       const res = await api.get(`/job/${id}`);
-      setJob(res.data.data);
+      const jobData = res.data.data;
+
+      setJob(jobData);
+
+      // ✅ IMPORTANT
+      setAlreadyApplied(jobData.applied || false);
+
     } catch (err) {
       console.log(err);
     } finally {
@@ -76,6 +84,9 @@ function JobDetailSection() {
       });
 
       alert(res.data.message);
+
+      // ✅ After apply → hide form
+      setAlreadyApplied(true);
 
       setForm({
         name: "",
@@ -139,90 +150,102 @@ function JobDetailSection() {
               </div>
             </div>
 
-            {/* APPLY FORM */}
+            {/* ✅ JOB DESCRIPTION (NEW) */}
+            <div className="mb-5">
+              <h4 className="mb-3">Job Description</h4>
+              <p>{job.job_description}</p>
+            </div>
+
+            {/* APPLY SECTION */}
             <div>
-              <h4 className="mb-4">Apply For The Job</h4>
 
-              <form onSubmit={handleApply}>
-                <div className="row g-3">
-
-                  {/* NAME */}
-                  <div className="col-6">
-                    <label className="form-label fw-semibold">
-                      Name <span className="text-danger">*</span>
-                    </label>
-                    <input
-                      name="name"
-                      className={`form-control ${errors.name ? "is-invalid" : ""}`}
-                      placeholder="Enter your name"
-                      value={form.name}
-                      onChange={handleChange}
-                    />
-                    {errors.name && (
-                      <div className="text-danger small">{errors.name}</div>
-                    )}
-                  </div>
-
-                  {/* EMAIL */}
-                  <div className="col-6">
-                    <label className="form-label fw-semibold">
-                      Email <span className="text-danger">*</span>
-                    </label>
-                    <input
-                      name="email"
-                      type="email"
-                      className={`form-control ${errors.email ? "is-invalid" : ""}`}
-                      placeholder="Enter your email"
-                      value={form.email}
-                      onChange={handleChange}
-                    />
-                    {errors.email && (
-                      <div className="text-danger small">{errors.email}</div>
-                    )}
-                  </div>
-
-                  {/* PORTFOLIO */}
-                  <div className="col-6">
-                    <label className="form-label fw-semibold">
-                      Portfolio
-                    </label>
-                    <input
-                      name="portfolio"
-                      className="form-control"
-                      placeholder="Portfolio link"
-                      value={form.portfolio}
-                      onChange={handleChange}
-                    />
-                  </div>
-
-                  {/* COVER LETTER */}
-                  <div className="col-12">
-                    <label className="form-label fw-semibold">
-                      Cover Letter
-                    </label>
-                    <textarea
-                      name="cover_letter"
-                      className="form-control"
-                      rows="4"
-                      placeholder="Write your cover letter"
-                      value={form.cover_letter}
-                      onChange={handleChange}
-                    />
-                  </div>
-
-                  {/* BUTTON */}
-                  <div className="col-12">
-                    <button
-                      type="submit"
-                      className="btn btn-primary w-100"
-                      disabled={submitting}
-                    >
-                      {submitting ? "Applying..." : "Apply Now"}
-                    </button>
-                  </div>
-
+              {/* ✅ IF ALREADY APPLIED */}
+              {alreadyApplied ? (
+                <div className="alert alert-success">
+                  ✅ You have already applied for this job
                 </div>
-              </form>
+              ) : (
+                <>
+                  <h4 className="mb-4">Apply For The Job</h4>
+
+                  <form onSubmit={handleApply}>
+                    <div className="row g-3">
+
+                      {/* NAME */}
+                      <div className="col-6">
+                        <label className="form-label fw-semibold">
+                          Name <span className="text-danger">*</span>
+                        </label>
+                        <input
+                          name="name"
+                          className={`form-control ${errors.name ? "is-invalid" : ""}`}
+                          value={form.name}
+                          onChange={handleChange}
+                        />
+                        {errors.name && (
+                          <div className="text-danger small">{errors.name}</div>
+                        )}
+                      </div>
+
+                      {/* EMAIL */}
+                      <div className="col-6">
+                        <label className="form-label fw-semibold">
+                          Email <span className="text-danger">*</span>
+                        </label>
+                        <input
+                          name="email"
+                          type="email"
+                          className={`form-control ${errors.email ? "is-invalid" : ""}`}
+                          value={form.email}
+                          onChange={handleChange}
+                        />
+                        {errors.email && (
+                          <div className="text-danger small">{errors.email}</div>
+                        )}
+                      </div>
+
+                      {/* PORTFOLIO */}
+                      <div className="col-6">
+                        <label className="form-label fw-semibold">
+                          Portfolio
+                        </label>
+                        <input
+                          name="portfolio"
+                          className="form-control"
+                          value={form.portfolio}
+                          onChange={handleChange}
+                        />
+                      </div>
+
+                      {/* COVER LETTER */}
+                      <div className="col-12">
+                        <label className="form-label fw-semibold">
+                          Cover Letter
+                        </label>
+                        <textarea
+                          name="cover_letter"
+                          className="form-control"
+                          rows="4"
+                          value={form.cover_letter}
+                          onChange={handleChange}
+                        />
+                      </div>
+
+                      <div className="col-12">
+                        <button
+                          type="submit"
+                          className="btn btn-primary w-100"
+                          disabled={submitting}
+                        >
+                          {submitting ? "Applying..." : "Apply Now"}
+                        </button>
+                      </div>
+
+                    </div>
+                  </form>
+                </>
+              )}
+
             </div>
 
           </div>
