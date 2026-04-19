@@ -199,7 +199,7 @@ export default function CandidateDashboard() {
 
                     <button
                       className="btn btn-outline-success w-100"
-                      onClick={() => navigate("/resume")}
+                      onClick={() => navigate("/candidate/resume")}
                     >
                       Update Resume
                     </button>

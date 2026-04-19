@@ -10,6 +10,8 @@ export default function SavedJobs() {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [total, setTotal] = useState(0);
+
   const perPage = 5;
 
   const fetchJobs = async () => {
@@ -20,6 +22,7 @@ export default function SavedJobs() {
 
       setJobs(res.data.data || []);
       setTotalPages(res.data.last_page || 1);
+      setTotal(res.data.total || 0);
     } catch (err) {
       console.error(err);
     }
@@ -46,14 +49,16 @@ export default function SavedJobs() {
       <div className="container-fluid mt-4 mb-5">
         <div className="row">
 
+          {/* SIDEBAR */}
           <div className="col-md-3 col-lg-2">
             <CandidateSidebar />
           </div>
 
+          {/* MAIN */}
           <div className="col-md-9 col-lg-10">
             <div className="bg-white p-4 shadow rounded">
 
-              <h4 className="mb-3">Saved Jobs</h4>
+              <h4 className="mb-3">Saved Jobs ({total})</h4>
 
               <input
                 className="form-control w-50 mb-3"
@@ -65,43 +70,99 @@ export default function SavedJobs() {
                 }}
               />
 
-              <table className="table table-bordered">
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>Job Title</th>
-                    <th>Company</th>
-                    <th>Location</th>
-                    <th>Salary</th>
-                    <th>Date</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
+              {/* TABLE */}
+              <div className="table-responsive">
+                <table className="table table-bordered">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Job Title</th>
+                      <th>Company</th>
+                      <th>Location</th>
+                      <th>Salary</th>
+                      <th>Date</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
 
-                <tbody>
-                  {jobs.length > 0 ? (
-                    jobs.map((job, i) => (
-                      <tr key={job.id}>
-                        <td>{(page - 1) * perPage + i + 1}</td>
-                        <td>{job.job_title}</td>
-                        <td>{job.company_name || "N/A"}</td>
-                        <td>{job.location}</td>
-                        <td>₹ {job.salary_range || "N/A"}</td>
-                        <td>{new Date(job.created_at).toLocaleDateString()}</td>
-                        <td>
-                          <button className="btn btn-danger btn-sm" onClick={() => removeJob(job.id)}>
-                            Remove
-                          </button>
+                  <tbody>
+                    {jobs.length > 0 ? (
+                      jobs.map((job, i) => (
+                        <tr key={job.id}>
+                          <td>{(page - 1) * perPage + i + 1}</td>
+                          <td>{job.job_title}</td>
+                          <td>{job.company_name || "N/A"}</td>
+                          <td>{job.location}</td>
+                          <td>₹ {job.salary_range || "N/A"}</td>
+                          <td>{new Date(job.created_at).toLocaleDateString()}</td>
+                          <td>
+                            <button
+                              className="btn btn-danger btn-sm"
+                              onClick={() => removeJob(job.id)}
+                            >
+                              Remove
+                            </button>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td colSpan="7" className="text-center">
+                          No saved jobs
                         </td>
                       </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan="7" className="text-center">No saved jobs</td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* ✅ PAGINATION */}
+              {totalPages > 1 && (
+                <div className="d-flex justify-content-between align-items-center mt-3">
+
+                  {/* LEFT INFO */}
+                  <div>
+                    Showing page <strong>{page}</strong> of{" "}
+                    <strong>{totalPages}</strong>
+                  </div>
+
+                  {/* RIGHT BUTTONS */}
+                  <div className="d-flex gap-2">
+
+                    <button
+                      className="btn btn-sm btn-outline-primary"
+                      disabled={page === 1}
+                      onClick={() => setPage(page - 1)}
+                    >
+                      Prev
+                    </button>
+
+                    {/* PAGE NUMBERS */}
+                    {[...Array(totalPages)].map((_, i) => (
+                      <button
+                        key={i}
+                        className={`btn btn-sm ${
+                          page === i + 1
+                            ? "btn-primary"
+                            : "btn-outline-primary"
+                        }`}
+                        onClick={() => setPage(i + 1)}
+                      >
+                        {i + 1}
+                      </button>
+                    ))}
+
+                    <button
+                      className="btn btn-sm btn-outline-primary"
+                      disabled={page === totalPages}
+                      onClick={() => setPage(page + 1)}
+                    >
+                      Next
+                    </button>
+
+                  </div>
+                </div>
+              )}
 
             </div>
           </div>
