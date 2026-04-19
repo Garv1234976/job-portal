@@ -76,6 +76,7 @@ function JobDetailSection() {
       });
 
       alert(res.data.message);
+
       setForm({
         name: "",
         email: "",
@@ -105,6 +106,7 @@ function JobDetailSection() {
           {/* LEFT */}
           <div className="col-lg-8">
 
+            {/* HEADER */}
             <div className="d-flex align-items-center mb-5">
               <img
                 src={
@@ -144,49 +146,71 @@ function JobDetailSection() {
               <form onSubmit={handleApply}>
                 <div className="row g-3">
 
+                  {/* NAME */}
                   <div className="col-6">
+                    <label className="form-label fw-semibold">
+                      Name <span className="text-danger">*</span>
+                    </label>
                     <input
                       name="name"
-                      className="form-control"
-                      placeholder="Name *"
+                      className={`form-control ${errors.name ? "is-invalid" : ""}`}
+                      placeholder="Enter your name"
                       value={form.name}
                       onChange={handleChange}
                     />
-                    {errors.name && <small className="text-danger">{errors.name}</small>}
+                    {errors.name && (
+                      <div className="text-danger small">{errors.name}</div>
+                    )}
                   </div>
 
+                  {/* EMAIL */}
                   <div className="col-6">
+                    <label className="form-label fw-semibold">
+                      Email <span className="text-danger">*</span>
+                    </label>
                     <input
                       name="email"
-                      className="form-control"
-                      placeholder="Email *"
+                      type="email"
+                      className={`form-control ${errors.email ? "is-invalid" : ""}`}
+                      placeholder="Enter your email"
                       value={form.email}
                       onChange={handleChange}
                     />
-                    {errors.email && <small className="text-danger">{errors.email}</small>}
+                    {errors.email && (
+                      <div className="text-danger small">{errors.email}</div>
+                    )}
                   </div>
 
+                  {/* PORTFOLIO */}
                   <div className="col-6">
+                    <label className="form-label fw-semibold">
+                      Portfolio
+                    </label>
                     <input
                       name="portfolio"
                       className="form-control"
-                      placeholder="Portfolio"
+                      placeholder="Portfolio link"
                       value={form.portfolio}
                       onChange={handleChange}
                     />
                   </div>
 
+                  {/* COVER LETTER */}
                   <div className="col-12">
+                    <label className="form-label fw-semibold">
+                      Cover Letter
+                    </label>
                     <textarea
                       name="cover_letter"
                       className="form-control"
                       rows="4"
-                      placeholder="Cover Letter"
+                      placeholder="Write your cover letter"
                       value={form.cover_letter}
                       onChange={handleChange}
                     />
                   </div>
 
+                  {/* BUTTON */}
                   <div className="col-12">
                     <button
                       type="submit"
@@ -199,6 +223,49 @@ function JobDetailSection() {
 
                 </div>
               </form>
+            </div>
+
+          </div>
+
+          {/* RIGHT SIDE */}
+          <div className="col-lg-4">
+
+            <div className="bg-light rounded p-4 mb-4">
+              <h4 className="mb-4">Job Summary</h4>
+
+              <p>
+                <FaCalendarAlt className="text-primary me-2" />
+                Posted: {job.created_at}
+              </p>
+
+              <p>
+                <FaUserTie className="text-primary me-2" />
+                Vacancy: {job.vacancy || "N/A"}
+              </p>
+
+              <p>
+                <FaClock className="text-primary me-2" />
+                Job Type: {job.employment_type}
+              </p>
+
+              <p>
+                <FaMoneyBillAlt className="text-primary me-2" />
+                Salary: ₹ {job.salary_range}
+              </p>
+
+              <p>
+                <FaMapMarkerAlt className="text-primary me-2" />
+                Location: {job.location}
+              </p>
+            </div>
+
+            <div className="bg-light rounded p-4">
+              <h4 className="mb-4">
+                <FaBuilding className="me-2 text-primary" />
+                Company Detail
+              </h4>
+
+              <p>{job.company_name || "No company info available"}</p>
             </div>
 
           </div>
