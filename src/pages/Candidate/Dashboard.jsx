@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import api from "../../services/api";
 
-import CandidateSidebar from "../../components/condidate/CandidateSidebar";
+import CandidateSidebar from "../../components/candidate/CandidateSidebar";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 
