@@ -27,7 +27,7 @@ export default function CandidateSidebar({ activeTab, setActiveTab }) {
         Candidate Panel
       </h5>
 
-      {tabs.map((tab) => (
+      {menu.map((tab) => (
         <div
           key={tab.id}
           onClick={() => setActiveTab(tab.id)}
