@@ -37,14 +37,12 @@ export default function CandidateDashboard() {
     }
   };
 
-  // ✅ TAB CHANGE
   useEffect(() => {
     if (activeTab === "applied" || activeTab === "dashboard") {
       fetchAppliedJobs();
     }
   }, [activeTab]);
 
-  // ✅ SEARCH (LIVE WITH DEBOUNCE)
   useEffect(() => {
     if (activeTab === "applied") {
       const delay = setTimeout(() => {
@@ -55,16 +53,19 @@ export default function CandidateDashboard() {
     }
   }, [search, page]);
 
-   const fetchSavedJobs = async () => {
+  const fetchSavedJobs = async () => {
     try {
       const res = await api.get("/saved-jobs", {
-        params: { search, page, per_page: perPage },
+        params: {
+          search,
+          page,
+          per_page: perPage,
+        },
       });
 
       setSavedJobs(res.data.data || []);
       setTotalPages(res.data.last_page || 1);
       setTotalSaved(res.data.total || 0);
-
     } catch (err) {
       console.error(err);
     }
@@ -80,7 +81,6 @@ export default function CandidateDashboard() {
     }
   }, [activeTab]);
 
-  // 🔥 SEARCH + PAGINATION
   useEffect(() => {
     const delay = setTimeout(() => {
       if (activeTab === "applied") fetchAppliedJobs();
@@ -90,7 +90,6 @@ export default function CandidateDashboard() {
     return () => clearTimeout(delay);
   }, [search, page]);
 
-  // ✅ CONTENT
   const renderContent = () => {
     switch (activeTab) {
       // 🔥 DASHBOARD
@@ -113,7 +112,7 @@ export default function CandidateDashboard() {
                 onClick={() => setActiveTab("saved")}
               >
                 <h5>Saved Jobs</h5>
-                <h2 className="text-success">{totalSaved}</h2>
+                <h2 className="text-success">0</h2>
               </div>
             </div>
 
@@ -229,99 +228,7 @@ export default function CandidateDashboard() {
         );
 
       case "saved":
-        return (
-          <>
-            <h5 className="mb-3">Saved Jobs</h5>
-
-            {/* 🔍 SEARCH */}
-            <div className="mb-3 d-flex justify-content-between">
-              <input
-                type="text"
-                className="form-control w-50"
-                placeholder="Search job, company..."
-                value={search}
-                onChange={(e) => {
-                  setSearch(e.target.value);
-                  setPage(1);
-                }}
-              />
-            </div>
-
-            {/* TABLE */}
-            <div className="table-responsive">
-              <table className="table table-bordered align-middle">
-                <thead className="table-light">
-                  <tr>
-                    <th>#</th>
-                    <th>Job Title</th>
-                    <th>Company</th>
-                    <th>Location</th>
-                    <th>Salary</th>
-                    <th>Saved Date</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {savedJobs.length > 0 ? (
-                    savedJobs.map((item, index) => (
-                      <tr key={item.id}>
-                        <td>{(page - 1) * perPage + index + 1}</td>
-
-                        <td>{item.job?.job_title}</td>
-                        <td>{item.job?.company_name || "N/A"}</td>
-                        <td>{item.job?.location}</td>
-                        <td>₹ {item.job?.salary_range || "N/A"}</td>
-
-                        <td>
-                          {new Date(item.created_at).toLocaleDateString()}
-                        </td>
-
-                        <td>
-                          <button
-                            className="btn btn-sm btn-danger"
-                            onClick={() => handleUnsave(item.job?.id)}
-                          >
-                            Remove
-                          </button>
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan="7" className="text-center">
-                        No saved jobs found
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
-
-            {/* PAGINATION */}
-            <div className="d-flex justify-content-end mt-3 gap-2">
-              <button
-                className="btn btn-sm btn-outline-primary"
-                disabled={page === 1}
-                onClick={() => setPage(page - 1)}
-              >
-                Prev
-              </button>
-
-              <span className="align-self-center">
-                Page {page} of {totalPages}
-              </span>
-
-              <button
-                className="btn btn-sm btn-outline-primary"
-                disabled={page === totalPages}
-                onClick={() => setPage(page + 1)}
-              >
-                Next
-              </button>
-            </div>
-          </>
-        );
+        return <div className="empty-box">No saved jobs yet.</div>;
 
       case "lastViewed":
         return <div className="empty-box">No recently viewed jobs.</div>;
