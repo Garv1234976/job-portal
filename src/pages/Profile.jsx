@@ -91,41 +91,102 @@ function Profile() {
     return q.join(", ");
   };
 
-  // ✅ UPDATED: HANDLE UPDATE WITH CV
-  const handleUpdate = async () => {
-    try {
-      const formData = new FormData();
-      Object.keys(form).forEach((key) => {
-         if (key === "photo") {
+ const handleUpdate = async () => {
+  try {
+    // ======================
+    // ✅ VALIDATION
+    // ======================
+
+    if (!form.full_name) {
+      return Swal.fire("Error", "Full name is required", "error");
+    }
+
+    if (!form.phone) {
+      return Swal.fire("Error", "Phone is required", "error");
+    }
+
+    if (!form.skills || form.skills.length === 0) {
+      return Swal.fire("Error", "Select at least 1 skill", "error");
+    }
+
+    if (form.skills.length > 5) {
+      return Swal.fire("Error", "Maximum 5 skills allowed", "error");
+    }
+
+    // ✅ PHOTO VALIDATION
+    if (form.photo instanceof File) {
+      if (!form.photo.type.startsWith("image/")) {
+        return Swal.fire("Error", "Photo must be an image", "error");
+      }
+
+      if (form.photo.size > 2 * 1024 * 1024) {
+        return Swal.fire("Error", "Photo max size 2MB", "error");
+      }
+    }
+
+    // ✅ CV VALIDATION
+    if (form.cv instanceof File) {
+      const allowed = ["application/pdf", "application/msword",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"];
+
+      if (!allowed.includes(form.cv.type)) {
+        return Swal.fire("Error", "CV must be PDF/DOC/DOCX", "error");
+      }
+
+      if (form.cv.size > 2 * 1024 * 1024) {
+        return Swal.fire("Error", "CV max size 2MB", "error");
+      }
+    }
+
+    // ======================
+    // ✅ FORM DATA
+    // ======================
+    const formData = new FormData();
+
+    Object.keys(form).forEach((key) => {
+
+      // ✅ PHOTO
+      if (key === "photo") {
         if (form.photo instanceof File) {
           formData.append("photo", form.photo);
         }
       }
 
-        if (key === "cv") {
-          if (form.cv instanceof File) {
-            formData.append("cv", form.cv);
-          }
-        } else if (Array.isArray(form[key])) {
-          form[key].forEach((item, i) => {
-            formData.append(`${key}[${i}]`, item);
-          });
-        } else {
-          formData.append(key, form[key] ?? "");
+      // ✅ CV
+      else if (key === "cv") {
+        if (form.cv instanceof File) {
+          formData.append("cv", form.cv);
         }
-      });
+      }
 
-      await API.post("/update-profile", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      // ✅ ARRAY (skills, qualification)
+      else if (Array.isArray(form[key])) {
+        form[key].forEach((item, i) => {
+          formData.append(`${key}[${i}]`, item);
+        });
+      }
 
-      Swal.fire("Success", "Profile updated", "success");
-      setEditMode(false);
-      fetchProfile();
-    } catch {
-      Swal.fire("Error", "Update failed", "error");
-    }
-  };
+      // ✅ NORMAL FIELD
+      else {
+        formData.append(key, form[key] ?? "");
+      }
+    });
+
+    // ======================
+    // ✅ API CALL
+    // ======================
+    await API.post("/update-profile", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+
+    Swal.fire("Success", "Profile updated successfully", "success");
+    setEditMode(false);
+    fetchProfile();
+
+  } catch (err) {
+    Swal.fire("Error", "Update failed", "error");
+  }
+};
 
   const skillOptions = [
     { value: "PHP", label: "PHP" },
