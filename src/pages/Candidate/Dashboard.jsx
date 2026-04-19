@@ -6,9 +6,7 @@ import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 
 export default function CandidateDashboard() {
-  // ✅ DEFAULT = DASHBOARD
   const [activeTab, setActiveTab] = useState("dashboard");
-
   const [appliedJobs, setAppliedJobs] = useState([]);
 
   useEffect(() => {
@@ -30,28 +28,37 @@ export default function CandidateDashboard() {
   const renderContent = () => {
     switch (activeTab) {
 
-      // 🔥 DASHBOARD (NEW)
+      // 🔥 DASHBOARD
       case "dashboard":
         return (
           <div className="row g-4">
 
             <div className="col-md-4">
-              <div className="card shadow-sm p-4 text-center">
-                <h5 className="fw-bold">Applied Jobs</h5>
+              <div
+                className="card dashboard-box p-4 text-center"
+                onClick={() => setActiveTab("applied")}
+              >
+                <h5>Applied Jobs</h5>
                 <h2 className="text-primary">{appliedJobs.length}</h2>
               </div>
             </div>
 
             <div className="col-md-4">
-              <div className="card shadow-sm p-4 text-center">
-                <h5 className="fw-bold">Saved Jobs</h5>
+              <div
+                className="card dashboard-box p-4 text-center"
+                onClick={() => setActiveTab("saved")}
+              >
+                <h5>Saved Jobs</h5>
                 <h2 className="text-success">0</h2>
               </div>
             </div>
 
             <div className="col-md-4">
-              <div className="card shadow-sm p-4 text-center">
-                <h5 className="fw-bold">Profile Status</h5>
+              <div
+                className="card dashboard-box p-4 text-center"
+                onClick={() => setActiveTab("profile")}
+              >
+                <h5>Profile</h5>
                 <p className="text-muted">Complete your profile</p>
               </div>
             </div>
@@ -61,62 +68,72 @@ export default function CandidateDashboard() {
 
       // ✅ APPLIED JOBS
       case "applied":
-        return appliedJobs.length > 0 ? (
-          <div className="row">
-            {appliedJobs.map((item) => (
-              <div key={item.id} className="col-md-6 mb-3">
-                <div className="card shadow-sm h-100">
-                  <div className="card-body">
+        return (
+          <>
+            <h5 className="mb-3">Applied Jobs</h5>
 
-                    <h5 className="fw-bold">
-                      {item.job?.job_title}
-                    </h5>
+            {appliedJobs.length > 0 ? (
+              <div className="row g-3">
+                {appliedJobs.map((item) => (
+                  <div key={item.id} className="col-md-6">
+                    <div className="card job-card p-3">
 
-                    <p className="text-muted mb-1">
-                      📍 {item.job?.location}
-                    </p>
+                      <h6 className="fw-bold">
+                        {item.job?.job_title}
+                      </h6>
 
-                    <span
-                      className={`badge ${
-                        item.status === "pending"
-                          ? "bg-warning text-dark"
-                          : item.status === "applied"
-                          ? "bg-success"
-                          : "bg-danger"
-                      }`}
-                    >
-                      {item.status}
-                    </span>
+                      <p className="text-muted mb-1">
+                        📍 {item.job?.location}
+                      </p>
 
+                      <span
+                        className={`badge ${
+                          item.status === "pending"
+                            ? "bg-warning text-dark"
+                            : item.status === "applied"
+                            ? "bg-success"
+                            : "bg-danger"
+                        }`}
+                      >
+                        {item.status}
+                      </span>
+
+                    </div>
                   </div>
-                </div>
+                ))}
               </div>
-            ))}
-          </div>
-        ) : (
-          <p className="text-muted">No applied jobs yet.</p>
+            ) : (
+              <div className="empty-box">No applied jobs yet.</div>
+            )}
+          </>
         );
 
       case "saved":
-        return <p className="text-muted">No saved jobs.</p>;
+        return (
+          <div className="empty-box">
+            No saved jobs yet.
+          </div>
+        );
 
       case "lastViewed":
-        return <p className="text-muted">No recently viewed jobs.</p>;
+        return (
+          <div className="empty-box">
+            No recently viewed jobs.
+          </div>
+        );
 
       case "profile":
         return (
-          <div>
-            <h5 className="fw-bold mb-3">Edit Profile</h5>
-            <p className="text-muted">
-              Update your profile details here.
-            </p>
+          <div className="card p-4">
+            <h5>Edit Profile</h5>
+            <p className="text-muted">Update your profile here.</p>
           </div>
         );
 
       case "resume":
         return (
-          <div>
-            <h5 className="fw-bold mb-3">Resume</h5>
+          <div className="card p-4">
+            <h5>Resume</h5>
             <p className="text-muted">
               Upload or update your resume.
             </p>
@@ -130,13 +147,13 @@ export default function CandidateDashboard() {
 
   return (
     <>
-      {/* ✅ NAVBAR */}
+      {/* NAVBAR */}
       <Navbar />
 
       <div className="container-fluid mt-4 mb-5">
         <div className="row">
 
-          {/* ✅ SIDEBAR */}
+          {/* SIDEBAR */}
           <div className="col-md-3 col-lg-2 mb-3">
             <CandidateSidebar
               activeTab={activeTab}
@@ -144,11 +161,10 @@ export default function CandidateDashboard() {
             />
           </div>
 
-          {/* ✅ MAIN CONTENT */}
+          {/* CONTENT */}
           <div className="col-md-9 col-lg-10">
             <div className="bg-white shadow-lg rounded p-4 min-h-[500px]">
 
-              {/* HEADER */}
               <div className="mb-4">
                 <h3 className="fw-bold">Candidate Dashboard</h3>
                 <p className="text-muted">
@@ -156,7 +172,6 @@ export default function CandidateDashboard() {
                 </p>
               </div>
 
-              {/* CONTENT */}
               {renderContent()}
 
             </div>
@@ -165,8 +180,44 @@ export default function CandidateDashboard() {
         </div>
       </div>
 
-      {/* ✅ FOOTER */}
+      {/* FOOTER */}
       <Footer />
+
+      {/* ✅ STYLE */}
+      <style>
+        {`
+          .dashboard-box {
+            cursor: pointer;
+            border-radius: 12px;
+            transition: 0.3s;
+            border: 1px solid #eee;
+          }
+
+          .dashboard-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+          }
+
+          .job-card {
+            border-radius: 10px;
+            transition: 0.3s;
+            border: 1px solid #eee;
+          }
+
+          .job-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+          }
+
+          .empty-box {
+            padding: 40px;
+            text-align: center;
+            background: #f8fafc;
+            border-radius: 10px;
+            color: #6b7280;
+          }
+        `}
+      </style>
     </>
   );
 }
