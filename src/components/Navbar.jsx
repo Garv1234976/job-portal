@@ -3,6 +3,20 @@ import { useEffect, useState } from "react";
 import API from "../services/api";
 import Swal from "sweetalert2";
 
+// ✅ React Icons
+import {
+  FaHome,
+  FaInfoCircle,
+  FaList,
+  FaThLarge,
+  FaEnvelope,
+  FaUserCircle,
+  FaSignOutAlt,
+  FaTachometerAlt,
+  FaUser,
+  FaPlus
+} from "react-icons/fa";
+
 function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -41,7 +55,7 @@ function Navbar() {
     navigate("/login");
   };
 
-  // ✅ ACTIVE LINK
+  // ✅ ACTIVE CHECK
   const isActive = (path) => location.pathname === path;
 
   return (
@@ -49,10 +63,7 @@ function Navbar() {
       <div className="container">
 
         {/* LOGO */}
-        <Link
-          to="/"
-          className="navbar-brand fw-bold fs-3 text-primary"
-        >
+        <Link to="/" className="navbar-brand fw-bold fs-3 text-primary">
           JobEntry
         </Link>
 
@@ -68,35 +79,70 @@ function Navbar() {
 
         <div className="collapse navbar-collapse" id="navbarCollapse">
 
-          {/* LEFT MENU */}
           <div className="navbar-nav ms-auto align-items-lg-center gap-lg-2">
 
-            <Link to="/" className={`nav-link ${isActive("/") ? "active fw-semibold text-primary" : ""}`}>
-              Home
+            {/* HOME */}
+            <Link
+              to="/"
+              className={`nav-link d-flex align-items-center gap-2 ${
+                isActive("/") ? "active-green fw-semibold" : ""
+              }`}
+            >
+              <FaHome /> Home
             </Link>
 
-            <Link to="/about" className={`nav-link ${isActive("/about") ? "active fw-semibold text-primary" : ""}`}>
-              About
+            {/* ABOUT */}
+            <Link
+              to="/about"
+              className={`nav-link d-flex align-items-center gap-2 ${
+                isActive("/about") ? "active-green fw-semibold" : ""
+              }`}
+            >
+              <FaInfoCircle /> About
             </Link>
 
-            <Link to="/jobs" className={`nav-link ${isActive("/jobs") ? "active fw-semibold text-primary" : ""}`}>
-              Jobs
+            {/* JOBS */}
+            <Link
+              to="/jobs"
+              className={`nav-link d-flex align-items-center gap-2 ${
+                isActive("/jobs") ? "active-green fw-semibold" : ""
+              }`}
+            >
+              <FaList /> Jobs
             </Link>
 
-            <Link to="/category" className={`nav-link ${isActive("/category") ? "active fw-semibold text-primary" : ""}`}>
-              Categories
+            {/* CATEGORY */}
+            <Link
+              to="/category"
+              className={`nav-link d-flex align-items-center gap-2 ${
+                isActive("/category") ? "active-green fw-semibold" : ""
+              }`}
+            >
+              <FaThLarge /> Categories
             </Link>
 
-            <Link to="/contact" className={`nav-link ${isActive("/contact") ? "active fw-semibold text-primary" : ""}`}>
-              Contact
+            {/* CONTACT */}
+            <Link
+              to="/contact"
+              className={`nav-link d-flex align-items-center gap-2 ${
+                isActive("/contact") ? "active-green fw-semibold" : ""
+              }`}
+            >
+              <FaEnvelope /> Contact
             </Link>
 
-            {/* AUTH */}
+            {/* NOT LOGGED IN */}
             {!token && (
               <>
-                <Link to="/login" className="nav-link">Login</Link>
-                <Link to="/register/candidate" className="btn btn-outline-primary ms-2 px-3">
-                  Register
+                <Link to="/login" className="nav-link">
+                  <FaUser /> Login
+                </Link>
+
+                <Link
+                  to="/register/candidate"
+                  className="btn btn-outline-primary ms-2 px-3 d-flex align-items-center gap-2"
+                >
+                  <FaUser /> Register
                 </Link>
               </>
             )}
@@ -107,59 +153,88 @@ function Navbar() {
 
                 <a
                   href="#"
-                  className="nav-link dropdown-toggle d-flex align-items-center gap-1"
+                  className="nav-link dropdown-toggle d-flex align-items-center gap-2"
                   data-bs-toggle="dropdown"
                 >
-                  <i className="fa fa-user-circle fs-5"></i>
-                  <span>My Account</span>
+                  <FaUserCircle /> My Account
                 </a>
 
                 <div className="dropdown-menu dropdown-menu-end shadow border-0">
 
-                  {/* ROLE BASED LINKS */}
+                  {/* DASHBOARD */}
                   {role === "candidate" && (
-                    <Link to="/candidate/dashboard" className="dropdown-item">
-                      📊 Dashboard
+                    <Link
+                      to="/candidate/dashboard"
+                      className="dropdown-item d-flex align-items-center gap-2"
+                    >
+                      <FaTachometerAlt /> Dashboard
                     </Link>
                   )}
 
                   {role === "recruiter" && (
-                    <Link to="/recruiter/dashboard" className="dropdown-item">
-                      📊 Dashboard
+                    <Link
+                      to="/recruiter/dashboard"
+                      className="dropdown-item d-flex align-items-center gap-2"
+                    >
+                      <FaTachometerAlt /> Dashboard
                     </Link>
                   )}
 
-                  <Link to="/profile" className="dropdown-item">
-                    👤 Profile
+                  {/* PROFILE */}
+                  <Link
+                    to="/profile"
+                    className="dropdown-item d-flex align-items-center gap-2"
+                  >
+                    <FaUser /> Profile
                   </Link>
 
                   <div className="dropdown-divider"></div>
 
+                  {/* LOGOUT */}
                   <button
                     onClick={handleLogout}
-                    className="dropdown-item text-danger"
+                    className="dropdown-item text-danger d-flex align-items-center gap-2"
                   >
-                    🚪 Logout
+                    <FaSignOutAlt /> Logout
                   </button>
                 </div>
               </div>
             )}
-
           </div>
 
-          {/* RIGHT BUTTON */}
+          {/* POST JOB BUTTON */}
           {token && role === "recruiter" && (
             <button
               onClick={handlePostJob}
-              className="btn btn-primary ms-lg-3 px-4 fw-semibold"
+              className="btn btn-primary ms-lg-3 px-4 fw-semibold d-flex align-items-center gap-2"
               style={{ borderRadius: "30px" }}
             >
-              + Post Job
+              <FaPlus /> Post Job
             </button>
           )}
-
         </div>
       </div>
+
+      {/* ✅ STYLE */}
+      <style>
+        {`
+          .active-green {
+            color: #28a745 !important;
+          }
+
+          .nav-link {
+            transition: 0.2s;
+          }
+
+          .nav-link:hover {
+            color: #28a745 !important;
+          }
+
+          .dropdown-item:hover {
+            background: #f5f7fa;
+          }
+        `}
+      </style>
     </nav>
   );
 }
