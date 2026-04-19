@@ -6,51 +6,71 @@ import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 
 export default function CandidateDashboard() {
+
   const [activeTab, setActiveTab] = useState("dashboard");
+
   const [appliedJobs, setAppliedJobs] = useState([]);
+  const [totalApplied, setTotalApplied] = useState(0);
+
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [perPage] = useState(5);
   const [totalPages, setTotalPages] = useState(1);
 
+  // 🔥 FETCH FUNCTION
+  const fetchAppliedJobs = async () => {
+    try {
+      const res = await api.get("/applied-jobs", {
+        params: {
+          search,
+          page,
+          per_page: perPage,
+        },
+      });
+
+      setAppliedJobs(res.data.data || []);
+      setTotalPages(res.data.last_page || 1);
+      setTotalApplied(res.data.total || 0);
+
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // ✅ TAB CHANGE
   useEffect(() => {
     if (activeTab === "applied" || activeTab === "dashboard") {
       fetchAppliedJobs();
     }
   }, [activeTab]);
 
- const fetchAppliedJobs = async () => {
-  try {
-    const res = await api.get("/applied-jobs", {
-      params: {
-        search: search,
-        page: page,
-        per_page: perPage,
-      },
-    });
+  // ✅ SEARCH (LIVE WITH DEBOUNCE)
+  useEffect(() => {
+    if (activeTab === "applied") {
+      const delay = setTimeout(() => {
+        fetchAppliedJobs();
+      }, 400);
 
-    setAppliedJobs(res.data.data);
-    setTotalPages(res.data.last_page || 1);
-
-  } catch (err) {
-    console.error(err);
-  }
-};
+      return () => clearTimeout(delay);
+    }
+  }, [search, page]);
 
   // ✅ CONTENT
   const renderContent = () => {
     switch (activeTab) {
+
       // 🔥 DASHBOARD
       case "dashboard":
         return (
           <div className="row g-4">
+
             <div className="col-md-4">
               <div
                 className="card dashboard-box p-4 text-center"
                 onClick={() => setActiveTab("applied")}
               >
                 <h5>Applied Jobs</h5>
-                <h2 className="text-primary">{appliedJobs.length}</h2>
+                <h2 className="text-primary">{totalApplied}</h2>
               </div>
             </div>
 
@@ -73,10 +93,11 @@ export default function CandidateDashboard() {
                 <p className="text-muted">Complete your profile</p>
               </div>
             </div>
+
           </div>
         );
 
-      // ✅ APPLIED JOBS
+      // ✅ APPLIED JOBS TABLE
       case "applied":
         return (
           <>
@@ -99,6 +120,7 @@ export default function CandidateDashboard() {
             {/* 📋 TABLE */}
             <div className="table-responsive">
               <table className="table table-bordered align-middle">
+
                 <thead className="table-light">
                   <tr>
                     <th>#</th>
@@ -114,6 +136,7 @@ export default function CandidateDashboard() {
                   {appliedJobs.length > 0 ? (
                     appliedJobs.map((item, index) => (
                       <tr key={item.id}>
+
                         <td>{(page - 1) * perPage + index + 1}</td>
 
                         <td>{item.job?.job_title}</td>
@@ -121,15 +144,13 @@ export default function CandidateDashboard() {
                         <td>{item.job?.location}</td>
 
                         <td>
-                          <span
-                            className={`badge ${
-                              item.status === "pending"
-                                ? "bg-warning text-dark"
-                                : item.status === "applied"
-                                  ? "bg-success"
-                                  : "bg-danger"
-                            }`}
-                          >
+                          <span className={`badge ${
+                            item.status === "pending"
+                              ? "bg-warning text-dark"
+                              : item.status === "applied"
+                              ? "bg-success"
+                              : "bg-danger"
+                          }`}>
                             {item.status}
                           </span>
                         </td>
@@ -137,6 +158,7 @@ export default function CandidateDashboard() {
                         <td>
                           {new Date(item.created_at).toLocaleDateString()}
                         </td>
+
                       </tr>
                     ))
                   ) : (
@@ -147,11 +169,13 @@ export default function CandidateDashboard() {
                     </tr>
                   )}
                 </tbody>
+
               </table>
             </div>
 
             {/* 📄 PAGINATION */}
             <div className="d-flex justify-content-end mt-3 gap-2">
+
               <button
                 className="btn btn-sm btn-outline-primary"
                 disabled={page === 1}
@@ -171,6 +195,7 @@ export default function CandidateDashboard() {
               >
                 Next
               </button>
+
             </div>
           </>
         );
@@ -204,12 +229,11 @@ export default function CandidateDashboard() {
 
   return (
     <>
-      {/* NAVBAR */}
       <Navbar />
 
       <div className="container-fluid mt-4 mb-5">
         <div className="row">
-          {/* SIDEBAR */}
+
           <div className="col-md-3 col-lg-2 mb-3">
             <CandidateSidebar
               activeTab={activeTab}
@@ -217,9 +241,9 @@ export default function CandidateDashboard() {
             />
           </div>
 
-          {/* CONTENT */}
           <div className="col-md-9 col-lg-10">
             <div className="bg-white shadow-lg rounded p-4 min-h-[500px]">
+
               <div className="mb-4">
                 <h3 className="fw-bold">Candidate Dashboard</h3>
                 <p className="text-muted">
@@ -228,12 +252,13 @@ export default function CandidateDashboard() {
               </div>
 
               {renderContent()}
+
             </div>
           </div>
+
         </div>
       </div>
 
-      {/* FOOTER */}
       <Footer />
 
       {/* ✅ STYLE */}
@@ -249,17 +274,6 @@ export default function CandidateDashboard() {
           .dashboard-box:hover {
             transform: translateY(-5px);
             box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-          }
-
-          .job-card {
-            border-radius: 10px;
-            transition: 0.3s;
-            border: 1px solid #eee;
-          }
-
-          .job-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
           }
 
           .empty-box {
