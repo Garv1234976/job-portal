@@ -88,7 +88,7 @@ function JobCard({ job }) {
   return (
     <div
       className="p-3 mb-3 border rounded shadow-sm bg-white job-card"
-      onClick={() => navigate(`/job/${job.id}`)} // ✅ CLICK CARD → DETAIL
+      onClick={() => navigate(`/job/${job.id}`)} 
       style={{ cursor: "pointer" }}
     >
       <div className="d-flex justify-content-between align-items-start">

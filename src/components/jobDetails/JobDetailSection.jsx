@@ -49,7 +49,7 @@ function JobDetailSection() {
                 className="img-fluid border rounded"
                 src={
                   job.logo
-                    ? `https://server.budes.online/public/${job.logo}`
+                    ? `https://server.budes.online//public/storage/${job.logo}`
                     : "/assets/img/default.png"
                 }
                 style={{ width: 80, height: 80 }}
