@@ -11,8 +11,11 @@ export default function CandidateDashboard() {
 
   const [totalApplied, setTotalApplied] = useState(0);
   const [totalSaved, setTotalSaved] = useState(0);
+  const [profile, setProfile] = useState({});
+  const [completion, setCompletion] = useState(0);
+  const [missingFields, setMissingFields] = useState([]);
 
-  // 🔥 FETCH COUNTS ONLY
+  // ✅ FETCH COUNTS
   const fetchCounts = async () => {
     try {
       const applied = await api.get("/applied-jobs");
@@ -25,8 +28,51 @@ export default function CandidateDashboard() {
     }
   };
 
+  // ✅ FETCH PROFILE
+  const fetchProfile = async () => {
+    try {
+      const res = await api.get("/profile");
+      const data = res.data.data || {};
+      setProfile(data);
+
+      calculateProfileCompletion(data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // ✅ PROFILE COMPLETION LOGIC
+  const calculateProfileCompletion = (data) => {
+    const fields = [
+      { key: "full_name", label: "Full Name" },
+      { key: "phone", label: "Phone" },
+      { key: "dob", label: "Date of Birth" },
+      { key: "skills", label: "Skills" },
+      { key: "qualification", label: "Qualification" },
+      { key: "photo", label: "Profile Photo" },
+      { key: "cv", label: "Resume" },
+    ];
+
+    let filled = 0;
+    let missing = [];
+
+    fields.forEach((field) => {
+      if (data[field.key]) {
+        filled++;
+      } else {
+        missing.push(field.label);
+      }
+    });
+
+    const percent = Math.round((filled / fields.length) * 100);
+
+    setCompletion(percent);
+    setMissingFields(missing);
+  };
+
   useEffect(() => {
     fetchCounts();
+    fetchProfile();
   }, []);
 
   return (
@@ -53,22 +99,29 @@ export default function CandidateDashboard() {
                 </p>
               </div>
 
-              {/* DASHBOARD CONTENT */}
               <div className="row g-4">
 
                 {/* PROFILE CARD */}
                 <div className="col-md-4">
                   <div className="card shadow-sm p-4 text-center h-100">
+
                     <img
-                      src="/assets/img/default.png"
+                      src={
+                        profile.photo
+                          ? `https://server.budes.online/public/${profile.photo}`
+                          : "/assets/img/default.png"
+                      }
                       className="rounded-circle mb-3"
                       style={{ width: 80, height: 80, objectFit: "cover" }}
                       alt=""
                     />
 
-                    <h5 className="fw-bold">Welcome 👋</h5>
+                    <h5 className="fw-bold">
+                      {profile.full_name || "Your Name"}
+                    </h5>
+
                     <p className="text-muted mb-2">
-                      Manage your profile & resume
+                      {profile.job_profile || "Add your job profile"}
                     </p>
 
                     <button
@@ -104,29 +157,37 @@ export default function CandidateDashboard() {
                   </div>
                 </div>
 
-                {/* PROFILE STATUS */}
+                {/* PROFILE COMPLETION */}
                 <div className="col-md-6">
-                  <div className="card shadow-sm p-4">
+                  <div className="card shadow-sm p-4 h-100">
                     <h6 className="fw-bold mb-3">Profile Completion</h6>
 
-                    <div className="progress mb-2">
+                    <div className="progress mb-2" style={{ height: "10px" }}>
                       <div
-                        className="progress-bar bg-success"
-                        style={{ width: "70%" }}
-                      >
-                        70%
-                      </div>
+                        className={`progress-bar ${
+                          completion < 50
+                            ? "bg-danger"
+                            : completion < 80
+                            ? "bg-warning"
+                            : "bg-success"
+                        }`}
+                        style={{ width: `${completion}%` }}
+                      ></div>
                     </div>
 
-                    <small className="text-muted">
-                      Complete your profile to get better job matches
-                    </small>
+                    <p className="mb-2 fw-semibold">{completion}% Completed</p>
+
+                    {missingFields.length > 0 && (
+                      <small className="text-muted">
+                        Missing: {missingFields.join(", ")}
+                      </small>
+                    )}
                   </div>
                 </div>
 
                 {/* QUICK ACTIONS */}
                 <div className="col-md-6">
-                  <div className="card shadow-sm p-4">
+                  <div className="card shadow-sm p-4 h-100">
                     <h6 className="fw-bold mb-3">Quick Actions</h6>
 
                     <button
@@ -138,7 +199,7 @@ export default function CandidateDashboard() {
 
                     <button
                       className="btn btn-outline-success w-100"
-                      onClick={() => navigate("/profile")}
+                      onClick={() => navigate("/resume")}
                     >
                       Update Resume
                     </button>
