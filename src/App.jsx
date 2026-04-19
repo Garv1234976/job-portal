@@ -23,6 +23,12 @@ import GuestRoute from "./components/GuestRoute";
 import CandidateDashboard from "./pages/Candidate/Dashboard";
 import CandidateProfile from "./pages/Candidate/Profile";
 
+// ✅ NEW (for sidebar pages)
+import AppliedJobs from "./pages/Candidate/AppliedJobs";
+import SavedJobs from "./pages/Candidate/SavedJobs";
+import LastViewed from "./pages/Candidate/LastViewed";
+import Resume from "./pages/Candidate/Resume";
+
 // Recruiter
 import RecruiterDashboard from "./pages/Recruiter/Dashboard";
 import Plans from "./pages/Recruiter/Plans";
@@ -36,6 +42,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+
         {/* ================= PUBLIC ROUTES ================= */}
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
@@ -75,6 +82,8 @@ function App() {
         />
 
         {/* ================= CANDIDATE ROUTES ================= */}
+
+        {/* DASHBOARD */}
         <Route
           path="/candidate/dashboard"
           element={
@@ -84,6 +93,7 @@ function App() {
           }
         />
 
+        {/* PROFILE */}
         <Route
           path="/profile"
           element={
@@ -92,7 +102,6 @@ function App() {
             </ProtectedRoute>
           }
         />
-
 
         <Route
           path="/candidate/profile"
@@ -103,7 +112,46 @@ function App() {
           }
         />
 
+        {/* ✅ NEW SIDEBAR ROUTES */}
+
+        <Route
+          path="/candidate/applied"
+          element={
+            <ProtectedRoute roleRequired="candidate">
+              <AppliedJobs />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/candidate/saved"
+          element={
+            <ProtectedRoute roleRequired="candidate">
+              <SavedJobs />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/candidate/last-viewed"
+          element={
+            <ProtectedRoute roleRequired="candidate">
+              <LastViewed />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/candidate/resume"
+          element={
+            <ProtectedRoute roleRequired="candidate">
+              <Resume />
+            </ProtectedRoute>
+          }
+        />
+
         {/* ================= RECRUITER ROUTES ================= */}
+
         <Route
           path="/recruiter/dashboard"
           element={
@@ -157,6 +205,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+
         <Route
           path="/recruiter/closed-jobs"
           element={
@@ -165,6 +214,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+
       </Routes>
     </BrowserRouter>
   );
