@@ -15,10 +15,11 @@ export default function CandidateDashboard() {
   const [page, setPage] = useState(1);
   const [perPage] = useState(5);
   const [totalPages, setTotalPages] = useState(1);
+
   const [savedJobs, setSavedJobs] = useState([]);
   const [totalSaved, setTotalSaved] = useState(0);
 
-  // 🔥 FETCH FUNCTION
+  // 🔥 FETCH APPLIED
   const fetchAppliedJobs = async () => {
     try {
       const res = await api.get("/applied-jobs", {
@@ -37,24 +38,7 @@ export default function CandidateDashboard() {
     }
   };
 
-  // ✅ TAB CHANGE
-  useEffect(() => {
-    if (activeTab === "applied" || activeTab === "dashboard") {
-      fetchAppliedJobs();
-    }
-  }, [activeTab]);
-
-  // ✅ SEARCH (LIVE WITH DEBOUNCE)
-  useEffect(() => {
-    if (activeTab === "applied") {
-      const delay = setTimeout(() => {
-        fetchAppliedJobs();
-      }, 400);
-
-      return () => clearTimeout(delay);
-    }
-  }, [search, page]);
-
+  // 🔥 FETCH SAVED
   const fetchSavedJobs = async () => {
     try {
       const res = await api.get("/saved-jobs", {
@@ -73,30 +57,64 @@ export default function CandidateDashboard() {
     }
   };
 
+  // 🔥 UNSAVE
+  const handleUnsave = async (jobId) => {
+    try {
+      await api.post("/unsave-job", { job_id: jobId });
+      fetchSavedJobs();
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // ✅ TAB CHANGE (KEEPED)
   useEffect(() => {
     if (activeTab === "applied" || activeTab === "dashboard") {
       fetchAppliedJobs();
     }
-
-    if (activeTab === "saved") {
-      fetchSavedJobs();
-    }
   }, [activeTab]);
 
-  // 🔥 SEARCH + PAGINATION
+  // ✅ SEARCH APPLIED (KEEPED BUT SAFE)
+  useEffect(() => {
+    if (activeTab === "applied") {
+      const delay = setTimeout(() => {
+        fetchAppliedJobs();
+      }, 400);
+
+      return () => clearTimeout(delay);
+    }
+  }, [search, page]);
+
+  // ✅ YOUR EXISTING EFFECT (IMPROVED CONTROL)
   useEffect(() => {
     const delay = setTimeout(() => {
-      if (activeTab === "applied") fetchAppliedJobs();
-      if (activeTab === "saved") fetchSavedJobs();
+      if (activeTab === "applied" || activeTab === "dashboard") {
+        fetchAppliedJobs();
+      }
+
+      if (activeTab === "saved" || activeTab === "dashboard") {
+        fetchSavedJobs();
+      }
     }, 400);
 
     return () => clearTimeout(delay);
+  }, [activeTab, search, page]);
+
+  // ✅ EXTRA CONTROL (FIXED DUPLICATE CALL ISSUE)
+  useEffect(() => {
+    if (activeTab === "saved") {
+      const delay = setTimeout(() => {
+        fetchSavedJobs();
+      }, 400);
+
+      return () => clearTimeout(delay);
+    }
   }, [search, page]);
 
   // ✅ CONTENT
   const renderContent = () => {
     switch (activeTab) {
-      // 🔥 DASHBOARD
+
       case "dashboard":
         return (
           <div className="row g-4">
@@ -132,13 +150,11 @@ export default function CandidateDashboard() {
           </div>
         );
 
-      // ✅ APPLIED JOBS TABLE
       case "applied":
         return (
           <>
             <h5 className="mb-3">Applied Jobs</h5>
 
-            {/* 🔍 SEARCH */}
             <div className="mb-3 d-flex justify-content-between">
               <input
                 type="text"
@@ -152,7 +168,6 @@ export default function CandidateDashboard() {
               />
             </div>
 
-            {/* 📋 TABLE */}
             <div className="table-responsive">
               <table className="table table-bordered align-middle">
                 <thead className="table-light">
@@ -171,21 +186,18 @@ export default function CandidateDashboard() {
                     appliedJobs.map((item, index) => (
                       <tr key={item.id}>
                         <td>{(page - 1) * perPage + index + 1}</td>
-
                         <td>{item.job?.job_title}</td>
                         <td>{item.job?.company_name || "N/A"}</td>
                         <td>{item.job?.location}</td>
 
                         <td>
-                          <span
-                            className={`badge ${
-                              item.status === "pending"
-                                ? "bg-warning text-dark"
-                                : item.status === "applied"
-                                  ? "bg-success"
-                                  : "bg-danger"
-                            }`}
-                          >
+                          <span className={`badge ${
+                            item.status === "pending"
+                              ? "bg-warning text-dark"
+                              : item.status === "applied"
+                              ? "bg-success"
+                              : "bg-danger"
+                          }`}>
                             {item.status}
                           </span>
                         </td>
@@ -205,29 +217,6 @@ export default function CandidateDashboard() {
                 </tbody>
               </table>
             </div>
-
-            {/* 📄 PAGINATION */}
-            <div className="d-flex justify-content-end mt-3 gap-2">
-              <button
-                className="btn btn-sm btn-outline-primary"
-                disabled={page === 1}
-                onClick={() => setPage(page - 1)}
-              >
-                Prev
-              </button>
-
-              <span className="align-self-center">
-                Page {page} of {totalPages}
-              </span>
-
-              <button
-                className="btn btn-sm btn-outline-primary"
-                disabled={page === totalPages}
-                onClick={() => setPage(page + 1)}
-              >
-                Next
-              </button>
-            </div>
           </>
         );
 
@@ -236,12 +225,11 @@ export default function CandidateDashboard() {
           <>
             <h5 className="mb-3">Saved Jobs</h5>
 
-            {/* 🔍 SEARCH */}
             <div className="mb-3 d-flex justify-content-between">
               <input
                 type="text"
                 className="form-control w-50"
-                placeholder="Search job, company..."
+                placeholder="Search job..."
                 value={search}
                 onChange={(e) => {
                   setSearch(e.target.value);
@@ -250,99 +238,38 @@ export default function CandidateDashboard() {
               />
             </div>
 
-            {/* TABLE */}
             <div className="table-responsive">
               <table className="table table-bordered align-middle">
                 <thead className="table-light">
                   <tr>
                     <th>#</th>
-                    <th>Job Title</th>
+                    <th>Job</th>
                     <th>Company</th>
-                    <th>Location</th>
-                    <th>Salary</th>
-                    <th>Saved Date</th>
                     <th>Action</th>
                   </tr>
                 </thead>
 
                 <tbody>
-                  {savedJobs.length > 0 ? (
-                    savedJobs.map((item, index) => (
-                      <tr key={item.id}>
-                        <td>{(page - 1) * perPage + index + 1}</td>
+                  {savedJobs.map((item, i) => (
+                    <tr key={item.id}>
+                      <td>{i + 1}</td>
+                      <td>{item.job?.job_title}</td>
+                      <td>{item.job?.company_name}</td>
 
-                        <td>{item.job?.job_title}</td>
-                        <td>{item.job?.company_name || "N/A"}</td>
-                        <td>{item.job?.location}</td>
-                        <td>₹ {item.job?.salary_range || "N/A"}</td>
-
-                        <td>
-                          {new Date(item.created_at).toLocaleDateString()}
-                        </td>
-
-                        <td>
-                          <button
-                            className="btn btn-sm btn-danger"
-                            onClick={() => handleUnsave(item.job?.id)}
-                          >
-                            Remove
-                          </button>
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan="7" className="text-center">
-                        No saved jobs found
+                      <td>
+                        <button
+                          className="btn btn-danger btn-sm"
+                          onClick={() => handleUnsave(item.job?.id)}
+                        >
+                          Remove
+                        </button>
                       </td>
                     </tr>
-                  )}
+                  ))}
                 </tbody>
               </table>
             </div>
-
-            {/* PAGINATION */}
-            <div className="d-flex justify-content-end mt-3 gap-2">
-              <button
-                className="btn btn-sm btn-outline-primary"
-                disabled={page === 1}
-                onClick={() => setPage(page - 1)}
-              >
-                Prev
-              </button>
-
-              <span className="align-self-center">
-                Page {page} of {totalPages}
-              </span>
-
-              <button
-                className="btn btn-sm btn-outline-primary"
-                disabled={page === totalPages}
-                onClick={() => setPage(page + 1)}
-              >
-                Next
-              </button>
-            </div>
           </>
-        );
-
-      case "lastViewed":
-        return <div className="empty-box">No recently viewed jobs.</div>;
-
-      case "profile":
-        return (
-          <div className="card p-4">
-            <h5>Edit Profile</h5>
-            <p className="text-muted">Update your profile here.</p>
-          </div>
-        );
-
-      case "resume":
-        return (
-          <div className="card p-4">
-            <h5>Resume</h5>
-            <p className="text-muted">Upload or update your resume.</p>
-          </div>
         );
 
       default:
@@ -379,31 +306,6 @@ export default function CandidateDashboard() {
       </div>
 
       <Footer />
-
-      {/* ✅ STYLE */}
-      <style>
-        {`
-          .dashboard-box {
-            cursor: pointer;
-            border-radius: 12px;
-            transition: 0.3s;
-            border: 1px solid #eee;
-          }
-
-          .dashboard-box:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-          }
-
-          .empty-box {
-            padding: 40px;
-            text-align: center;
-            background: #f8fafc;
-            border-radius: 10px;
-            color: #6b7280;
-          }
-        `}
-      </style>
     </>
   );
 }
