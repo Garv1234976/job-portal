@@ -99,7 +99,7 @@ function Profile() {
       // REQUIRED
       if (!form.full_name) newErrors.full_name = "Full name is required";
       if (!form.phone) newErrors.phone = "Phone is required";
-
+      if (!form.preferred_location) newErrors.preferred_location = "location is required";
       if (!form.skills || form.skills.length === 0)
         newErrors.skills = "Select at least 1 skill";
 
@@ -252,7 +252,7 @@ function Profile() {
                 <div className="col-md-6">
                   <label className="form-label fw-semibold">
                     <FaMapMarkerAlt className="me-2 text-primary" />
-                    Location
+                    Location<span className="text-danger">*</span>
                   </label>
 
                   {editMode ? (
@@ -268,13 +268,16 @@ function Profile() {
                       {user.preferred_location || "Add location"}
                     </div>
                   )}
+                    {errors.preferred_location && (
+                    <small className="text-danger">{errors.preferred_location}</small>
+                  )}
                 </div>
 
                 {/* PHONE */}
                 <div className="col-md-6">
                   <label className="form-label fw-semibold">
                     <FaPhone className="me-2 text-success" />
-                    Phone
+                    Phone<span className="text-danger">*</span>
                   </label>
 
                   {editMode ? (
