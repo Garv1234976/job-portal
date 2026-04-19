@@ -65,23 +65,9 @@ function Navbar() {
             About
           </Link>
 
-          <div className="nav-item dropdown">
-            <a
-              href="#"
-              className="nav-link dropdown-toggle"
-              data-bs-toggle="dropdown"
-            >
-              Jobs
-            </a>
-            <div className="dropdown-menu rounded-0 m-0">
-              <Link to="/jobs" className="dropdown-item">
-                Job List
-              </Link>
-              <Link to="/job-detail" className="dropdown-item">
-                Job Detail
-              </Link>
-            </div>
-          </div>
+          <Link to="/jobs" className="dropdown-item">
+            Job List
+          </Link>
 
           <Link to="/category" className="nav-item nav-link">
             Job Category
@@ -115,10 +101,6 @@ function Navbar() {
                 <Link to="/profile" className="dropdown-item">
                   👤 Profile
                 </Link>
-
-                {/* <Link to="/saved-jobs" className="dropdown-item">
-                  🔖 Saved Jobs
-                </Link> */}
 
                 <div className="dropdown-divider"></div>
 
