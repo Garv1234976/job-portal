@@ -64,8 +64,7 @@ function Navbar() {
           <Link to="/about" className="nav-item nav-link">
             About
           </Link>
-
-          <Link to="/jobs" className="dropdown-item">
+          <Link to="/jobs" className="nav-item nav-link">
             Job List
           </Link>
 
