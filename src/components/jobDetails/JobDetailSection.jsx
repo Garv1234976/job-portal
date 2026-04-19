@@ -9,13 +9,23 @@ import {
   FaUserTie,
   FaCalendarAlt,
   FaBuilding,
-  FaFileUpload,
 } from "react-icons/fa";
 
 function JobDetailSection() {
   const { id } = useParams();
+
   const [job, setJob] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    portfolio: "",
+    cover_letter: ""
+  });
+
+  const [errors, setErrors] = useState({});
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     fetchJob();
@@ -32,6 +42,58 @@ function JobDetailSection() {
     }
   };
 
+  const handleChange = (e) => {
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value
+    });
+
+    setErrors({
+      ...errors,
+      [e.target.name]: ""
+    });
+  };
+
+  const handleApply = async (e) => {
+    e.preventDefault();
+
+    let newErrors = {};
+
+    if (!form.name) newErrors.name = "Name is required";
+    if (!form.email) newErrors.email = "Email is required";
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
+    setSubmitting(true);
+
+    try {
+      const res = await api.post("/apply-job", {
+        job_id: job.id,
+        ...form
+      });
+
+      alert(res.data.message);
+      setForm({
+        name: "",
+        email: "",
+        portfolio: "",
+        cover_letter: ""
+      });
+
+    } catch (err) {
+      if (err.response?.status === 422) {
+        setErrors(err.response.data.errors || {});
+      } else {
+        alert(err.response?.data?.message || "Error");
+      }
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   if (loading) return <p className="text-center">Loading...</p>;
   if (!job) return <p className="text-center">Job not found</p>;
 
@@ -40,147 +102,103 @@ function JobDetailSection() {
       <div className="container">
         <div className="row gy-5 gx-4">
 
-          {/* LEFT SIDE */}
+          {/* LEFT */}
           <div className="col-lg-8">
 
-            {/* HEADER */}
             <div className="d-flex align-items-center mb-5">
               <img
-                className="img-fluid border rounded"
                 src={
                   job.logo
-                    ? `https://server.budes.online//public/storage/${job.logo}`
+                    ? `https://server.budes.online/public/storage/${job.logo}`
                     : "/assets/img/default.png"
                 }
                 style={{ width: 80, height: 80 }}
-                alt="logo"
+                alt=""
+                className="border rounded"
               />
 
               <div className="ps-4">
                 <h3>{job.job_title}</h3>
 
                 <span className="me-3">
-                  <FaMapMarkerAlt className="text-primary me-2" />
+                  <FaMapMarkerAlt className="me-2 text-primary" />
                   {job.location}
                 </span>
 
                 <span className="me-3">
-                  <FaClock className="text-primary me-2" />
+                  <FaClock className="me-2 text-primary" />
                   {job.employment_type}
                 </span>
 
                 <span>
-                  <FaMoneyBillAlt className="text-primary me-2" />
+                  <FaMoneyBillAlt className="me-2 text-primary" />
                   ₹ {job.salary_range}
                 </span>
               </div>
-            </div>
-
-            {/* DESCRIPTION */}
-            <div className="mb-5">
-              <h4 className="mb-3">Job Description</h4>
-              <p>{job.job_description}</p>
             </div>
 
             {/* APPLY FORM */}
             <div>
               <h4 className="mb-4">Apply For The Job</h4>
 
-              <form>
+              <form onSubmit={handleApply}>
                 <div className="row g-3">
 
-                  <div className="col-12 col-sm-6">
+                  <div className="col-6">
                     <input
+                      name="name"
                       className="form-control"
-                      placeholder="Your Name"
+                      placeholder="Name *"
+                      value={form.name}
+                      onChange={handleChange}
                     />
+                    {errors.name && <small className="text-danger">{errors.name}</small>}
                   </div>
 
-                  <div className="col-12 col-sm-6">
+                  <div className="col-6">
                     <input
-                      type="email"
+                      name="email"
                       className="form-control"
-                      placeholder="Your Email"
+                      placeholder="Email *"
+                      value={form.email}
+                      onChange={handleChange}
                     />
+                    {errors.email && <small className="text-danger">{errors.email}</small>}
                   </div>
 
-                  <div className="col-12 col-sm-6">
+                  <div className="col-6">
                     <input
+                      name="portfolio"
                       className="form-control"
-                      placeholder="Portfolio Website"
+                      placeholder="Portfolio"
+                      value={form.portfolio}
+                      onChange={handleChange}
                     />
-                  </div>
-
-                  <div className="col-12 col-sm-6">
-                    <div className="input-group">
-                      <span className="input-group-text">
-                        <FaFileUpload />
-                      </span>
-                      <input type="file" className="form-control bg-white" />
-                    </div>
                   </div>
 
                   <div className="col-12">
                     <textarea
+                      name="cover_letter"
                       className="form-control"
-                      rows="5"
+                      rows="4"
                       placeholder="Cover Letter"
-                    ></textarea>
+                      value={form.cover_letter}
+                      onChange={handleChange}
+                    />
                   </div>
 
                   <div className="col-12">
-                    <button className="btn btn-primary w-100">
-                      Apply Now
+                    <button
+                      type="submit"
+                      className="btn btn-primary w-100"
+                      disabled={submitting}
+                    >
+                      {submitting ? "Applying..." : "Apply Now"}
                     </button>
                   </div>
 
                 </div>
               </form>
-            </div>
-
-          </div>
-
-          {/* RIGHT SIDE */}
-          <div className="col-lg-4">
-
-            {/* JOB SUMMARY */}
-            <div className="bg-light rounded p-4 mb-4">
-              <h4 className="mb-4">Job Summary</h4>
-
-              <p>
-                <FaCalendarAlt className="text-primary me-2" />
-                Posted: {job.created_at}
-              </p>
-
-              <p>
-                <FaUserTie className="text-primary me-2" />
-                Vacancy: {job.vacancy || "N/A"}
-              </p>
-
-              <p>
-                <FaClock className="text-primary me-2" />
-                Job Type: {job.employment_type}
-              </p>
-
-              <p>
-                <FaMoneyBillAlt className="text-primary me-2" />
-                Salary: ₹ {job.salary_range}
-              </p>
-
-              <p>
-                <FaMapMarkerAlt className="text-primary me-2" />
-                Location: {job.location}
-              </p>
-            </div>
-
-            {/* COMPANY */}
-            <div className="bg-light rounded p-4">
-              <h4 className="mb-4">
-                <FaBuilding className="me-2 text-primary" />
-                Company Detail
-              </h4>
-
-              <p>{job.company_name || "No company info available"}</p>
             </div>
 
           </div>
