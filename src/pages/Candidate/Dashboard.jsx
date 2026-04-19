@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import api from "../../services/api";
 
 // ✅ Components
-import CandidateSidebar from "../../components/dashboard/CandidateSidebar";
+import CandidateSidebar from "../../components/candidate/CandidateSidebar";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 
