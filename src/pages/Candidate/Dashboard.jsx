@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import api from "../../services/api";
 
-// ✅ Components
-import CandidateSidebar from "../../components/candidate/CandidateSidebar";
+import CandidateSidebar from "../../components/dashboard/CandidateSidebar";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 
@@ -10,7 +9,6 @@ export default function CandidateDashboard() {
   const [activeTab, setActiveTab] = useState("applied");
   const [appliedJobs, setAppliedJobs] = useState([]);
 
-  // 🔥 FETCH APPLIED JOBS
   useEffect(() => {
     if (activeTab === "applied") {
       fetchAppliedJobs();
@@ -27,7 +25,6 @@ export default function CandidateDashboard() {
     }
   };
 
-  // ✅ CONTENT
   const renderContent = () => {
     switch (activeTab) {
       case "applied":
@@ -42,7 +39,7 @@ export default function CandidateDashboard() {
                     </h5>
 
                     <p className="text-muted mb-1">
-                      📍 {item.job?.location}
+                       {item.job?.location}
                     </p>
 
                     <span
