@@ -14,7 +14,7 @@ import {
   FaSignOutAlt,
   FaTachometerAlt,
   FaUser,
-  FaPlus
+  FaPlus,
 } from "react-icons/fa";
 
 function Navbar() {
@@ -61,7 +61,6 @@ function Navbar() {
   return (
     <nav className="navbar navbar-expand-lg bg-white shadow-sm sticky-top py-2">
       <div className="container">
-
         {/* LOGO */}
         <Link to="/" className="navbar-brand fw-bold fs-3 text-primary">
           JobEntry
@@ -78,9 +77,7 @@ function Navbar() {
         </button>
 
         <div className="collapse navbar-collapse" id="navbarCollapse">
-
           <div className="navbar-nav ms-auto align-items-lg-center gap-lg-2">
-
             {/* HOME */}
             <Link
               to="/"
@@ -88,7 +85,7 @@ function Navbar() {
                 isActive("/") ? "active-green fw-semibold" : ""
               }`}
             >
-              <FaHome /> Home
+              Home
             </Link>
 
             {/* ABOUT */}
@@ -98,7 +95,7 @@ function Navbar() {
                 isActive("/about") ? "active-green fw-semibold" : ""
               }`}
             >
-              <FaInfoCircle /> About
+              About
             </Link>
 
             {/* JOBS */}
@@ -108,7 +105,7 @@ function Navbar() {
                 isActive("/jobs") ? "active-green fw-semibold" : ""
               }`}
             >
-              <FaList /> Jobs
+              Jobs
             </Link>
 
             {/* CATEGORY */}
@@ -118,7 +115,7 @@ function Navbar() {
                 isActive("/category") ? "active-green fw-semibold" : ""
               }`}
             >
-              <FaThLarge /> Categories
+              Categories
             </Link>
 
             {/* CONTACT */}
@@ -128,21 +125,24 @@ function Navbar() {
                 isActive("/contact") ? "active-green fw-semibold" : ""
               }`}
             >
-              <FaEnvelope /> Contact
+              Contact
             </Link>
 
             {/* NOT LOGGED IN */}
             {!token && (
               <>
-                <Link to="/login" className="nav-link">
-                  <FaUser /> Login
+                <Link
+                  to="/login"
+                  className="nav-link d-flex align-items-center gap-2"
+                >
+                  Login
                 </Link>
 
                 <Link
                   to="/register/candidate"
                   className="btn btn-outline-primary ms-2 px-3 d-flex align-items-center gap-2"
                 >
-                  <FaUser /> Register
+                  Register
                 </Link>
               </>
             )}
@@ -150,7 +150,6 @@ function Navbar() {
             {/* USER DROPDOWN */}
             {token && (
               <div className="nav-item dropdown ms-lg-3">
-
                 <a
                   href="#"
                   className="nav-link dropdown-toggle d-flex align-items-center gap-2"
@@ -160,7 +159,6 @@ function Navbar() {
                 </a>
 
                 <div className="dropdown-menu dropdown-menu-end shadow border-0">
-
                   {/* DASHBOARD */}
                   {role === "candidate" && (
                     <Link
@@ -218,20 +216,32 @@ function Navbar() {
       {/* ✅ STYLE */}
       <style>
         {`
-          .active-green {
-            color: #28a745 !important;
-          }
-
+          /* DEFAULT BLACK TEXT */
           .nav-link {
+            color: #000 !important;
             transition: 0.2s;
           }
 
-          .nav-link:hover {
+          /* ACTIVE GREEN ONLY */
+          .active-green {
             color: #28a745 !important;
+            font-weight: 600;
+          }
+
+          /* HOVER (SUBTLE ONLY) */
+          .nav-link:hover {
+            color: #000 !important;
+            opacity: 0.7;
+          }
+
+          /* DROPDOWN */
+          .dropdown-item {
+            color: #000;
           }
 
           .dropdown-item:hover {
             background: #f5f7fa;
+            color: #000;
           }
         `}
       </style>
