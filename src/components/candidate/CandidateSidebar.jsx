@@ -3,18 +3,22 @@ import {
   FaBookmark,
   FaHistory,
   FaUser,
-  FaFileAlt
+  FaFileAlt,
+  FaHome
 } from "react-icons/fa";
 
 export default function CandidateSidebar({ activeTab, setActiveTab }) {
 
-  const tabs = [
-    { id: "applied", label: "Applied Jobs", icon: <FaBriefcase /> },
-    { id: "saved", label: "Saved Jobs", icon: <FaBookmark /> },
-    { id: "lastViewed", label: "Last Viewed", icon: <FaHistory /> },
-    { id: "profile", label: "Edit Profile", icon: <FaUser /> },
-    { id: "resume", label: "Resume", icon: <FaFileAlt /> },
-  ];
+ const menu = [
+  { id: "dashboard", name: "Dashboard", icon: <FaHome /> },
+
+  { id: "applied", name: "Applied Jobs", icon: <FaBriefcase /> },
+  { id: "saved", name: "Saved Jobs", icon: <FaBookmark /> },
+  { id: "lastViewed", name: "Last Viewed", icon: <FaHistory /> },
+
+  { id: "profile", name: "Edit Profile", icon: <FaUser /> },
+  { id: "resume", name: "Resume", icon: <FaFileAlt /> },
+];
 
   return (
     <div className="bg-white shadow-sm rounded p-3 h-100">

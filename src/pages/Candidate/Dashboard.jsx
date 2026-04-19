@@ -6,11 +6,13 @@ import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 
 export default function CandidateDashboard() {
-  const [activeTab, setActiveTab] = useState("applied");
+  // ✅ DEFAULT = DASHBOARD
+  const [activeTab, setActiveTab] = useState("dashboard");
+
   const [appliedJobs, setAppliedJobs] = useState([]);
 
   useEffect(() => {
-    if (activeTab === "applied") {
+    if (activeTab === "applied" || activeTab === "dashboard") {
       fetchAppliedJobs();
     }
   }, [activeTab]);
@@ -18,15 +20,46 @@ export default function CandidateDashboard() {
   const fetchAppliedJobs = async () => {
     try {
       const res = await api.get("/applied-jobs");
-      console.log("ddddddddd", res.data.data);
       setAppliedJobs(res.data.data || []);
     } catch (err) {
       console.error(err);
     }
   };
 
+  // ✅ CONTENT
   const renderContent = () => {
     switch (activeTab) {
+
+      // 🔥 DASHBOARD (NEW)
+      case "dashboard":
+        return (
+          <div className="row g-4">
+
+            <div className="col-md-4">
+              <div className="card shadow-sm p-4 text-center">
+                <h5 className="fw-bold">Applied Jobs</h5>
+                <h2 className="text-primary">{appliedJobs.length}</h2>
+              </div>
+            </div>
+
+            <div className="col-md-4">
+              <div className="card shadow-sm p-4 text-center">
+                <h5 className="fw-bold">Saved Jobs</h5>
+                <h2 className="text-success">0</h2>
+              </div>
+            </div>
+
+            <div className="col-md-4">
+              <div className="card shadow-sm p-4 text-center">
+                <h5 className="fw-bold">Profile Status</h5>
+                <p className="text-muted">Complete your profile</p>
+              </div>
+            </div>
+
+          </div>
+        );
+
+      // ✅ APPLIED JOBS
       case "applied":
         return appliedJobs.length > 0 ? (
           <div className="row">
@@ -34,12 +67,13 @@ export default function CandidateDashboard() {
               <div key={item.id} className="col-md-6 mb-3">
                 <div className="card shadow-sm h-100">
                   <div className="card-body">
+
                     <h5 className="fw-bold">
                       {item.job?.job_title}
                     </h5>
 
                     <p className="text-muted mb-1">
-                       {item.job?.location}
+                      📍 {item.job?.location}
                     </p>
 
                     <span
@@ -53,6 +87,7 @@ export default function CandidateDashboard() {
                     >
                       {item.status}
                     </span>
+
                   </div>
                 </div>
               </div>
