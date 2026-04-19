@@ -19,6 +19,7 @@ function Profile() {
   const [form, setForm] = useState({});
   const [loading, setLoading] = useState(true);
   const [editMode, setEditMode] = useState(false);
+  const [errors, setErrors] = useState({});
 
   const qualificationOptions = [
     { value: "10th", label: "10th" },
