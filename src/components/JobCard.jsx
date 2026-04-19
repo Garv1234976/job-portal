@@ -14,7 +14,6 @@ import {
 
 function JobCard({ job }) {
   const [applied, setApplied] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
 
@@ -25,35 +24,9 @@ function JobCard({ job }) {
     setSaved(job.saved || false);
   }, [job]);
 
-  // ✅ APPLY JOB
-  const applyJob = async (e) => {
-    e.stopPropagation(); // ❗ prevent card click
-
-    if (loading || applied) return;
-
-    setLoading(true);
-
-    try {
-      const res = await API.post("/apply-job", {
-        job_id: job.id,
-      });
-
-      setApplied(true);
-      Swal.fire("Success", res.data.message, "success");
-    } catch (err) {
-      Swal.fire(
-        "Error",
-        err.response?.data?.message || "Something went wrong",
-        "error"
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-
   // ✅ SAVE / UNSAVE
   const toggleSaveJob = async (e) => {
-    e.stopPropagation(); // ❗ prevent card click
+    e.stopPropagation();
 
     if (saving) return;
 
@@ -88,7 +61,7 @@ function JobCard({ job }) {
   return (
     <div
       className="p-3 mb-3 border rounded shadow-sm bg-white job-card"
-      onClick={() => navigate(`/job/${job.id}`)} 
+      onClick={() => navigate(`/job/${job.id}`)}
       style={{ cursor: "pointer" }}
     >
       <div className="d-flex justify-content-between align-items-start">
@@ -156,15 +129,17 @@ function JobCard({ job }) {
 
           <br />
 
-          {/* APPLY */}
+          {/* APPLY (NOW REDIRECT) */}
           <button
             className={`btn btn-sm ${
               applied ? "btn-success" : "btn-primary"
             }`}
-            onClick={applyJob}
-            disabled={applied || loading}
+            onClick={(e) => {
+              e.stopPropagation();
+              navigate(`/job/${job.id}`);
+            }}
           >
-            {loading ? "Applying..." : applied ? "Applied" : "Apply"}
+            {applied ? "View Applied" : "View Details"}
           </button>
 
         </div>
