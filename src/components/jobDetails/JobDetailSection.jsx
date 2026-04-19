@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import API from "../services/api";
+import api from "../../services/api";
 
-// ✅ React Icons
 import {
   FaMapMarkerAlt,
   FaClock,
@@ -24,7 +23,7 @@ function JobDetailSection() {
 
   const fetchJob = async () => {
     try {
-      const res = await API.get(`/job/${id}`);
+      const res = await api.get(`/job/${id}`);
       setJob(res.data.data);
     } catch (err) {
       console.log(err);
