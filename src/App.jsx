@@ -41,7 +41,7 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/jobs" element={<JobList />} />
-        <Route path="/job-detail" element={<JobDetail />} />
+        <Route path="/job/:id" element={<JobDetail />} />
         <Route path="/category" element={<Category />} />
 
         {/* ================= AUTH ROUTES ================= */}
