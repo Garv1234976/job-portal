@@ -1,6 +1,7 @@
 import Swal from "sweetalert2";
 import API from "../services/api";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 // ✅ React Icons
 import {
@@ -17,12 +18,17 @@ function JobCard({ job }) {
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     setApplied(job.applied || false);
     setSaved(job.saved || false);
   }, [job]);
 
-  const applyJob = async () => {
+  // ✅ APPLY JOB
+  const applyJob = async (e) => {
+    e.stopPropagation(); // ❗ prevent card click
+
     if (loading || applied) return;
 
     setLoading(true);
@@ -45,7 +51,10 @@ function JobCard({ job }) {
     }
   };
 
-  const toggleSaveJob = async () => {
+  // ✅ SAVE / UNSAVE
+  const toggleSaveJob = async (e) => {
+    e.stopPropagation(); // ❗ prevent card click
+
     if (saving) return;
 
     setSaving(true);
@@ -65,6 +74,7 @@ function JobCard({ job }) {
     }
   };
 
+  // ✅ DAYS AGO
   const getDaysAgo = (date) => {
     const diff = Math.floor(
       (new Date() - new Date(date)) / (1000 * 60 * 60 * 24)
@@ -76,7 +86,11 @@ function JobCard({ job }) {
   };
 
   return (
-    <div className="p-3 mb-3 border rounded shadow-sm bg-white job-card">
+    <div
+      className="p-3 mb-3 border rounded shadow-sm bg-white job-card"
+      onClick={() => navigate(`/job/${job.id}`)} // ✅ CLICK CARD → DETAIL
+      style={{ cursor: "pointer" }}
+    >
       <div className="d-flex justify-content-between align-items-start">
 
         {/* LEFT */}
@@ -99,11 +113,15 @@ function JobCard({ job }) {
 
             {/* META */}
             <div className="text-muted small mb-1 d-flex flex-wrap align-items-center gap-2">
-              <span><FaBriefcase className="me-1" /> {job.experience} Years</span>
+              <span>
+                <FaBriefcase className="me-1" /> {job.experience} Years
+              </span>
               <span>|</span>
               <span>₹ {job.salary_range}</span>
               <span>|</span>
-              <span><FaMapMarkerAlt className="me-1" /> {job.location}</span>
+              <span>
+                <FaMapMarkerAlt className="me-1" /> {job.location}
+              </span>
             </div>
 
             {/* DESC */}
@@ -123,7 +141,7 @@ function JobCard({ job }) {
         {/* RIGHT */}
         <div className="text-end">
 
-          {/* SAVE BUTTON */}
+          {/* SAVE */}
           <button
             className="btn btn-sm btn-light border mb-2"
             onClick={toggleSaveJob}
@@ -138,7 +156,7 @@ function JobCard({ job }) {
 
           <br />
 
-          {/* APPLY BUTTON */}
+          {/* APPLY */}
           <button
             className={`btn btn-sm ${
               applied ? "btn-success" : "btn-primary"
