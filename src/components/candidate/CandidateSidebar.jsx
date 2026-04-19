@@ -4,12 +4,6 @@ import {
   FaHistory,
   FaUser,
   FaFileAlt,
-  FaHomeimport {
-  FaBriefcase,
-  FaBookmark,
-  FaHistory,
-  FaUser,
-  FaFileAlt,
   FaHome
 } from "react-icons/fa";
 
@@ -27,31 +21,38 @@ export default function CandidateSidebar({ activeTab, setActiveTab }) {
   ];
 
   return (
-    <div className="bg-white shadow-sm rounded p-3 h-100 position-sticky" style={{ top: "80px" }}>
+    <div
+      className="bg-white shadow-sm rounded p-3 h-100 position-sticky"
+      style={{ top: "80px" }}
+    >
+      <h5 className="mb-3 fw-bold">Candidate Panel</h5>
 
-      <h5 className="mb-4 fw-bold text-center">
-        Candidate Panel
-      </h5>
+      <ul className="list-unstyled">
 
-      {menu.map((tab) => (
-        <div
-          key={tab.id}
-          onClick={() => setActiveTab(tab.id)}
-          className={`d-flex align-items-center justify-content-between p-2 mb-2 rounded sidebar-item ${
-            activeTab === tab.id ? "active" : ""
-          }`}
-          style={{ cursor: "pointer" }}
-        >
-          <div className="d-flex align-items-center gap-2">
-            {tab.icon}
-            <span>{tab.name}</span> {/* ✅ FIXED */}
-          </div>
+        {menu.map((item, i) => (
+          <li key={i} className="mb-2">
 
-          {activeTab === tab.id && (
-            <i className="fa fa-chevron-right small"></i>
-          )}
-        </div>
-      ))}
+            <div
+              className={`d-flex align-items-center justify-content-between p-2 rounded sidebar-item ${
+                activeTab === item.id ? "active" : ""
+              }`}
+              style={{ cursor: "pointer" }}
+              onClick={() => setActiveTab(item.id)}
+            >
+              <div className="d-flex align-items-center gap-2">
+                {item.icon}
+                <span>{item.name}</span>
+              </div>
+
+              {activeTab === item.id && (
+                <i className="fa fa-chevron-right small"></i>
+              )}
+            </div>
+
+          </li>
+        ))}
+
+      </ul>
 
       {/* ✅ STYLING */}
       <style>
@@ -76,50 +77,12 @@ export default function CandidateSidebar({ activeTab, setActiveTab }) {
           .sidebar-item.active svg {
             color: #fff;
           }
+
+          .sidebar-item svg {
+            min-width: 18px;
+          }
         `}
       </style>
-
-    </div>
-  );
-}
-} from "react-icons/fa";
-
-export default function CandidateSidebar({ activeTab, setActiveTab }) {
-
- const menu = [
-  { id: "dashboard", name: "Dashboard", icon: <FaHome /> },
-
-  { id: "applied", name: "Applied Jobs", icon: <FaBriefcase /> },
-  { id: "saved", name: "Saved Jobs", icon: <FaBookmark /> },
-  { id: "lastViewed", name: "Last Viewed", icon: <FaHistory /> },
-
-  { id: "profile", name: "Edit Profile", icon: <FaUser /> },
-  { id: "resume", name: "Resume", icon: <FaFileAlt /> },
-];
-
-  return (
-    <div className="bg-white shadow-sm rounded p-3 h-100">
-
-      <h5 className="mb-4 fw-bold text-center">
-        Candidate Panel
-      </h5>
-
-      {menu.map((tab) => (
-        <div
-          key={tab.id}
-          onClick={() => setActiveTab(tab.id)}
-          className={`d-flex align-items-center gap-2 p-2 mb-2 rounded ${
-            activeTab === tab.id
-              ? "bg-primary text-white"
-              : "bg-light"
-          }`}
-          style={{ cursor: "pointer" }}
-        >
-          {tab.icon}
-          <span>{tab.label}</span>
-        </div>
-      ))}
-
     </div>
   );
 }
