@@ -1,67 +1,89 @@
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import API from "../services/api";
+
+// ✅ React Icons
+import {
+  FaMapMarkerAlt,
+  FaClock,
+  FaMoneyBillAlt,
+  FaUserTie,
+  FaCalendarAlt,
+  FaBuilding,
+  FaFileUpload,
+} from "react-icons/fa";
+
 function JobDetailSection() {
+  const { id } = useParams();
+  const [job, setJob] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchJob();
+  }, [id]);
+
+  const fetchJob = async () => {
+    try {
+      const res = await API.get(`/job/${id}`);
+      setJob(res.data.data);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) return <p className="text-center">Loading...</p>;
+  if (!job) return <p className="text-center">Job not found</p>;
+
   return (
-    <div className="container-xxl py-5 wow fadeInUp" data-wow-delay="0.1s">
+    <div className="container-xxl py-5">
       <div className="container">
         <div className="row gy-5 gx-4">
 
           {/* LEFT SIDE */}
           <div className="col-lg-8">
 
-            {/* Header */}
+            {/* HEADER */}
             <div className="d-flex align-items-center mb-5">
               <img
-                className="flex-shrink-0 img-fluid border rounded"
-                src="/assets/img/com-logo-2.jpg"
-                alt=""
-                style={{ width: "80px", height: "80px" }}
+                className="img-fluid border rounded"
+                src={
+                  job.logo
+                    ? `https://server.budes.online/public/${job.logo}`
+                    : "/assets/img/default.png"
+                }
+                style={{ width: 80, height: 80 }}
+                alt="logo"
               />
 
-              <div className="text-start ps-4">
-                <h3 className="mb-3">Marketing Manager</h3>
+              <div className="ps-4">
+                <h3>{job.job_title}</h3>
 
                 <span className="me-3">
-                  <i className="fa fa-map-marker-alt text-primary me-2"></i>
-                  New York, USA
+                  <FaMapMarkerAlt className="text-primary me-2" />
+                  {job.location}
                 </span>
 
                 <span className="me-3">
-                  <i className="far fa-clock text-primary me-2"></i>
-                  Full Time
+                  <FaClock className="text-primary me-2" />
+                  {job.employment_type}
                 </span>
 
                 <span>
-                  <i className="far fa-money-bill-alt text-primary me-2"></i>
-                  $123 - $456
+                  <FaMoneyBillAlt className="text-primary me-2" />
+                  ₹ {job.salary_range}
                 </span>
               </div>
             </div>
 
-            {/* Description */}
+            {/* DESCRIPTION */}
             <div className="mb-5">
-              <h4 className="mb-3">Job description</h4>
-              <p>
-                Dolor justo tempor duo ipsum accusam rebum gubergren erat...
-              </p>
-
-              <h4 className="mb-3">Responsibility</h4>
-              <p>Magna et elitr diam sed lorem...</p>
-
-              <ul className="list-unstyled">
-                <li><i className="fa fa-angle-right text-primary me-2"></i>Dolor justo tempor duo ipsum accusam</li>
-                <li><i className="fa fa-angle-right text-primary me-2"></i>Elitr stet dolor vero clita labore</li>
-                <li><i className="fa fa-angle-right text-primary me-2"></i>Rebum vero dolores dolores</li>
-              </ul>
-
-              <h4 className="mb-3">Qualifications</h4>
-              <p>Magna et elitr diam sed lorem...</p>
-
-              <ul className="list-unstyled">
-                <li><i className="fa fa-angle-right text-primary me-2"></i>Dolor justo tempor duo ipsum</li>
-                <li><i className="fa fa-angle-right text-primary me-2"></i>Elitr stet dolor vero</li>
-              </ul>
+              <h4 className="mb-3">Job Description</h4>
+              <p>{job.job_description}</p>
             </div>
 
-            {/* FORM */}
+            {/* APPLY FORM */}
             <div>
               <h4 className="mb-4">Apply For The Job</h4>
 
@@ -69,23 +91,42 @@ function JobDetailSection() {
                 <div className="row g-3">
 
                   <div className="col-12 col-sm-6">
-                    <input className="form-control" placeholder="Your Name" />
+                    <input
+                      className="form-control"
+                      placeholder="Your Name"
+                    />
                   </div>
 
                   <div className="col-12 col-sm-6">
-                    <input type="email" className="form-control" placeholder="Your Email" />
+                    <input
+                      type="email"
+                      className="form-control"
+                      placeholder="Your Email"
+                    />
                   </div>
 
                   <div className="col-12 col-sm-6">
-                    <input className="form-control" placeholder="Portfolio Website" />
+                    <input
+                      className="form-control"
+                      placeholder="Portfolio Website"
+                    />
                   </div>
 
                   <div className="col-12 col-sm-6">
-                    <input type="file" className="form-control bg-white" />
+                    <div className="input-group">
+                      <span className="input-group-text">
+                        <FaFileUpload />
+                      </span>
+                      <input type="file" className="form-control bg-white" />
+                    </div>
                   </div>
 
                   <div className="col-12">
-                    <textarea className="form-control" rows="5" placeholder="Coverletter"></textarea>
+                    <textarea
+                      className="form-control"
+                      rows="5"
+                      placeholder="Cover Letter"
+                    ></textarea>
                   </div>
 
                   <div className="col-12">
@@ -103,25 +144,44 @@ function JobDetailSection() {
           {/* RIGHT SIDE */}
           <div className="col-lg-4">
 
-            {/* Summary */}
-            <div className="bg-light rounded p-5 mb-4 wow slideInUp">
+            {/* JOB SUMMARY */}
+            <div className="bg-light rounded p-4 mb-4">
               <h4 className="mb-4">Job Summary</h4>
 
-              <p><i className="fa fa-angle-right text-primary me-2"></i>Published On: 01 Jan, 2045</p>
-              <p><i className="fa fa-angle-right text-primary me-2"></i>Vacancy: 123 Position</p>
-              <p><i className="fa fa-angle-right text-primary me-2"></i>Job Nature: Full Time</p>
-              <p><i className="fa fa-angle-right text-primary me-2"></i>Salary: $123 - $456</p>
-              <p><i className="fa fa-angle-right text-primary me-2"></i>Location: New York</p>
-              <p className="m-0"><i className="fa fa-angle-right text-primary me-2"></i>Date Line: 01 Jan</p>
-            </div>
-
-            {/* Company */}
-            <div className="bg-light rounded p-5 wow slideInUp">
-              <h4 className="mb-4">Company Detail</h4>
+              <p>
+                <FaCalendarAlt className="text-primary me-2" />
+                Posted: {job.created_at}
+              </p>
 
               <p>
-                Ipsum dolor ipsum accusam stet et et diam dolores...
+                <FaUserTie className="text-primary me-2" />
+                Vacancy: {job.vacancy || "N/A"}
               </p>
+
+              <p>
+                <FaClock className="text-primary me-2" />
+                Job Type: {job.employment_type}
+              </p>
+
+              <p>
+                <FaMoneyBillAlt className="text-primary me-2" />
+                Salary: ₹ {job.salary_range}
+              </p>
+
+              <p>
+                <FaMapMarkerAlt className="text-primary me-2" />
+                Location: {job.location}
+              </p>
+            </div>
+
+            {/* COMPANY */}
+            <div className="bg-light rounded p-4">
+              <h4 className="mb-4">
+                <FaBuilding className="me-2 text-primary" />
+                Company Detail
+              </h4>
+
+              <p>{job.company_name || "No company info available"}</p>
             </div>
 
           </div>
