@@ -266,10 +266,10 @@ export default function CandidateDashboard() {
                       <tr key={item.id}>
                         <td>{(page - 1) * perPage + index + 1}</td>
 
-                        <td>{item.job?.job_title}</td>
-                        <td>{item.job?.company_name || "N/A"}</td>
-                        <td>{item.job?.location}</td>
-                        <td>₹ {item.job?.salary_range || "N/A"}</td>
+                        <td>{item.job_title}</td>
+                        <td>{item.company_name || "N/A"}</td>
+                        <td>{item.location}</td>
+                        <td>₹ {item.salary_range || "N/A"}</td>
 
                         <td>
                           {new Date(item.created_at).toLocaleDateString()}
