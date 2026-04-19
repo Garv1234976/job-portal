@@ -28,6 +28,7 @@ export default function CreateJob() {
     if (!form.salary_range) newErrors.salary_range = "Required";
     if (!form.openings) newErrors.openings = "Required";
     if (!form.category_id) newErrors.category_id = "Required";
+    if (!form.company_name) newErrors.company_name = "Required";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -138,6 +139,19 @@ export default function CreateJob() {
                         setForm({ ...form, logo: e.target.files[0] })
                       }
                     />
+                  </div>
+
+                  <div className="col-md-6">
+                    <label>
+                      Company Name <span className="text-danger">*</span>
+                    </label>
+                    <input
+                      className="form-control"
+                      name="company_name"
+                      placeholder="Enter company name"
+                      onChange={handleChange}
+                    />
+                    <small className="text-danger">{errors.company_name}</small>
                   </div>
 
                   {/* CATEGORY */}
