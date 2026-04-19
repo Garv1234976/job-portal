@@ -11,22 +11,19 @@ export default function CandidateDashboard() {
   const [appliedJobs, setAppliedJobs] = useState([]);
   const [totalApplied, setTotalApplied] = useState(0);
 
+  const [savedJobs, setSavedJobs] = useState([]);
+  const [totalSaved, setTotalSaved] = useState(0);
+
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [perPage] = useState(5);
   const [totalPages, setTotalPages] = useState(1);
-  const [savedJobs, setSavedJobs] = useState([]);
-  const [totalSaved, setTotalSaved] = useState(0);
 
-  // 🔥 FETCH FUNCTION
+  // 🔥 FETCH APPLIED JOBS
   const fetchAppliedJobs = async () => {
     try {
       const res = await api.get("/applied-jobs", {
-        params: {
-          search,
-          page,
-          per_page: perPage,
-        },
+        params: { search, page, per_page: perPage },
       });
 
       setAppliedJobs(res.data.data || []);
@@ -37,30 +34,11 @@ export default function CandidateDashboard() {
     }
   };
 
-  useEffect(() => {
-    if (activeTab === "applied" || activeTab === "dashboard") {
-      fetchAppliedJobs();
-    }
-  }, [activeTab]);
-
-  useEffect(() => {
-    if (activeTab === "applied") {
-      const delay = setTimeout(() => {
-        fetchAppliedJobs();
-      }, 400);
-
-      return () => clearTimeout(delay);
-    }
-  }, [search, page]);
-
+  // 🔥 FETCH SAVED JOBS
   const fetchSavedJobs = async () => {
     try {
       const res = await api.get("/saved-jobs", {
-        params: {
-          search,
-          page,
-          per_page: perPage,
-        },
+        params: { search, page, per_page: perPage },
       });
 
       setSavedJobs(res.data.data || []);
@@ -71,8 +49,14 @@ export default function CandidateDashboard() {
     }
   };
 
+  // 🔥 LOAD DATA (IMPORTANT FIX)
   useEffect(() => {
-    if (activeTab === "applied" || activeTab === "dashboard") {
+    if (activeTab === "dashboard") {
+      fetchAppliedJobs();
+      fetchSavedJobs(); // ✅ FIXED
+    }
+
+    if (activeTab === "applied") {
       fetchAppliedJobs();
     }
 
@@ -81,6 +65,7 @@ export default function CandidateDashboard() {
     }
   }, [activeTab]);
 
+  // 🔍 SEARCH + PAGINATION
   useEffect(() => {
     const delay = setTimeout(() => {
       if (activeTab === "applied") fetchAppliedJobs();
@@ -90,11 +75,27 @@ export default function CandidateDashboard() {
     return () => clearTimeout(delay);
   }, [search, page]);
 
+  // ❌ REMOVE SAVED JOB
+  const handleUnsave = async (jobId) => {
+    try {
+      await api.post("/unsave-job", { job_id: jobId });
+
+      fetchSavedJobs(); // refresh list
+      fetchSavedJobs(); // refresh count
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  // UI CONTENT
   const renderContent = () => {
     switch (activeTab) {
+
+      // 🔥 DASHBOARD
       case "dashboard":
         return (
           <div className="row g-4">
+
             <div className="col-md-4">
               <div
                 className="card dashboard-box p-4 text-center"
@@ -124,224 +125,110 @@ export default function CandidateDashboard() {
                 <p className="text-muted">Complete your profile</p>
               </div>
             </div>
+
           </div>
         );
 
-      // ✅ APPLIED JOBS TABLE
+      // ✅ APPLIED
       case "applied":
         return (
           <>
             <h5 className="mb-3">Applied Jobs</h5>
 
-            {/* 🔍 SEARCH */}
-            <div className="mb-3 d-flex justify-content-between">
-              <input
-                type="text"
-                className="form-control w-50"
-                placeholder="Search job..."
-                value={search}
-                onChange={(e) => {
-                  setSearch(e.target.value);
-                  setPage(1);
-                }}
-              />
-            </div>
+            <input
+              type="text"
+              className="form-control w-50 mb-3"
+              placeholder="Search job..."
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setPage(1);
+              }}
+            />
 
-            {/* 📋 TABLE */}
             <div className="table-responsive">
-              <table className="table table-bordered align-middle">
-                <thead className="table-light">
+              <table className="table table-bordered">
+                <thead>
                   <tr>
                     <th>#</th>
-                    <th>Job Title</th>
+                    <th>Job</th>
                     <th>Company</th>
                     <th>Location</th>
                     <th>Status</th>
-                    <th>Date</th>
                   </tr>
                 </thead>
 
                 <tbody>
-                  {appliedJobs.length > 0 ? (
-                    appliedJobs.map((item, index) => (
-                      <tr key={item.id}>
-                        <td>{(page - 1) * perPage + index + 1}</td>
-
-                        <td>{item.job?.job_title}</td>
-                        <td>{item.job?.company_name || "N/A"}</td>
-                        <td>{item.job?.location}</td>
-
-                        <td>
-                          <span
-                            className={`badge ${
-                              item.status === "pending"
-                                ? "bg-warning text-dark"
-                                : item.status === "applied"
-                                  ? "bg-success"
-                                  : "bg-danger"
-                            }`}
-                          >
-                            {item.status}
-                          </span>
-                        </td>
-
-                        <td>
-                          {new Date(item.created_at).toLocaleDateString()}
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan="6" className="text-center">
-                        No data found
-                      </td>
+                  {appliedJobs.map((item, i) => (
+                    <tr key={item.id}>
+                      <td>{i + 1}</td>
+                      <td>{item.job?.job_title}</td>
+                      <td>{item.job?.company_name}</td>
+                      <td>{item.job?.location}</td>
+                      <td>{item.status}</td>
                     </tr>
-                  )}
+                  ))}
                 </tbody>
               </table>
-            </div>
-
-            {/* 📄 PAGINATION */}
-            <div className="d-flex justify-content-end mt-3 gap-2">
-              <button
-                className="btn btn-sm btn-outline-primary"
-                disabled={page === 1}
-                onClick={() => setPage(page - 1)}
-              >
-                Prev
-              </button>
-
-              <span className="align-self-center">
-                Page {page} of {totalPages}
-              </span>
-
-              <button
-                className="btn btn-sm btn-outline-primary"
-                disabled={page === totalPages}
-                onClick={() => setPage(page + 1)}
-              >
-                Next
-              </button>
             </div>
           </>
         );
 
+      // ✅ SAVED
       case "saved":
         return (
           <>
             <h5 className="mb-3">Saved Jobs</h5>
 
-            {/* 🔍 SEARCH */}
-            <div className="mb-3 d-flex justify-content-between">
-              <input
-                type="text"
-                className="form-control w-50"
-                placeholder="Search job..."
-                value={search}
-                onChange={(e) => {
-                  setSearch(e.target.value);
-                  setPage(1);
-                }}
-              />
-            </div>
+            <input
+              type="text"
+              className="form-control w-50 mb-3"
+              placeholder="Search job..."
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setPage(1);
+              }}
+            />
 
-            {/* 📋 TABLE */}
             <div className="table-responsive">
-              <table className="table table-bordered align-middle">
-                <thead className="table-light">
+              <table className="table table-bordered">
+                <thead>
                   <tr>
                     <th>#</th>
-                    <th>Job Title</th>
+                    <th>Job</th>
                     <th>Company</th>
                     <th>Location</th>
-                    <th>Salary</th>
-                    <th>Saved Date</th>
                     <th>Action</th>
                   </tr>
                 </thead>
 
                 <tbody>
-                  {savedJobs.length > 0 ? (
-                    savedJobs.map((item, index) => (
-                      <tr key={item.id}>
-                        <td>{(page - 1) * perPage + index + 1}</td>
+                  {savedJobs.map((item, i) => (
+                    <tr key={item.id}>
+                      <td>{i + 1}</td>
+                      <td>{item.job_title}</td>
+                      <td>{item.company_name}</td>
+                      <td>{item.location}</td>
 
-                        <td>{item.job_title}</td>
-                        <td>{item.company_name || "N/A"}</td>
-                        <td>{item.location}</td>
-                        <td>₹ {item.salary_range || "N/A"}</td>
-
-                        <td>
-                          {new Date(item.created_at).toLocaleDateString()}
-                        </td>
-
-                        <td>
-                          <button
-                            className="btn btn-sm btn-danger"
-                            onClick={() => handleUnsave(item.job?.id)}
-                          >
-                            Remove
-                          </button>
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan="7" className="text-center">
-                        No saved jobs found
+                      <td>
+                        <button
+                          className="btn btn-danger btn-sm"
+                          onClick={() => handleUnsave(item.id)} // ✅ FIXED
+                        >
+                          Remove
+                        </button>
                       </td>
                     </tr>
-                  )}
+                  ))}
                 </tbody>
               </table>
-            </div>
-
-            {/* 📄 PAGINATION */}
-            <div className="d-flex justify-content-end mt-3 gap-2">
-              <button
-                className="btn btn-sm btn-outline-primary"
-                disabled={page === 1}
-                onClick={() => setPage(page - 1)}
-              >
-                Prev
-              </button>
-
-              <span className="align-self-center">
-                Page {page} of {totalPages}
-              </span>
-
-              <button
-                className="btn btn-sm btn-outline-primary"
-                disabled={page === totalPages}
-                onClick={() => setPage(page + 1)}
-              >
-                Next
-              </button>
             </div>
           </>
         );
 
-      case "lastViewed":
-        return <div className="empty-box">No recently viewed jobs.</div>;
-
-      case "profile":
-        return (
-          <div className="card p-4">
-            <h5>Edit Profile</h5>
-            <p className="text-muted">Update your profile here.</p>
-          </div>
-        );
-
-      case "resume":
-        return (
-          <div className="card p-4">
-            <h5>Resume</h5>
-            <p className="text-muted">Upload or update your resume.</p>
-          </div>
-        );
-
       default:
-        return null;
+        return <div>No data</div>;
     }
   };
 
@@ -351,54 +238,24 @@ export default function CandidateDashboard() {
 
       <div className="container-fluid mt-4 mb-5">
         <div className="row">
-          <div className="col-md-3 col-lg-2 mb-3">
+
+          <div className="col-md-3">
             <CandidateSidebar
               activeTab={activeTab}
               setActiveTab={setActiveTab}
             />
           </div>
 
-          <div className="col-md-9 col-lg-10">
-            <div className="bg-white shadow-lg rounded p-4 min-h-[500px]">
-              <div className="mb-4">
-                <h3 className="fw-bold">Candidate Dashboard</h3>
-                <p className="text-muted">
-                  Manage your jobs, profile and resume
-                </p>
-              </div>
-
+          <div className="col-md-9">
+            <div className="bg-white p-4 rounded shadow">
               {renderContent()}
             </div>
           </div>
+
         </div>
       </div>
 
       <Footer />
-
-      {/* ✅ STYLE */}
-      <style>
-        {`
-          .dashboard-box {
-            cursor: pointer;
-            border-radius: 12px;
-            transition: 0.3s;
-            border: 1px solid #eee;
-          }
-
-          .dashboard-box:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-          }
-
-          .empty-box {
-            padding: 40px;
-            text-align: center;
-            background: #f8fafc;
-            border-radius: 10px;
-            color: #6b7280;
-          }
-        `}
-      </style>
     </>
   );
 }
