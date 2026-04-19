@@ -9,9 +9,9 @@ export default function CandidateDashboard() {
   const [activeTab, setActiveTab] = useState("dashboard");
 
   const [appliedJobs, setAppliedJobs] = useState([]);
-  const [totalApplied, setTotalApplied] = useState(0);
-
   const [savedJobs, setSavedJobs] = useState([]);
+
+  const [totalApplied, setTotalApplied] = useState(0);
   const [totalSaved, setTotalSaved] = useState(0);
 
   const [search, setSearch] = useState("");
@@ -19,7 +19,7 @@ export default function CandidateDashboard() {
   const [perPage] = useState(5);
   const [totalPages, setTotalPages] = useState(1);
 
-  // 🔥 FETCH APPLIED JOBS
+  // 🔥 FETCH APPLIED
   const fetchAppliedJobs = async () => {
     try {
       const res = await api.get("/applied-jobs", {
@@ -27,14 +27,14 @@ export default function CandidateDashboard() {
       });
 
       setAppliedJobs(res.data.data || []);
-      setTotalPages(res.data.last_page || 1);
       setTotalApplied(res.data.total || 0);
+      setTotalPages(res.data.last_page || 1);
     } catch (err) {
       console.error(err);
     }
   };
 
-  // 🔥 FETCH SAVED JOBS
+  // 🔥 FETCH SAVED
   const fetchSavedJobs = async () => {
     try {
       const res = await api.get("/saved-jobs", {
@@ -42,27 +42,23 @@ export default function CandidateDashboard() {
       });
 
       setSavedJobs(res.data.data || []);
-      setTotalPages(res.data.last_page || 1);
       setTotalSaved(res.data.total || 0);
+      setTotalPages(res.data.last_page || 1);
     } catch (err) {
       console.error(err);
     }
   };
 
-  // 🔥 LOAD DATA (IMPORTANT FIX)
+  // 🔥 LOAD DATA
   useEffect(() => {
     if (activeTab === "dashboard") {
       fetchAppliedJobs();
-      fetchSavedJobs(); // ✅ FIXED
-    }
-
-    if (activeTab === "applied") {
-      fetchAppliedJobs();
-    }
-
-    if (activeTab === "saved") {
       fetchSavedJobs();
     }
+
+    if (activeTab === "applied") fetchAppliedJobs();
+    if (activeTab === "saved") fetchSavedJobs();
+
   }, [activeTab]);
 
   // 🔍 SEARCH + PAGINATION
@@ -75,61 +71,48 @@ export default function CandidateDashboard() {
     return () => clearTimeout(delay);
   }, [search, page]);
 
-  // ❌ REMOVE SAVED JOB
+  // ❌ UNSAVE
   const handleUnsave = async (jobId) => {
     try {
       await api.post("/unsave-job", { job_id: jobId });
-
-      fetchSavedJobs(); // refresh list
-      fetchSavedJobs(); // refresh count
+      fetchSavedJobs();
     } catch (err) {
       console.error(err);
     }
   };
 
-  // UI CONTENT
+  // 🔥 CONTENT
   const renderContent = () => {
     switch (activeTab) {
 
-      // 🔥 DASHBOARD
+      // DASHBOARD
       case "dashboard":
         return (
           <div className="row g-4">
-
             <div className="col-md-4">
-              <div
-                className="card dashboard-box p-4 text-center"
-                onClick={() => setActiveTab("applied")}
-              >
+              <div className="card dashboard-box p-4 text-center" onClick={() => setActiveTab("applied")}>
                 <h5>Applied Jobs</h5>
                 <h2 className="text-primary">{totalApplied}</h2>
               </div>
             </div>
 
             <div className="col-md-4">
-              <div
-                className="card dashboard-box p-4 text-center"
-                onClick={() => setActiveTab("saved")}
-              >
+              <div className="card dashboard-box p-4 text-center" onClick={() => setActiveTab("saved")}>
                 <h5>Saved Jobs</h5>
                 <h2 className="text-success">{totalSaved}</h2>
               </div>
             </div>
 
             <div className="col-md-4">
-              <div
-                className="card dashboard-box p-4 text-center"
-                onClick={() => setActiveTab("profile")}
-              >
+              <div className="card dashboard-box p-4 text-center">
                 <h5>Profile</h5>
                 <p className="text-muted">Complete your profile</p>
               </div>
             </div>
-
           </div>
         );
 
-      // ✅ APPLIED
+      // APPLIED JOBS
       case "applied":
         return (
           <>
@@ -151,30 +134,63 @@ export default function CandidateDashboard() {
                 <thead>
                   <tr>
                     <th>#</th>
-                    <th>Job</th>
+                    <th>Job Title</th>
                     <th>Company</th>
                     <th>Location</th>
+                    <th>Salary</th>
                     <th>Status</th>
+                    <th>Date</th>
                   </tr>
                 </thead>
 
                 <tbody>
-                  {appliedJobs.map((item, i) => (
-                    <tr key={item.id}>
-                      <td>{i + 1}</td>
-                      <td>{item.job?.job_title}</td>
-                      <td>{item.job?.company_name}</td>
-                      <td>{item.job?.location}</td>
-                      <td>{item.status}</td>
+                  {appliedJobs.length > 0 ? (
+                    appliedJobs.map((item, index) => (
+                      <tr key={item.id}>
+                        <td>{(page - 1) * perPage + index + 1}</td>
+                        <td>{item.job?.job_title}</td>
+                        <td>{item.job?.company_name || "N/A"}</td>
+                        <td>{item.job?.location}</td>
+                        <td>₹ {item.job?.salary_range || "N/A"}</td>
+                        <td>{item.status}</td>
+                        <td>{new Date(item.created_at).toLocaleDateString()}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="7" className="text-center">
+                        No data found
+                      </td>
                     </tr>
-                  ))}
+                  )}
                 </tbody>
               </table>
+            </div>
+
+            {/* PAGINATION */}
+            <div className="d-flex justify-content-end gap-2 mt-3">
+              <button
+                className="btn btn-sm btn-outline-primary"
+                disabled={page === 1}
+                onClick={() => setPage(page - 1)}
+              >
+                Prev
+              </button>
+
+              <span>Page {page} of {totalPages}</span>
+
+              <button
+                className="btn btn-sm btn-outline-primary"
+                disabled={page === totalPages}
+                onClick={() => setPage(page + 1)}
+              >
+                Next
+              </button>
             </div>
           </>
         );
 
-      // ✅ SAVED
+      // SAVED JOBS
       case "saved":
         return (
           <>
@@ -196,39 +212,72 @@ export default function CandidateDashboard() {
                 <thead>
                   <tr>
                     <th>#</th>
-                    <th>Job</th>
+                    <th>Job Title</th>
                     <th>Company</th>
                     <th>Location</th>
+                    <th>Salary</th>
+                    <th>Saved Date</th>
                     <th>Action</th>
                   </tr>
                 </thead>
 
                 <tbody>
-                  {savedJobs.map((item, i) => (
-                    <tr key={item.id}>
-                      <td>{i + 1}</td>
-                      <td>{item.job_title}</td>
-                      <td>{item.company_name}</td>
-                      <td>{item.location}</td>
+                  {savedJobs.length > 0 ? (
+                    savedJobs.map((item, index) => (
+                      <tr key={item.id}>
+                        <td>{(page - 1) * perPage + index + 1}</td>
+                        <td>{item.job_title}</td>
+                        <td>{item.company_name || "N/A"}</td>
+                        <td>{item.location}</td>
+                        <td>₹ {item.salary_range || "N/A"}</td>
+                        <td>{new Date(item.created_at).toLocaleDateString()}</td>
 
-                      <td>
-                        <button
-                          className="btn btn-danger btn-sm"
-                          onClick={() => handleUnsave(item.id)} // ✅ FIXED
-                        >
-                          Remove
-                        </button>
+                        <td>
+                          <button
+                            className="btn btn-danger btn-sm"
+                            onClick={() => handleUnsave(item.id)}
+                          >
+                            Remove
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="7" className="text-center">
+                        No saved jobs found
                       </td>
                     </tr>
-                  ))}
+                  )}
                 </tbody>
               </table>
+            </div>
+
+            {/* PAGINATION */}
+            <div className="d-flex justify-content-end gap-2 mt-3">
+              <button
+                className="btn btn-sm btn-outline-primary"
+                disabled={page === 1}
+                onClick={() => setPage(page - 1)}
+              >
+                Prev
+              </button>
+
+              <span>Page {page} of {totalPages}</span>
+
+              <button
+                className="btn btn-sm btn-outline-primary"
+                disabled={page === totalPages}
+                onClick={() => setPage(page + 1)}
+              >
+                Next
+              </button>
             </div>
           </>
         );
 
       default:
-        return <div>No data</div>;
+        return null;
     }
   };
 
@@ -239,15 +288,18 @@ export default function CandidateDashboard() {
       <div className="container-fluid mt-4 mb-5">
         <div className="row">
 
-          <div className="col-md-3">
-            <CandidateSidebar
-              activeTab={activeTab}
-              setActiveTab={setActiveTab}
-            />
+          <div className="col-md-3 col-lg-2">
+            <CandidateSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
           </div>
 
-          <div className="col-md-9">
-            <div className="bg-white p-4 rounded shadow">
+          <div className="col-md-9 col-lg-10">
+            <div className="bg-white shadow-lg rounded p-4 min-h-[500px]">
+
+              <div className="mb-4">
+                <h3 className="fw-bold">Candidate Dashboard</h3>
+                <p className="text-muted">Manage your jobs, profile and resume</p>
+              </div>
+
               {renderContent()}
             </div>
           </div>
