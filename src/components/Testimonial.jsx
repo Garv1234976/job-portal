@@ -4,6 +4,7 @@ import api from "../services/api";
 function Testimonial() {
   const [testimonials, setTestimonials] = useState([]);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [loading, setLoading] = useState(true);
 
   const fetchTestimonials = async () => {
     try {
@@ -11,6 +12,8 @@ function Testimonial() {
       setTestimonials(res.data.data || []);
     } catch (err) {
       console.error(err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -42,13 +45,30 @@ function Testimonial() {
           <h2 className="fw-bold">What Our Clients Say</h2>
         </div>
 
-        {current && (
+        {/* LOADING */}
+        {loading && (
+          <div className="text-center">
+            <p>Loading testimonials...</p>
+          </div>
+        )}
+
+        {/* EMPTY */}
+        {!loading && testimonials.length === 0 && (
+          <div className="text-center text-muted">
+            No testimonials available
+          </div>
+        )}
+
+        {/* CONTENT */}
+        {!loading && current && (
           <div
+            key={activeIndex}
             className="mx-auto text-center p-5 rounded-4 shadow-sm position-relative"
             style={{
               maxWidth: "700px",
               background: "#fff",
-              transition: "0.4s ease",
+              transition: "all 0.5s ease",
+              animation: "fadeIn 0.5s",
             }}
           >
             {/* QUOTE ICON */}
@@ -81,8 +101,11 @@ function Testimonial() {
             <div className="d-flex flex-column align-items-center">
 
               <img
-                src={`/${current.image}`}
+                src={current.image} // ✅ FIXED (NO "/")
                 alt=""
+                onError={(e) =>
+                  (e.target.src = "/assets/img/default.png")
+                }
                 style={{
                   width: 70,
                   height: 70,
@@ -101,27 +124,40 @@ function Testimonial() {
         )}
 
         {/* DOTS */}
-        <div className="text-center mt-4">
-          {testimonials.map((_, i) => (
-            <span
-              key={i}
-              onClick={() => setActiveIndex(i)}
-              style={{
-                height: 12,
-                width: 12,
-                margin: "0 6px",
-                display: "inline-block",
-                borderRadius: "50%",
-                background: i === activeIndex ? "#00B074" : "#ddd",
-                transition: "0.3s",
-                cursor: "pointer",
-                transform: i === activeIndex ? "scale(1.3)" : "scale(1)",
-              }}
-            ></span>
-          ))}
-        </div>
+        {!loading && testimonials.length > 1 && (
+          <div className="text-center mt-4">
+            {testimonials.map((_, i) => (
+              <span
+                key={i}
+                onClick={() => setActiveIndex(i)}
+                style={{
+                  height: 12,
+                  width: 12,
+                  margin: "0 6px",
+                  display: "inline-block",
+                  borderRadius: "50%",
+                  background: i === activeIndex ? "#00B074" : "#ddd",
+                  transition: "0.3s",
+                  cursor: "pointer",
+                  transform:
+                    i === activeIndex ? "scale(1.3)" : "scale(1)",
+                }}
+              ></span>
+            ))}
+          </div>
+        )}
 
       </div>
+
+      {/* SIMPLE FADE ANIMATION */}
+      <style>
+        {`
+          @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+          }
+        `}
+      </style>
     </div>
   );
 }
