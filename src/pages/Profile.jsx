@@ -6,6 +6,7 @@ import CandidateSidebar from "../components/candidate/CandidateSidebar";
 
 import { FaEdit, FaMapMarkerAlt, FaPhone } from "react-icons/fa";
 import Swal from "sweetalert2";
+import Select from "react-select";
 
 function Profile() {
   const [profile, setProfile] = useState({});
@@ -13,7 +14,6 @@ function Profile() {
   const [editSection, setEditSection] = useState(null);
   const [form, setForm] = useState({});
 
-  // ✅ SAFE ARRAY
   const safeArray = (data) => {
     if (!data) return [];
     try {
@@ -25,7 +25,23 @@ function Profile() {
     }
   };
 
-  // ✅ PROFILE COMPLETION
+  const skillOptions = [
+    { value: "PHP", label: "PHP" },
+    { value: "Laravel", label: "Laravel" },
+    { value: "React", label: "React" },
+    { value: "Vue", label: "Vue" },
+    { value: "Node.js", label: "Node.js" },
+    { value: "MySQL", label: "MySQL" },
+  ];
+
+  const qualificationOptions = [
+    { value: "10th", label: "10th" },
+    { value: "12th", label: "12th" },
+    { value: "Diploma", label: "Diploma" },
+    { value: "Graduate", label: "Graduate" },
+    { value: "Post Graduate", label: "Post Graduate" },
+  ];
+
   const getCompletion = () => {
     let total = 6;
     let filled = 0;
@@ -61,7 +77,6 @@ function Profile() {
     }
   };
 
-  // ✅ PHOTO UPLOAD
   const handlePhotoUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -83,7 +98,6 @@ function Profile() {
     }
   };
 
-  // ✅ SAVE
   const handleSave = async () => {
     try {
       const formData = new FormData();
@@ -117,12 +131,10 @@ function Profile() {
       <div className="container-fluid mt-4 mb-5">
         <div className="row">
 
-          {/* SIDEBAR */}
           <div className="col-md-3 col-lg-2">
             <CandidateSidebar />
           </div>
 
-          {/* MAIN */}
           <div className="col-md-9 col-lg-10">
 
             {/* HEADER */}
@@ -131,7 +143,6 @@ function Profile() {
 
                 <div className="d-flex gap-3 align-items-center">
 
-                  {/* PROFILE IMAGE */}
                   <div style={{ position: "relative", cursor: "pointer" }}>
                     <img
                       src={
@@ -154,10 +165,11 @@ function Profile() {
                         right: 0,
                         background: "#fff",
                         borderRadius: "50%",
-                        padding: "5px",
+                        padding: "6px",
+                        boxShadow: "0 0 6px rgba(0,0,0,0.2)",
                       }}
                     >
-                      <FaEdit size={12} />
+                      <FaEdit size={14} />
                     </span>
 
                     <input
@@ -195,7 +207,6 @@ function Profile() {
                 </button>
               </div>
 
-              {/* PROGRESS */}
               <div className="mt-3">
                 <small>Profile Completion: {getCompletion()}%</small>
                 <div className="progress mt-1">
@@ -211,20 +222,20 @@ function Profile() {
             <div className="card p-4 mb-4 rounded-4">
               <div className="d-flex justify-content-between mb-3">
                 <h5>Skills</h5>
-                <FaEdit
-                  style={{ cursor: "pointer" }}
+                <button
+                  className="btn btn-light btn-sm border"
                   onClick={() => {
                     setEditSection("skills");
                     setForm({ skills: profile.skills });
                   }}
-                />
+                >
+                  <FaEdit />
+                </button>
               </div>
 
               <div className="d-flex flex-wrap gap-2">
                 {profile.skills.map((s, i) => (
-                  <span key={i} className="badge bg-primary">
-                    {s}
-                  </span>
+                  <span key={i} className="badge bg-primary">{s}</span>
                 ))}
               </div>
             </div>
@@ -233,20 +244,20 @@ function Profile() {
             <div className="card p-4 mb-4 rounded-4">
               <div className="d-flex justify-content-between mb-3">
                 <h5>Qualification</h5>
-                <FaEdit
-                  style={{ cursor: "pointer" }}
+                <button
+                  className="btn btn-light btn-sm border"
                   onClick={() => {
                     setEditSection("qualification");
                     setForm({ qualification: profile.qualification });
                   }}
-                />
+                >
+                  <FaEdit />
+                </button>
               </div>
 
               <div className="d-flex flex-wrap gap-2">
                 {profile.qualification.map((q, i) => (
-                  <span key={i} className="badge bg-success">
-                    {q}
-                  </span>
+                  <span key={i} className="badge bg-success">{q}</span>
                 ))}
               </div>
             </div>
@@ -263,49 +274,21 @@ function Profile() {
 
               <h5>Edit {editSection}</h5>
 
-              {editSection === "basic" && (
-                <>
-                  <label>Full Name</label>
-                  <input
-                    className="form-control mb-2"
-                    value={form.full_name || ""}
-                    onChange={(e) =>
-                      setForm({ ...form, full_name: e.target.value })
-                    }
-                  />
-
-                  <label>Phone</label>
-                  <input
-                    className="form-control mb-2"
-                    value={form.phone || ""}
-                    onChange={(e) =>
-                      setForm({ ...form, phone: e.target.value })
-                    }
-                  />
-
-                  <label>Location</label>
-                  <input
-                    className="form-control"
-                    value={form.preferred_location || ""}
-                    onChange={(e) =>
-                      setForm({
-                        ...form,
-                        preferred_location: e.target.value,
-                      })
-                    }
-                  />
-                </>
-              )}
-
               {editSection === "skills" && (
                 <>
                   <label>Skills</label>
-                  <input
-                    className="form-control"
-                    value={form.skills.join(",")}
-                    onChange={(e) =>
-                      setForm({ skills: e.target.value.split(",") })
-                    }
+                  <Select
+                    isMulti
+                    options={skillOptions}
+                    value={form.skills.map((s) => ({ value: s, label: s }))}
+                    onChange={(selected) => {
+                      if (selected.length > 5) {
+                        return Swal.fire("Limit", "Max 5 skills", "warning");
+                      }
+                      setForm({
+                        skills: selected.map((i) => i.value),
+                      });
+                    }}
                   />
                 </>
               )}
@@ -313,20 +296,19 @@ function Profile() {
               {editSection === "qualification" && (
                 <>
                   <label>Qualification</label>
-                  <select
-                    className="form-control"
-                    value={form.qualification?.[0] || ""}
-                    onChange={(e) =>
-                      setForm({ qualification: [e.target.value] })
+                  <Select
+                    isMulti
+                    options={qualificationOptions}
+                    value={form.qualification.map((q) => ({
+                      value: q,
+                      label: q,
+                    }))}
+                    onChange={(selected) =>
+                      setForm({
+                        qualification: selected.map((i) => i.value),
+                      })
                     }
-                  >
-                    <option value="">Select</option>
-                    <option value="10th">10th</option>
-                    <option value="12th">12th</option>
-                    <option value="Diploma">Diploma</option>
-                    <option value="Graduate">Graduate</option>
-                    <option value="Post Graduate">Post Graduate</option>
-                  </select>
+                  />
                 </>
               )}
 
