@@ -1,115 +1,124 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import api from "../services/api";
 
 function Testimonial() {
+  const [testimonials, setTestimonials] = useState([]);
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  const fetchTestimonials = async () => {
+    try {
+      const res = await api.get("/testimonials");
+      setTestimonials(res.data.data || []);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   useEffect(() => {
-    if (window.$ && window.$.fn.owlCarousel) {
-      window.$('.testimonial-carousel').owlCarousel({
-        autoplay: true,
-        smartSpeed: 1000,
-        items: 1,
-        dots: true,
-        loop: true
-      });
-    }
+    fetchTestimonials();
   }, []);
 
+  useEffect(() => {
+    if (testimonials.length === 0) return;
+
+    const interval = setInterval(() => {
+      setActiveIndex((prev) =>
+        prev === testimonials.length - 1 ? 0 : prev + 1
+      );
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, [testimonials]);
+
+  const current = testimonials[activeIndex];
+
   return (
-    <div className="container-xxl py-5 wow fadeInUp" data-wow-delay="0.1s">
+    <div className="container-xxl py-5 bg-light">
       <div className="container">
 
-        <h1 className="text-center mb-5">Our Clients Say!!!</h1>
+        {/* TITLE */}
+        <div className="text-center mb-5">
+          <h6 className="text-primary fw-bold">Testimonials</h6>
+          <h2 className="fw-bold">What Our Clients Say</h2>
+        </div>
 
-        <div className="owl-carousel testimonial-carousel">
+        {current && (
+          <div
+            className="mx-auto text-center p-5 rounded-4 shadow-sm position-relative"
+            style={{
+              maxWidth: "700px",
+              background: "#fff",
+              transition: "0.4s ease",
+            }}
+          >
+            {/* QUOTE ICON */}
+            <div
+              style={{
+                fontSize: 40,
+                color: "#00B074",
+                position: "absolute",
+                top: -20,
+                left: "50%",
+                transform: "translateX(-50%)",
+                background: "#fff",
+                padding: "5px 15px",
+                borderRadius: "50%",
+                boxShadow: "0 5px 15px rgba(0,0,0,0.1)",
+              }}
+            >
+              ❝
+            </div>
 
-          <div className="testimonial-item bg-light rounded p-4">
-            <i className="fa fa-quote-left fa-2x text-primary mb-3"></i>
-
-            <p>
-              Dolor et eos labore, stet justo sed est sed. Diam sed sed dolor stet amet eirmod eos labore diam
+            {/* MESSAGE */}
+            <p
+              className="mt-4 mb-4 text-muted"
+              style={{ fontSize: "16px", lineHeight: "1.7" }}
+            >
+              {current.message}
             </p>
 
-            <div className="d-flex align-items-center">
+            {/* USER */}
+            <div className="d-flex flex-column align-items-center">
+
               <img
-                className="img-fluid flex-shrink-0 rounded"
-                src="/assets/img/testimonial-1.jpg"
-                alt="User"
-                style={{ width: "50px", height: "50px" }}
+                src={`/${current.image}`}
+                alt=""
+                style={{
+                  width: 70,
+                  height: 70,
+                  borderRadius: "50%",
+                  objectFit: "cover",
+                  border: "3px solid #00B074",
+                  marginBottom: 10,
+                }}
               />
 
-              <div className="ps-3">
-                <h5 className="mb-1">Client Name</h5>
-                <small>Profession</small>
-              </div>
+              <h5 className="mb-0 fw-bold">{current.name}</h5>
+              <small className="text-muted">{current.profession}</small>
+
             </div>
           </div>
+        )}
 
-          <div className="testimonial-item bg-light rounded p-4">
-            <i className="fa fa-quote-left fa-2x text-primary mb-3"></i>
-
-            <p>
-              Dolor et eos labore, stet justo sed est sed. Diam sed sed dolor stet amet eirmod eos labore diam
-            </p>
-
-            <div className="d-flex align-items-center">
-              <img
-                className="img-fluid flex-shrink-0 rounded"
-                src="/assets/img/testimonial-2.jpg"
-                alt="User"
-                style={{ width: "50px", height: "50px" }}
-              />
-
-              <div className="ps-3">
-                <h5 className="mb-1">Client Name</h5>
-                <small>Profession</small>
-              </div>
-            </div>
-          </div>
-
-          <div className="testimonial-item bg-light rounded p-4">
-            <i className="fa fa-quote-left fa-2x text-primary mb-3"></i>
-
-            <p>
-              Dolor et eos labore, stet justo sed est sed. Diam sed sed dolor stet amet eirmod eos labore diam
-            </p>
-
-            <div className="d-flex align-items-center">
-              <img
-                className="img-fluid flex-shrink-0 rounded"
-                src="/assets/img/testimonial-3.jpg"
-                alt="User"
-                style={{ width: "50px", height: "50px" }}
-              />
-
-              <div className="ps-3">
-                <h5 className="mb-1">Client Name</h5>
-                <small>Profession</small>
-              </div>
-            </div>
-          </div>
-
-          <div className="testimonial-item bg-light rounded p-4">
-            <i className="fa fa-quote-left fa-2x text-primary mb-3"></i>
-
-            <p>
-              Dolor et eos labore, stet justo sed est sed. Diam sed sed dolor stet amet eirmod eos labore diam
-            </p>
-
-            <div className="d-flex align-items-center">
-              <img
-                className="img-fluid flex-shrink-0 rounded"
-                src="/assets/img/testimonial-4.jpg"
-                alt="User"
-                style={{ width: "50px", height: "50px" }}
-              />
-
-              <div className="ps-3">
-                <h5 className="mb-1">Client Name</h5>
-                <small>Profession</small>
-              </div>
-            </div>
-          </div>
-
+        {/* DOTS */}
+        <div className="text-center mt-4">
+          {testimonials.map((_, i) => (
+            <span
+              key={i}
+              onClick={() => setActiveIndex(i)}
+              style={{
+                height: 12,
+                width: 12,
+                margin: "0 6px",
+                display: "inline-block",
+                borderRadius: "50%",
+                background: i === activeIndex ? "#00B074" : "#ddd",
+                transition: "0.3s",
+                cursor: "pointer",
+                transform: i === activeIndex ? "scale(1.3)" : "scale(1)",
+              }}
+            ></span>
+          ))}
         </div>
 
       </div>
