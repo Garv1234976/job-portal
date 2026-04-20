@@ -4,14 +4,26 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import CandidateSidebar from "../components/candidate/CandidateSidebar";
 
-import { FaEdit, FaUser, FaMapMarkerAlt, FaPhone } from "react-icons/fa";
-import Swal from "sweetalert2";
+import { FaEdit, FaMapMarkerAlt, FaPhone } from "react-icons/fa";
 
 function Profile() {
   const [profile, setProfile] = useState({});
   const [loading, setLoading] = useState(true);
 
-  // ✅ PROFILE COMPLETION CALCULATION
+  // ✅ SAFE ARRAY (MAIN FIX)
+  const safeArray = (data) => {
+    if (!data) return [];
+
+    try {
+      if (Array.isArray(data)) return data;
+      if (typeof data === "string") return JSON.parse(data);
+      return [];
+    } catch {
+      return [];
+    }
+  };
+
+  // ✅ PROFILE COMPLETION
   const getCompletion = () => {
     let total = 6;
     let filled = 0;
@@ -19,8 +31,8 @@ function Profile() {
     if (profile.full_name) filled++;
     if (profile.phone) filled++;
     if (profile.preferred_location) filled++;
-    if (profile.skills?.length) filled++;
-    if (profile.qualification?.length) filled++;
+    if (safeArray(profile.skills).length) filled++;
+    if (safeArray(profile.qualification).length) filled++;
     if (profile.cv) filled++;
 
     return Math.round((filled / total) * 100);
@@ -33,7 +45,15 @@ function Profile() {
   const fetchProfile = async () => {
     try {
       const res = await API.get("/profile");
-      setProfile(res.data.data);
+      const data = res.data.data;
+
+      // ✅ NORMALIZE HERE (IMPORTANT)
+      setProfile({
+        ...data,
+        skills: safeArray(data.skills),
+        qualification: safeArray(data.qualification),
+      });
+
       setLoading(false);
     } catch {
       setLoading(false);
@@ -89,7 +109,7 @@ function Profile() {
                 </button>
               </div>
 
-              {/* PROGRESS BAR */}
+              {/* PROGRESS */}
               <div className="mt-3">
                 <small>Profile Completion: {getCompletion()}%</small>
                 <div className="progress">
@@ -109,8 +129,8 @@ function Profile() {
               </div>
 
               <div className="mt-2">
-                {profile.skills?.length ? (
-                  profile.skills.map((s, i) => (
+                {safeArray(profile.skills).length ? (
+                  safeArray(profile.skills).map((s, i) => (
                     <span key={i} className="badge bg-primary me-2 mb-2">
                       {s}
                     </span>
@@ -129,8 +149,8 @@ function Profile() {
               </div>
 
               <div className="mt-2">
-                {profile.qualification?.length ? (
-                  profile.qualification.map((q, i) => (
+                {safeArray(profile.qualification).length ? (
+                  safeArray(profile.qualification).map((q, i) => (
                     <span key={i} className="badge bg-success me-2 mb-2">
                       {q}
                     </span>
