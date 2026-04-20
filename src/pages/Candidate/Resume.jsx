@@ -30,8 +30,8 @@ export default function Resume() {
   const resumeUrl = resume?.startsWith("http")
     ? resume
     : resume
-      ? `https://server.budes.online/public/${resume}`
-      : null;
+    ? `https://server.budes.online/public/${resume}`
+    : null;
 
   // 📄 FILE NAME
   const fileName = resume ? resume.split("/").pop() : "";
@@ -39,12 +39,15 @@ export default function Resume() {
   // 📄 FILE TYPE CHECK
   const isPDF = resumeUrl?.toLowerCase().endsWith(".pdf");
 
-  // ❌ REMOVE RESUME
+  // ❌ REMOVE RESUME (UPDATED ✅)
   const handleRemove = async () => {
     if (!window.confirm("Are you sure you want to remove resume?")) return;
 
     try {
-      await api.post("/resume/remove");
+      await api.post("/resume/upload", {
+        remove: 1,
+      });
+
       setResume(null);
     } catch (err) {
       console.error(err);
@@ -71,6 +74,7 @@ export default function Resume() {
                 <p>Loading...</p>
               ) : resume ? (
                 <div className="card p-4 shadow-sm">
+                  
                   {/* FILE INFO */}
                   <div className="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
                     <div>
@@ -80,6 +84,8 @@ export default function Resume() {
 
                     {/* ACTION BUTTONS */}
                     <div className="d-flex gap-2">
+
+                      {/* VIEW */}
                       <a
                         href={`https://docs.google.com/gview?url=${encodeURIComponent(resumeUrl)}&embedded=true`}
                         target="_blank"
@@ -89,26 +95,29 @@ export default function Resume() {
                         View
                       </a>
 
+                      {/* DOWNLOAD */}
                       <a
                         href={resumeUrl}
                         download
                         target="_blank"
-                        rel="noreferrer"
+                        rel="noopener noreferrer"
                         className="btn btn-success btn-sm"
                       >
                         Download
                       </a>
 
+                      {/* REMOVE */}
                       <button
                         className="btn btn-danger btn-sm"
                         onClick={handleRemove}
                       >
                         Remove
                       </button>
+
                     </div>
                   </div>
 
-                  {/* PREVIEW SECTION */}
+                  {/* PREVIEW */}
                   <div style={{ border: "1px solid #ddd" }}>
                     {isPDF ? (
                       <iframe
@@ -122,12 +131,12 @@ export default function Resume() {
                         <i className="fa fa-file fa-3x text-secondary mb-3"></i>
                         <h6 className="mb-2">Preview not available</h6>
                         <p className="text-muted">
-                          This file type cannot be previewed. Please download to
-                          view.
+                          This file type cannot be previewed. Please download to view.
                         </p>
                       </div>
                     )}
                   </div>
+
                 </div>
               ) : (
                 <div className="text-center py-5">
