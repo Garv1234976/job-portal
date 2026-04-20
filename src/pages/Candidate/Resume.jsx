@@ -26,11 +26,18 @@ export default function Resume() {
     fetchProfile();
   }, []);
 
+  // 🔗 FIX URL
   const resumeUrl = resume?.startsWith("http")
     ? resume
-    : `https://server.budes.online/public/${resume}`;
+    : resume
+    ? `https://server.budes.online/public/${resume}`
+    : null;
 
+  // 📄 FILE NAME
   const fileName = resume ? resume.split("/").pop() : "";
+
+  // 📄 FILE TYPE CHECK
+  const isPDF = resumeUrl?.toLowerCase().endsWith(".pdf");
 
   // ❌ REMOVE RESUME
   const handleRemove = async () => {
@@ -64,8 +71,9 @@ export default function Resume() {
                 <p>Loading...</p>
               ) : resume ? (
                 <div className="card p-4 shadow-sm">
+
                   {/* FILE INFO */}
-                  <div className="d-flex justify-content-between align-items-center mb-3">
+                  <div className="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
                     <div>
                       <h6 className="mb-1">{fileName}</h6>
                       <small className="text-muted">Uploaded Resume</small>
@@ -85,6 +93,8 @@ export default function Resume() {
                       <a
                         href={resumeUrl}
                         download
+                        target="_blank"
+                        rel="noreferrer"
                         className="btn btn-success btn-sm"
                       >
                         Download
@@ -99,15 +109,26 @@ export default function Resume() {
                     </div>
                   </div>
 
-                  {/* PREVIEW */}
+                  {/* PREVIEW SECTION */}
                   <div style={{ border: "1px solid #ddd" }}>
-                    <iframe
-                      src={resumeUrl}
-                      title="Resume Preview"
-                      width="100%"
-                      height="500px"
-                    />
+                    {isPDF ? (
+                      <iframe
+                        src={resumeUrl}
+                        title="Resume Preview"
+                        width="100%"
+                        height="500px"
+                      />
+                    ) : (
+                      <div className="text-center p-5 bg-light">
+                        <i className="fa fa-file fa-3x text-secondary mb-3"></i>
+                        <h6 className="mb-2">Preview not available</h6>
+                        <p className="text-muted">
+                          This file type cannot be previewed. Please download to view.
+                        </p>
+                      </div>
+                    )}
                   </div>
+
                 </div>
               ) : (
                 <div className="text-center py-5">
