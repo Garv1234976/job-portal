@@ -205,9 +205,13 @@ function Profile() {
                 </button>
               </div>
 
-              {profile.skills.map((s, i) => (
-                <span key={i} className="badge bg-primary me-2">{s}</span>
-              ))}
+               <div className="d-flex flex-wrap gap-2">
+                {profile.skills.map((s, i) => (
+                  <span key={i} className="badge bg-primary">
+                    {s}
+                  </span>
+                ))}
+              </div>
             </div>
 
             {/* QUALIFICATION */}
@@ -225,9 +229,13 @@ function Profile() {
                 </button>
               </div>
 
-              {profile.qualification.map((q, i) => (
-                <span key={i} className="badge bg-success me-2">{q}</span>
-              ))}
+               <div className="d-flex flex-wrap gap-2">
+                {profile.qualification.map((q, i) => (
+                  <span key={i} className="badge bg-success">
+                    {q}
+                  </span>
+                ))}
+              </div>
             </div>
 
           </div>
