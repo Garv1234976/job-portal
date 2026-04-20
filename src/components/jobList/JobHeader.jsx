@@ -6,40 +6,41 @@ function JobHeader() {
         backgroundImage: "url('/assets/img/carousel-1.jpg')",
         backgroundSize: "cover",
         backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
       }}
     >
       {/* ✅ DARK OVERLAY */}
       <div
+        className="position-absolute top-0 start-0 w-100 h-100"
         style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          width: "100%",
-          height: "100%",
-          background: "rgba(0,0,0,0.6)",
-          zIndex: 1,
+          background: "rgba(0, 0, 0, 0.6)",
         }}
       ></div>
 
-      {/* CONTENT */}
-      <div className="container my-5 pt-5 pb-4 position-relative" style={{ zIndex: 2 }}>
+      {/* ✅ CONTENT */}
+      <div className="container my-5 pt-5 pb-4 position-relative text-center">
 
         <h1 className="display-3 text-white mb-3">
           Job List
         </h1>
 
         <nav aria-label="breadcrumb">
-          <ol className="breadcrumb text-uppercase">
+          <ol className="breadcrumb justify-content-center text-uppercase mb-0">
 
             <li className="breadcrumb-item">
-              <a href="/" className="text-white">Home</a>
+              <a href="/" className="text-white text-decoration-none">
+                Home
+              </a>
             </li>
 
             <li className="breadcrumb-item">
-              <a href="#" className="text-white">Pages</a>
+              <span className="text-white-50">Pages</span>
             </li>
 
-            <li className="breadcrumb-item text-white active">
+            <li
+              className="breadcrumb-item text-white active"
+              aria-current="page"
+            >
               Job List
             </li>
 
