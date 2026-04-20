@@ -17,8 +17,6 @@ import {
   FaPlus,
 } from "react-icons/fa";
 
-// ✅ IMPORTANT (Bootstrap JS for toggle)
-import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 function Navbar() {
   const navigate = useNavigate();
