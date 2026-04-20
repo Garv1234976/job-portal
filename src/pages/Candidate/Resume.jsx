@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import api from "../../services/api";
+import Swal from "sweetalert2";
 
 import CandidateSidebar from "../../components/candidate/CandidateSidebar";
 import Navbar from "../../components/Navbar";
@@ -38,9 +39,12 @@ export default function Resume() {
   const fileName = resume ? resume.split("/").pop() : "";
   const isPDF = resumeUrl?.toLowerCase().endsWith(".pdf");
 
-  // 🔥 UPLOAD RESUME
+  // 🔥 UPLOAD
   const handleUpload = async () => {
-    if (!file) return alert("Please select file");
+    if (!file) {
+      Swal.fire("Error", "Please select a file", "error");
+      return;
+    }
 
     const formData = new FormData();
     formData.append("cv", file);
@@ -48,10 +52,13 @@ export default function Resume() {
     try {
       setUploading(true);
       await api.post("/resume/upload", formData);
-      fetchProfile(); // refresh resume
+
+      Swal.fire("Success", "Resume uploaded successfully", "success");
+
+      fetchProfile();
       setFile(null);
     } catch (err) {
-      console.error(err);
+      Swal.fire("Error", "Upload failed", "error");
     } finally {
       setUploading(false);
     }
@@ -59,13 +66,24 @@ export default function Resume() {
 
   // ❌ REMOVE
   const handleRemove = async () => {
-    if (!window.confirm("Remove resume?")) return;
+    const confirm = await Swal.fire({
+      title: "Are you sure?",
+      text: "You want to remove resume",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, remove",
+    });
+
+    if (!confirm.isConfirmed) return;
 
     try {
       await api.post("/resume/upload", { remove: 1 });
+
+      Swal.fire("Deleted", "Resume removed", "success");
+
       setResume(null);
     } catch (err) {
-      console.error(err);
+      Swal.fire("Error", "Failed to remove", "error");
     }
   };
 
@@ -96,13 +114,15 @@ export default function Resume() {
                     </div>
 
                     <div className="d-flex gap-2">
+
+                      {/* ✅ SEE RESUME (UPDATED TEXT) */}
                       <a
                         href={`https://docs.google.com/gview?url=${encodeURIComponent(resumeUrl)}&embedded=true`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="btn btn-outline-primary btn-sm"
                       >
-                        View
+                        See Resume
                       </a>
 
                       <a
@@ -121,6 +141,7 @@ export default function Resume() {
                       >
                         Remove
                       </button>
+
                     </div>
                   </div>
 
@@ -149,10 +170,11 @@ export default function Resume() {
 
                   <p className="text-muted mb-3">No resume uploaded</p>
 
-                  {/* FILE INPUT */}
+                  {/* ✅ FILE TYPE RESTRICTED */}
                   <input
                     type="file"
                     className="form-control mb-3"
+                    accept=".pdf,.doc,.docx"
                     onChange={(e) => setFile(e.target.files[0])}
                   />
 
