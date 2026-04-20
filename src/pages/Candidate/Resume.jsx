@@ -14,7 +14,6 @@ export default function Resume() {
     try {
       const res = await api.get("/profile");
       const data = res.data.data;
-
       setResume(data?.cv || null);
     } catch (err) {
       console.error(err);
@@ -27,20 +26,23 @@ export default function Resume() {
     fetchProfile();
   }, []);
 
-  // 🔗 FULL URL (important)
-  const getResumeUrl = () => {
-    if (!resume) return null;
-    return `https://server.budes.online/public/${resume}`;
+  // 🔗 URL
+  const resumeUrl = resume;
+
+  // 📄 FILE NAME
+  const fileName = resume ? resume.split("/").pop() : "";
+
+  // ❌ REMOVE RESUME
+  const handleRemove = async () => {
+    if (!window.confirm("Are you sure you want to remove resume?")) return;
+
+    try {
+      await api.post("/resume/remove");
+      setResume(null);
+    } catch (err) {
+      console.error(err);
+    }
   };
-
-  const resumeUrl = getResumeUrl();
-
-  // 📄 CHECK TYPE
-  const isPDF = resumeUrl?.endsWith(".pdf");
-  const isImage =
-    resumeUrl?.endsWith(".jpg") ||
-    resumeUrl?.endsWith(".jpeg") ||
-    resumeUrl?.endsWith(".png");
 
   return (
     <>
@@ -63,48 +65,66 @@ export default function Resume() {
               {loading ? (
                 <p>Loading...</p>
               ) : resume ? (
-                <>
-                  {/* PREVIEW SECTION */}
-                  <div className="mb-4">
+                <div className="card p-4 shadow-sm">
 
-                    {isPDF && (
-                      <iframe
-                        src={resumeUrl}
-                        title="Resume Preview"
-                        width="100%"
-                        height="500px"
-                        style={{ border: "1px solid #ddd" }}
-                      />
-                    )}
+                  {/* FILE INFO */}
+                  <div className="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                      <h6 className="mb-1">{fileName}</h6>
+                      <small className="text-muted">Uploaded Resume</small>
+                    </div>
 
-                    {isImage && (
-                      <img
-                        src={resumeUrl}
-                        alt="Resume"
-                        className="img-fluid border"
-                      />
-                    )}
+                    {/* ACTION BUTTONS */}
+                    <div className="d-flex gap-2">
 
-                    {!isPDF && !isImage && (
-                      <div className="alert alert-info">
-                        Preview not supported. Please download the file.
-                      </div>
-                    )}
+                      <a
+                        href={resumeUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="btn btn-outline-primary btn-sm"
+                      >
+                        View
+                      </a>
 
+                      <a
+                        href={resumeUrl}
+                        download
+                        className="btn btn-success btn-sm"
+                      >
+                        Download
+                      </a>
+
+                      <button
+                        className="btn btn-danger btn-sm"
+                        onClick={handleRemove}
+                      >
+                        Remove
+                      </button>
+
+                    </div>
                   </div>
 
-                  {/* DOWNLOAD BUTTON */}
-                  <a
-                    href={resumeUrl}
-                    download
-                    className="btn btn-success"
-                  >
-                    ⬇ Download Resume
-                  </a>
-                </>
+                  {/* PREVIEW */}
+                  <div style={{ border: "1px solid #ddd" }}>
+                    <iframe
+                      src={resumeUrl}
+                      title="Resume Preview"
+                      width="100%"
+                      height="500px"
+                    />
+                  </div>
+
+                </div>
               ) : (
-                <div className="text-center text-muted">
-                  <p>No resume uploaded yet.</p>
+                <div className="text-center py-5">
+                  <p className="text-muted mb-3">No resume uploaded</p>
+
+                  <button
+                    className="btn btn-primary"
+                    onClick={() => window.location.href = "/profile"}
+                  >
+                    Upload Resume
+                  </button>
                 </div>
               )}
 
