@@ -3,7 +3,7 @@ function CategoryHeader() {
     <div
       className="container-xxl py-5 page-header mb-5"
       style={{
-        backgroundImage: "url('/assets/img/carousel-1.jpg')",
+        backgroundImage: "url('/assets/img/category.jpg')",
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",

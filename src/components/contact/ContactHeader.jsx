@@ -3,7 +3,7 @@ function ContactHeader() {
     <div
       className="container-xxl py-5 page-header mb-5"
       style={{
-        backgroundImage: "url('/assets/img/carousel-1.jpg')",
+        backgroundImage: "url('/assets/img/contact.jpg')",
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",

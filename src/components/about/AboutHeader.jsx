@@ -3,7 +3,7 @@ function AboutHeader() {
     <div
       className="container-xxl py-5 page-header mb-5"
       style={{
-        backgroundImage: "url('/assets/img/about.jpg')",
+        backgroundImage: "url('/assets/img/abouth.jpg')",
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
