@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import api from "../../services/api";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
 import CandidateSidebar from "../../components/candidate/CandidateSidebar";
 import Navbar from "../../components/Navbar";
@@ -30,9 +31,28 @@ export default function SavedJobs() {
     }
   };
 
-  const removeJob = async (id) => {
-    await api.post("/unsave-job", { job_id: id });
-    fetchJobs();
+  // ✅ UPDATED REMOVE FUNCTION WITH SWEETALERT
+  const handleRemove = async (id) => {
+    const confirm = await Swal.fire({
+      title: "Are you sure?",
+      text: "You want to remove this saved job",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, remove",
+      cancelButtonText: "Cancel",
+    });
+
+    if (!confirm.isConfirmed) return;
+
+    try {
+      await api.post("/unsave-job", { job_id: id });
+
+      Swal.fire("Removed!", "Job removed successfully", "success");
+
+      fetchJobs();
+    } catch (err) {
+      Swal.fire("Error", "Failed to remove job", "error");
+    }
   };
 
   useEffect(() => {
@@ -112,8 +132,8 @@ export default function SavedJobs() {
                           {/* ACTION */}
                           <td>
                             <div className="d-flex gap-2">
-                              
-                              {/* VIEW BUTTON */}
+
+                              {/* VIEW */}
                               <button
                                 className="btn btn-sm btn-primary"
                                 onClick={(e) => {
@@ -124,12 +144,12 @@ export default function SavedJobs() {
                                 View
                               </button>
 
-                              {/* REMOVE */}
+                              {/* REMOVE (UPDATED) */}
                               <button
                                 className="btn btn-sm btn-danger"
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  removeJob(job.id);
+                                  handleRemove(job.id);
                                 }}
                               >
                                 Remove
