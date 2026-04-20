@@ -61,6 +61,28 @@ function Profile() {
     }
   };
 
+  // ✅ PHOTO UPLOAD
+  const handlePhotoUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const allowed = ["image/jpeg", "image/png", "image/jpg"];
+    if (!allowed.includes(file.type)) {
+      return Swal.fire("Error", "Only JPG, JPEG, PNG allowed", "error");
+    }
+
+    const formData = new FormData();
+    formData.append("photo", file);
+
+    try {
+      await API.post("/update-profile", formData);
+      Swal.fire("Success", "Photo updated", "success");
+      fetchProfile();
+    } catch {
+      Swal.fire("Error", "Upload failed", "error");
+    }
+  };
+
   // ✅ SAVE
   const handleSave = async () => {
     try {
@@ -108,32 +130,58 @@ function Profile() {
               <div className="d-flex justify-content-between align-items-center flex-wrap gap-3">
 
                 <div className="d-flex gap-3 align-items-center">
-                  <img
-                    src={
-                      profile.photo
-                        ? `https://server.budes.online/public/${profile.photo}`
-                        : "/assets/img/default.png"
-                    }
-                    className="rounded-circle"
-                    style={{ width: 80, height: 80, objectFit: "cover" }}
-                    alt=""
-                  />
+
+                  {/* PROFILE IMAGE */}
+                  <div style={{ position: "relative", cursor: "pointer" }}>
+                    <img
+                      src={
+                        profile.photo
+                          ? `https://server.budes.online/public/${profile.photo}`
+                          : "/assets/img/default.png"
+                      }
+                      className="rounded-circle"
+                      style={{ width: 90, height: 90, objectFit: "cover" }}
+                      alt=""
+                      onClick={() =>
+                        document.getElementById("photoInput").click()
+                      }
+                    />
+
+                    <span
+                      style={{
+                        position: "absolute",
+                        bottom: 0,
+                        right: 0,
+                        background: "#fff",
+                        borderRadius: "50%",
+                        padding: "5px",
+                      }}
+                    >
+                      <FaEdit size={12} />
+                    </span>
+
+                    <input
+                      type="file"
+                      id="photoInput"
+                      hidden
+                      accept="image/png, image/jpeg, image/jpg"
+                      onChange={handlePhotoUpload}
+                    />
+                  </div>
 
                   <div>
-                    <h4 className="mb-1 fw-bold">{profile.full_name}</h4>
-                    <p className="mb-1 text-muted">
-                      <FaMapMarkerAlt className="me-1" />
-                      {profile.preferred_location || "N/A"}
+                    <h4 className="fw-bold">{profile.full_name}</h4>
+                    <p className="text-muted mb-1">
+                      <FaMapMarkerAlt /> {profile.preferred_location}
                     </p>
-                    <p className="mb-0 text-muted">
-                      <FaPhone className="me-1" />
-                      {profile.phone || "N/A"}
+                    <p className="text-muted">
+                      <FaPhone /> {profile.phone}
                     </p>
                   </div>
                 </div>
 
                 <button
-                  className="btn btn-primary btn-sm px-3"
+                  className="btn btn-primary btn-sm"
                   onClick={() => {
                     setEditSection("basic");
                     setForm({
@@ -143,7 +191,7 @@ function Profile() {
                     });
                   }}
                 >
-                  <FaEdit className="me-1" /> Edit Profile
+                  <FaEdit /> Edit Profile
                 </button>
               </div>
 
@@ -160,98 +208,47 @@ function Profile() {
             </div>
 
             {/* SKILLS */}
-            <div className="card shadow-sm p-4 mb-4 border-0 rounded-4">
-              <div className="d-flex justify-content-between align-items-center mb-3">
-                <h5 className="fw-bold mb-0">Skills</h5>
-
-                <button
-                  className="btn btn-light btn-sm border"
+            <div className="card p-4 mb-4 rounded-4">
+              <div className="d-flex justify-content-between mb-3">
+                <h5>Skills</h5>
+                <FaEdit
+                  style={{ cursor: "pointer" }}
                   onClick={() => {
                     setEditSection("skills");
                     setForm({ skills: profile.skills });
                   }}
-                >
-                  <FaEdit />
-                </button>
+                />
               </div>
 
-              {profile.skills.length ? (
-                <div className="d-flex flex-wrap gap-2">
-                  {profile.skills.map((s, i) => (
-                    <span
-                      key={i}
-                      className="badge rounded-pill px-3 py-2"
-                      style={{
-                        background: "#e7f3ff",
-                        color: "#0d6efd",
-                        fontWeight: 500,
-                      }}
-                    >
-                      {s}
-                    </span>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-muted mb-0">No skills added</p>
-              )}
+              <div className="d-flex flex-wrap gap-2">
+                {profile.skills.map((s, i) => (
+                  <span key={i} className="badge bg-primary">
+                    {s}
+                  </span>
+                ))}
+              </div>
             </div>
 
             {/* QUALIFICATION */}
-            <div className="card shadow-sm p-4 mb-4 border-0 rounded-4">
-              <div className="d-flex justify-content-between align-items-center mb-3">
-                <h5 className="fw-bold mb-0">Qualification</h5>
-
-                <button
-                  className="btn btn-light btn-sm border"
+            <div className="card p-4 mb-4 rounded-4">
+              <div className="d-flex justify-content-between mb-3">
+                <h5>Qualification</h5>
+                <FaEdit
+                  style={{ cursor: "pointer" }}
                   onClick={() => {
                     setEditSection("qualification");
                     setForm({ qualification: profile.qualification });
                   }}
-                >
-                  <FaEdit />
-                </button>
+                />
               </div>
 
-              {profile.qualification.length ? (
-                <div className="d-flex flex-wrap gap-2">
-                  {profile.qualification.map((q, i) => (
-                    <span
-                      key={i}
-                      className="badge rounded-pill px-3 py-2"
-                      style={{
-                        background: "#e6f9f0",
-                        color: "#198754",
-                        fontWeight: 500,
-                      }}
-                    >
-                      {q}
-                    </span>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-muted mb-0">No qualification added</p>
-              )}
-            </div>
-
-            {/* ABOUT */}
-            <div className="card shadow-sm p-4 mb-4 border-0 rounded-4">
-              <div className="d-flex justify-content-between align-items-center mb-3">
-                <h5 className="fw-bold mb-0">About</h5>
-
-                <button
-                  className="btn btn-light btn-sm border"
-                  onClick={() => {
-                    setEditSection("about");
-                    setForm({ introduction: profile.introduction });
-                  }}
-                >
-                  <FaEdit />
-                </button>
+              <div className="d-flex flex-wrap gap-2">
+                {profile.qualification.map((q, i) => (
+                  <span key={i} className="badge bg-success">
+                    {q}
+                  </span>
+                ))}
               </div>
-
-              <p className="text-muted mb-0">
-                {profile.introduction || "No introduction added"}
-              </p>
             </div>
 
           </div>
@@ -264,10 +261,11 @@ function Profile() {
           <div className="modal-dialog">
             <div className="modal-content p-3">
 
-              <h5 className="fw-bold mb-3">Edit {editSection}</h5>
+              <h5>Edit {editSection}</h5>
 
               {editSection === "basic" && (
                 <>
+                  <label>Full Name</label>
                   <input
                     className="form-control mb-2"
                     value={form.full_name || ""}
@@ -275,6 +273,8 @@ function Profile() {
                       setForm({ ...form, full_name: e.target.value })
                     }
                   />
+
+                  <label>Phone</label>
                   <input
                     className="form-control mb-2"
                     value={form.phone || ""}
@@ -282,6 +282,8 @@ function Profile() {
                       setForm({ ...form, phone: e.target.value })
                     }
                   />
+
+                  <label>Location</label>
                   <input
                     className="form-control"
                     value={form.preferred_location || ""}
@@ -296,36 +298,36 @@ function Profile() {
               )}
 
               {editSection === "skills" && (
-                <input
-                  className="form-control"
-                  value={form.skills.join(",")}
-                  onChange={(e) =>
-                    setForm({ skills: e.target.value.split(",") })
-                  }
-                />
+                <>
+                  <label>Skills</label>
+                  <input
+                    className="form-control"
+                    value={form.skills.join(",")}
+                    onChange={(e) =>
+                      setForm({ skills: e.target.value.split(",") })
+                    }
+                  />
+                </>
               )}
 
               {editSection === "qualification" && (
-                <input
-                  className="form-control"
-                  value={form.qualification.join(",")}
-                  onChange={(e) =>
-                    setForm({
-                      qualification: e.target.value.split(","),
-                    })
-                  }
-                />
-              )}
-
-              {editSection === "about" && (
-                <textarea
-                  className="form-control"
-                  rows="4"
-                  value={form.introduction || ""}
-                  onChange={(e) =>
-                    setForm({ introduction: e.target.value })
-                  }
-                />
+                <>
+                  <label>Qualification</label>
+                  <select
+                    className="form-control"
+                    value={form.qualification?.[0] || ""}
+                    onChange={(e) =>
+                      setForm({ qualification: [e.target.value] })
+                    }
+                  >
+                    <option value="">Select</option>
+                    <option value="10th">10th</option>
+                    <option value="12th">12th</option>
+                    <option value="Diploma">Diploma</option>
+                    <option value="Graduate">Graduate</option>
+                    <option value="Post Graduate">Post Graduate</option>
+                  </select>
+                </>
               )}
 
               <div className="mt-3 text-end">
@@ -335,7 +337,6 @@ function Profile() {
                 >
                   Cancel
                 </button>
-
                 <button className="btn btn-primary" onClick={handleSave}>
                   Save
                 </button>
