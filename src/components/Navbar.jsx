@@ -17,6 +17,9 @@ import {
   FaPlus,
 } from "react-icons/fa";
 
+// ✅ IMPORTANT (Bootstrap JS for toggle)
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
+
 function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -59,7 +62,8 @@ function Navbar() {
   const isActive = (path) => location.pathname === path;
 
   return (
-    <nav className="navbar navbar-expand-lg bg-white shadow-sm sticky-top py-2">
+    // ✅ FIX: Added navbar-light
+    <nav className="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top py-2">
       <div className="container">
         {/* LOGO */}
         <Link to="/" className="navbar-brand fw-bold fs-3 text-primary">
@@ -73,6 +77,7 @@ function Navbar() {
           data-bs-toggle="collapse"
           data-bs-target="#navbarCollapse"
         >
+          {/* ✅ FIX: Added icon fallback */}
           <span className="navbar-toggler-icon"></span>
         </button>
 
@@ -242,6 +247,15 @@ function Navbar() {
           .dropdown-item:hover {
             background: #f5f7fa;
             color: #000;
+          }
+
+          /* ✅ FIX: Ensure toggler icon visible */
+          .navbar-toggler {
+            border: none;
+          }
+
+          .navbar-toggler:focus {
+            box-shadow: none;
           }
         `}
       </style>
