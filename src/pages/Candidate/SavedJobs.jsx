@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import api from "../../services/api";
+import { useNavigate } from "react-router-dom";
 
 import CandidateSidebar from "../../components/candidate/CandidateSidebar";
 import Navbar from "../../components/Navbar";
@@ -13,6 +14,7 @@ export default function SavedJobs() {
   const [total, setTotal] = useState(0);
 
   const perPage = 5;
+  const navigate = useNavigate();
 
   const fetchJobs = async () => {
     try {
@@ -72,7 +74,7 @@ export default function SavedJobs() {
 
               {/* TABLE */}
               <div className="table-responsive">
-                <table className="table table-bordered">
+                <table className="table table-bordered table-hover">
                   <thead>
                     <tr>
                       <th>#</th>
@@ -88,20 +90,52 @@ export default function SavedJobs() {
                   <tbody>
                     {jobs.length > 0 ? (
                       jobs.map((job, i) => (
-                        <tr key={job.id}>
+                        <tr
+                          key={job.id}
+                          style={{ cursor: "pointer" }}
+                          onClick={() => navigate(`/job/${job.id}`)}
+                        >
                           <td>{(page - 1) * perPage + i + 1}</td>
+
                           <td>{job.job_title}</td>
+
                           <td>{job.company_name || "N/A"}</td>
+
                           <td>{job.location}</td>
+
                           <td>₹ {job.salary_range || "N/A"}</td>
-                          <td>{new Date(job.created_at).toLocaleDateString()}</td>
+
                           <td>
-                            <button
-                              className="btn btn-danger btn-sm"
-                              onClick={() => removeJob(job.id)}
-                            >
-                              Remove
-                            </button>
+                            {new Date(job.created_at).toLocaleDateString()}
+                          </td>
+
+                          {/* ACTION */}
+                          <td>
+                            <div className="d-flex gap-2">
+                              
+                              {/* VIEW BUTTON */}
+                              <button
+                                className="btn btn-sm btn-primary"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  navigate(`/job/${job.id}`);
+                                }}
+                              >
+                                View
+                              </button>
+
+                              {/* REMOVE */}
+                              <button
+                                className="btn btn-sm btn-danger"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  removeJob(job.id);
+                                }}
+                              >
+                                Remove
+                              </button>
+
+                            </div>
                           </td>
                         </tr>
                       ))
@@ -116,17 +150,15 @@ export default function SavedJobs() {
                 </table>
               </div>
 
-              {/* ✅ PAGINATION */}
+              {/* PAGINATION */}
               {totalPages > 1 && (
                 <div className="d-flex justify-content-between align-items-center mt-3">
 
-                  {/* LEFT INFO */}
                   <div>
                     Showing page <strong>{page}</strong> of{" "}
                     <strong>{totalPages}</strong>
                   </div>
 
-                  {/* RIGHT BUTTONS */}
                   <div className="d-flex gap-2">
 
                     <button
@@ -137,7 +169,6 @@ export default function SavedJobs() {
                       Prev
                     </button>
 
-                    {/* PAGE NUMBERS */}
                     {[...Array(totalPages)].map((_, i) => (
                       <button
                         key={i}

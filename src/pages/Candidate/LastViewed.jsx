@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import api from "../../services/api";
+import { useNavigate } from "react-router-dom";
 
 import CandidateSidebar from "../../components/candidate/CandidateSidebar";
 import Navbar from "../../components/Navbar";
@@ -13,6 +14,7 @@ export default function LastViewed() {
   const [total, setTotal] = useState(0);
 
   const perPage = 5;
+  const navigate = useNavigate();
 
   // 🔥 FETCH LAST VIEWED
   const fetchJobs = async () => {
@@ -69,7 +71,7 @@ export default function LastViewed() {
 
               {/* TABLE */}
               <div className="table-responsive">
-                <table className="table table-bordered">
+                <table className="table table-bordered table-hover">
                   <thead>
                     <tr>
                       <th>#</th>
@@ -78,26 +80,50 @@ export default function LastViewed() {
                       <th>Location</th>
                       <th>Salary</th>
                       <th>Viewed At</th>
+                      <th>Action</th> {/* ✅ ADDED */}
                     </tr>
                   </thead>
 
                   <tbody>
                     {jobs.length > 0 ? (
                       jobs.map((job, i) => (
-                        <tr key={job.id}>
+                        <tr
+                          key={job.id}
+                          style={{ cursor: "pointer" }}
+                          onClick={() => navigate(`/job/${job.id}`)}
+                        >
                           <td>{(page - 1) * perPage + i + 1}</td>
+
                           <td>{job.job_title}</td>
+
                           <td>{job.company_name || "N/A"}</td>
+
                           <td>{job.location}</td>
+
                           <td>₹ {job.salary_range || "N/A"}</td>
+
                           <td>
                             {new Date(job.created_at).toLocaleDateString()}
                           </td>
+
+                          {/* ✅ ACTION BUTTON */}
+                          <td>
+                            <button
+                              className="btn btn-sm btn-primary"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                navigate(`/job/${job.id}`);
+                              }}
+                            >
+                              View
+                            </button>
+                          </td>
+
                         </tr>
                       ))
                     ) : (
                       <tr>
-                        <td colSpan="6" className="text-center">
+                        <td colSpan="7" className="text-center">
                           No recently viewed jobs
                         </td>
                       </tr>
