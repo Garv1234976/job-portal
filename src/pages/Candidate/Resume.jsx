@@ -8,6 +8,8 @@ import Footer from "../../components/Footer";
 export default function Resume() {
   const [resume, setResume] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [file, setFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
 
   // 🔥 FETCH PROFILE
   const fetchProfile = async () => {
@@ -26,28 +28,41 @@ export default function Resume() {
     fetchProfile();
   }, []);
 
-  // 🔗 FIX URL
+  // 🔗 URL
   const resumeUrl = resume?.startsWith("http")
     ? resume
     : resume
     ? `https://server.budes.online/public/${resume}`
     : null;
 
-  // 📄 FILE NAME
   const fileName = resume ? resume.split("/").pop() : "";
-
-  // 📄 FILE TYPE CHECK
   const isPDF = resumeUrl?.toLowerCase().endsWith(".pdf");
 
-  // ❌ REMOVE RESUME (UPDATED ✅)
-  const handleRemove = async () => {
-    if (!window.confirm("Are you sure you want to remove resume?")) return;
+  // 🔥 UPLOAD RESUME
+  const handleUpload = async () => {
+    if (!file) return alert("Please select file");
+
+    const formData = new FormData();
+    formData.append("cv", file);
 
     try {
-      await api.post("/resume/upload", {
-        remove: 1,
-      });
+      setUploading(true);
+      await api.post("/resume/upload", formData);
+      fetchProfile(); // refresh resume
+      setFile(null);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setUploading(false);
+    }
+  };
 
+  // ❌ REMOVE
+  const handleRemove = async () => {
+    if (!window.confirm("Remove resume?")) return;
+
+    try {
+      await api.post("/resume/upload", { remove: 1 });
       setResume(null);
     } catch (err) {
       console.error(err);
@@ -60,12 +75,10 @@ export default function Resume() {
 
       <div className="container-fluid mt-4 mb-5">
         <div className="row">
-          {/* SIDEBAR */}
           <div className="col-md-3 col-lg-2">
             <CandidateSidebar />
           </div>
 
-          {/* MAIN */}
           <div className="col-md-9 col-lg-10">
             <div className="bg-white p-4 shadow rounded">
               <h4 className="fw-bold mb-4">My Resume</h4>
@@ -74,7 +87,7 @@ export default function Resume() {
                 <p>Loading...</p>
               ) : resume ? (
                 <div className="card p-4 shadow-sm">
-                  
+
                   {/* FILE INFO */}
                   <div className="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
                     <div>
@@ -82,10 +95,7 @@ export default function Resume() {
                       <small className="text-muted">Uploaded Resume</small>
                     </div>
 
-                    {/* ACTION BUTTONS */}
                     <div className="d-flex gap-2">
-
-                      {/* VIEW */}
                       <a
                         href={`https://docs.google.com/gview?url=${encodeURIComponent(resumeUrl)}&embedded=true`}
                         target="_blank"
@@ -95,7 +105,6 @@ export default function Resume() {
                         View
                       </a>
 
-                      {/* DOWNLOAD */}
                       <a
                         href={resumeUrl}
                         download
@@ -106,14 +115,12 @@ export default function Resume() {
                         Download
                       </a>
 
-                      {/* REMOVE */}
                       <button
                         className="btn btn-danger btn-sm"
                         onClick={handleRemove}
                       >
                         Remove
                       </button>
-
                     </div>
                   </div>
 
@@ -122,16 +129,15 @@ export default function Resume() {
                     {isPDF ? (
                       <iframe
                         src={resumeUrl}
-                        title="Resume Preview"
                         width="100%"
                         height="500px"
+                        title="Resume"
                       />
                     ) : (
                       <div className="text-center p-5 bg-light">
-                        <i className="fa fa-file fa-3x text-secondary mb-3"></i>
-                        <h6 className="mb-2">Preview not available</h6>
+                        <h6>Preview not available</h6>
                         <p className="text-muted">
-                          This file type cannot be previewed. Please download to view.
+                          Download to view file
                         </p>
                       </div>
                     )}
@@ -139,15 +145,25 @@ export default function Resume() {
 
                 </div>
               ) : (
-                <div className="text-center py-5">
+                <div className="card p-4 text-center">
+
                   <p className="text-muted mb-3">No resume uploaded</p>
+
+                  {/* FILE INPUT */}
+                  <input
+                    type="file"
+                    className="form-control mb-3"
+                    onChange={(e) => setFile(e.target.files[0])}
+                  />
 
                   <button
                     className="btn btn-primary"
-                    onClick={() => (window.location.href = "/profile")}
+                    onClick={handleUpload}
+                    disabled={uploading}
                   >
-                    Upload Resume
+                    {uploading ? "Uploading..." : "Upload Resume"}
                   </button>
+
                 </div>
               )}
             </div>
