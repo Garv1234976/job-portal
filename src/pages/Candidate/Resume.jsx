@@ -26,10 +26,10 @@ export default function Resume() {
     fetchProfile();
   }, []);
 
-  // 🔗 URL
-  const resumeUrl = resume;
+  const resumeUrl = resume?.startsWith("http")
+    ? resume
+    : `https://server.budes.online/public/${resume}`;
 
-  // 📄 FILE NAME
   const fileName = resume ? resume.split("/").pop() : "";
 
   // ❌ REMOVE RESUME
@@ -50,7 +50,6 @@ export default function Resume() {
 
       <div className="container-fluid mt-4 mb-5">
         <div className="row">
-
           {/* SIDEBAR */}
           <div className="col-md-3 col-lg-2">
             <CandidateSidebar />
@@ -59,14 +58,12 @@ export default function Resume() {
           {/* MAIN */}
           <div className="col-md-9 col-lg-10">
             <div className="bg-white p-4 shadow rounded">
-
               <h4 className="fw-bold mb-4">My Resume</h4>
 
               {loading ? (
                 <p>Loading...</p>
               ) : resume ? (
                 <div className="card p-4 shadow-sm">
-
                   {/* FILE INFO */}
                   <div className="d-flex justify-content-between align-items-center mb-3">
                     <div>
@@ -76,7 +73,6 @@ export default function Resume() {
 
                     {/* ACTION BUTTONS */}
                     <div className="d-flex gap-2">
-
                       <a
                         href={resumeUrl}
                         target="_blank"
@@ -100,7 +96,6 @@ export default function Resume() {
                       >
                         Remove
                       </button>
-
                     </div>
                   </div>
 
@@ -113,7 +108,6 @@ export default function Resume() {
                       height="500px"
                     />
                   </div>
-
                 </div>
               ) : (
                 <div className="text-center py-5">
@@ -121,16 +115,14 @@ export default function Resume() {
 
                   <button
                     className="btn btn-primary"
-                    onClick={() => window.location.href = "/profile"}
+                    onClick={() => (window.location.href = "/profile")}
                   >
                     Upload Resume
                   </button>
                 </div>
               )}
-
             </div>
           </div>
-
         </div>
       </div>
 
