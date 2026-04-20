@@ -30,8 +30,8 @@ export default function Resume() {
   const resumeUrl = resume?.startsWith("http")
     ? resume
     : resume
-    ? `https://server.budes.online/public/${resume}`
-    : null;
+      ? `https://server.budes.online/public/${resume}`
+      : null;
 
   // 📄 FILE NAME
   const fileName = resume ? resume.split("/").pop() : "";
@@ -71,7 +71,6 @@ export default function Resume() {
                 <p>Loading...</p>
               ) : resume ? (
                 <div className="card p-4 shadow-sm">
-
                   {/* FILE INFO */}
                   <div className="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
                     <div>
@@ -82,9 +81,9 @@ export default function Resume() {
                     {/* ACTION BUTTONS */}
                     <div className="d-flex gap-2">
                       <a
-                        href={resumeUrl}
+                        href={`https://docs.google.com/gview?url=${encodeURIComponent(resumeUrl)}&embedded=true`}
                         target="_blank"
-                        rel="noreferrer"
+                        rel="noopener noreferrer"
                         className="btn btn-outline-primary btn-sm"
                       >
                         View
@@ -123,12 +122,12 @@ export default function Resume() {
                         <i className="fa fa-file fa-3x text-secondary mb-3"></i>
                         <h6 className="mb-2">Preview not available</h6>
                         <p className="text-muted">
-                          This file type cannot be previewed. Please download to view.
+                          This file type cannot be previewed. Please download to
+                          view.
                         </p>
                       </div>
                     )}
                   </div>
-
                 </div>
               ) : (
                 <div className="text-center py-5">
