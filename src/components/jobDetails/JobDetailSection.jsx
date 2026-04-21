@@ -23,7 +23,7 @@ function JobDetailSection() {
     name: "",
     email: "",
     portfolio: "",
-    cover_letter: "",
+    cover_letter"
   });
 
   const [errors, setErrors] = useState({});
@@ -80,7 +80,6 @@ function JobDetailSection() {
         ...form,
       });
 
-      // ✅ SweetAlert success
       Swal.fire({
         icon: "success",
         title: "Success",
@@ -98,20 +97,15 @@ function JobDetailSection() {
 
     } catch (err) {
 
-      // ✅ Limit reached
       if (err.response?.data?.limit_reached) {
         Swal.fire({
           icon: "warning",
           title: "Job Closed",
           text: "This job is no longer accepting applications",
         });
-      }
-      // ✅ Validation error
-      else if (err.response?.status === 422) {
+      } else if (err.response?.status === 422) {
         setErrors(err.response.data.errors || {});
-      }
-      // ✅ Other error
-      else {
+      } else {
         Swal.fire({
           icon: "error",
           title: "Error",
@@ -127,9 +121,15 @@ function JobDetailSection() {
   if (loading) return <p className="text-center">Loading...</p>;
   if (!job) return <p className="text-center">Job not found</p>;
 
-  // ✅ Job closed condition
+  // ✅ Job closed check
   const isJobClosed =
     job.application_count >= job.application_limit;
+
+  // ✅ Remaining vacancy (no negative)
+  const remainingVacancy = Math.max(
+    0,
+    job.application_limit - job.application_count
+  );
 
   return (
     <div className="container-xxl py-5">
@@ -162,7 +162,7 @@ function JobDetailSection() {
 
                 <span className="me-3">
                   <FaClock className="me-2 text-primary" />
-                  {job.employment_type}
+                  {job.employment_type || "N/A"}
                 </span>
 
                 <span>
@@ -181,7 +181,6 @@ function JobDetailSection() {
             {/* APPLY SECTION */}
             <div>
 
-              {/* ❌ JOB CLOSED */}
               {isJobClosed ? (
                 <div className="alert alert-danger text-center">
                   🚫 Job Closed - Application limit reached
@@ -197,7 +196,6 @@ function JobDetailSection() {
                   <form onSubmit={handleApply}>
                     <div className="row g-3">
 
-                      {/* NAME */}
                       <div className="col-6">
                         <label className="form-label fw-semibold">
                           Name <span className="text-danger">*</span>
@@ -213,7 +211,6 @@ function JobDetailSection() {
                         )}
                       </div>
 
-                      {/* EMAIL */}
                       <div className="col-6">
                         <label className="form-label fw-semibold">
                           Email <span className="text-danger">*</span>
@@ -230,7 +227,6 @@ function JobDetailSection() {
                         )}
                       </div>
 
-                      {/* PORTFOLIO */}
                       <div className="col-6">
                         <label className="form-label fw-semibold">
                           Portfolio
@@ -243,7 +239,6 @@ function JobDetailSection() {
                         />
                       </div>
 
-                      {/* COVER LETTER */}
                       <div className="col-12">
                         <label className="form-label fw-semibold">
                           Cover Letter
@@ -284,18 +279,21 @@ function JobDetailSection() {
 
               <p>
                 <FaCalendarAlt className="text-primary me-2" />
-                Posted: {job.created_at}
+                Posted: {new Date(job.created_at).toLocaleDateString("en-IN", {
+                  day: "numeric",
+                  month: "short",
+                  year: "numeric",
+                })}
               </p>
 
               <p>
                 <FaUserTie className="text-primary me-2" />
-                Vacancy:{" "}
-                {job.application_limit - job.application_count} / {job.application_limit}
+                Vacancy: {remainingVacancy}
               </p>
 
               <p>
                 <FaClock className="text-primary me-2" />
-                Job Type: {job.employment_type}
+                Job Type: {job.employment_type || "N/A"}
               </p>
 
               <p>
