@@ -24,6 +24,13 @@ function JobCard({ job }) {
     setSaved(job.saved || false);
   }, [job]);
 
+  // ✅ JOB CLOSED LOGIC
+  const isJobClosed =
+    job.application_count >= job.application_limit;
+
+  // ✅ OPTIONAL ROLE CHECK (adjust if needed)
+  const isRecruiter = job.is_recruiter || false;
+
   // ✅ SAVE / UNSAVE
   const toggleSaveJob = async (e) => {
     e.stopPropagation();
@@ -61,7 +68,7 @@ function JobCard({ job }) {
   return (
     <div
       className="p-3 mb-3 border rounded shadow-sm bg-white job-card"
-      onClick={() => navigate(`/job/${job.id}`)}
+      onClick={() => navigate(`/job/${job.id}`)} // ✅ Always allow view
       style={{ cursor: "pointer" }}
     >
       <div className="d-flex justify-content-between align-items-start">
@@ -80,6 +87,11 @@ function JobCard({ job }) {
           />
 
           <div className="ms-3">
+
+            {/* ✅ CLOSED BADGE */}
+            {isJobClosed && (
+              <span className="badge bg-danger mb-1">Closed</span>
+            )}
 
             {/* TITLE */}
             <h5 className="fw-bold mb-1">{job.job_title}</h5>
@@ -108,6 +120,13 @@ function JobCard({ job }) {
               {getDaysAgo(job.created_at)}
             </div>
 
+            {/* ✅ TEXT STATUS (NO ALERT) */}
+            {isJobClosed && (
+              <div className="text-danger small mt-1">
+                🚫 Job Closed 
+              </div>
+            )}
+
           </div>
         </div>
 
@@ -129,18 +148,28 @@ function JobCard({ job }) {
 
           <br />
 
-          {/* APPLY (NOW REDIRECT) */}
-          <button
-            className={`btn btn-sm ${
-              applied ? "btn-success" : "btn-primary"
-            }`}
-            onClick={(e) => {
-              e.stopPropagation();
-              navigate(`/job/${job.id}`);
-            }}
-          >
-            {applied ? "View Applied" : "View Details"}
-          </button>
+          {/* APPLY / VIEW BUTTON */}
+          {isRecruiter ? (
+            <button className="btn btn-sm btn-secondary" disabled>
+              View Only
+            </button>
+          ) : isJobClosed ? (
+            <button className="btn btn-sm btn-danger" disabled>
+              Job Closed
+            </button>
+          ) : (
+            <button
+              className={`btn btn-sm ${
+                applied ? "btn-success" : "btn-primary"
+              }`}
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate(`/job/${job.id}`);
+              }}
+            >
+              {applied ? "View Applied" : "View Details"}
+            </button>
+          )}
 
         </div>
       </div>
