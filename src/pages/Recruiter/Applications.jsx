@@ -12,29 +12,28 @@ export default function Applications() {
   const navigate = useNavigate();
 
   const [applications, setApplications] = useState([]);
-  const [resumeUrl, setResumeUrl] = useState(null);
   const [page, setPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
+  const [search, setSearch] = useState("");
 
-  // ✅ FETCH APPLICATIONS
+  // ✅ FETCH
   const fetchApplications = () => {
-    API.get(`/job-applications/${id}`, { params: { page } })
+    API.get(`/job-applications/${id}`, {
+      params: { page, search },
+    })
       .then((res) => {
         const data = res.data.data;
-
         setApplications(data.data || []);
         setLastPage(data.last_page || 1);
       })
-      .catch(() => {
-        setApplications([]);
-      });
+      .catch(() => setApplications([]));
   };
 
   useEffect(() => {
     fetchApplications();
-  }, [id, page]);
+  }, [id, page, search]);
 
-  // ✅ UPDATE STATUS
+  // ✅ STATUS UPDATE
   const updateStatus = async (appId, status) => {
     try {
       await API.post(`/application-status/${appId}`, { status });
@@ -44,7 +43,7 @@ export default function Applications() {
         text: `Candidate ${status}`,
         icon: "success",
         timer: 1500,
-        showConfirmButton: false
+        showConfirmButton: false,
       });
 
       fetchApplications();
@@ -53,11 +52,17 @@ export default function Applications() {
     }
   };
 
-  // ✅ PAGINATION UI
+  // ✅ GOOGLE VIEWER
+  const openResume = (url) => {
+    const viewer = `https://docs.google.com/gview?embedded=1&url=${encodeURIComponent(url)}`;
+    window.open(viewer, "_blank");
+  };
+
+  // ✅ PAGINATION
   const renderPagination = () => {
     if (lastPage <= 1) return null;
 
-    let pages = [];
+    const pages = [];
 
     pages.push(
       <button
@@ -100,30 +105,34 @@ export default function Applications() {
     <>
       <Navbar />
 
-      <div className="container-fluid mt-4">
+      <div className="container-fluid mt-4 mb-5">
         <div className="row">
 
-          {/* SIDEBAR */}
           <div className="col-md-3">
             <RecruiterSidebar />
           </div>
 
-          {/* MAIN */}
           <div className="col-md-9">
             <div className="container">
 
-              {/* HEADER */}
               <div className="d-flex justify-content-between mb-3">
                 <h3>Applications</h3>
-                <button
-                  className="btn btn-secondary"
-                  onClick={() => navigate(-1)}
-                >
+                <button className="btn btn-secondary" onClick={() => navigate(-1)}>
                   Back
                 </button>
               </div>
 
-              {/* TABLE */}
+              {/* SEARCH */}
+              <input
+                className="form-control mb-3"
+                placeholder="Search name or email..."
+                value={search}
+                onChange={(e) => {
+                  setSearch(e.target.value);
+                  setPage(1);
+                }}
+              />
+
               <table className="table table-bordered">
                 <thead className="table-dark">
                   <tr>
@@ -141,13 +150,11 @@ export default function Applications() {
                   {applications.length > 0 ? (
                     applications.map((app, i) => (
                       <tr key={app.id}>
-                        {/* SERIAL */}
                         <td>{(page - 1) * 5 + i + 1}</td>
 
                         <td>{app.name}</td>
                         <td>{app.email}</td>
 
-                        {/* PHONE + WHATSAPP */}
                         <td>
                           {app.phone ? (
                             <>
@@ -155,24 +162,20 @@ export default function Applications() {
                               <a
                                 href={`https://wa.me/91${app.phone}`}
                                 target="_blank"
-                                rel="noopener noreferrer"
                                 className="btn btn-success btn-sm mt-1"
                               >
                                 WhatsApp
                               </a>
                             </>
-                          ) : (
-                            <span className="text-muted">No Phone</span>
-                          )}
+                          ) : "No Phone"}
                         </td>
 
-                        {/* RESUME */}
                         <td>
                           {app.resume_url ? (
                             <>
                               <button
                                 className="btn btn-primary btn-sm me-2"
-                                onClick={() => setResumeUrl(app.resume_url)}
+                                onClick={() => openResume(app.resume_url)}
                               >
                                 View
                               </button>
@@ -186,11 +189,10 @@ export default function Applications() {
                               </a>
                             </>
                           ) : (
-                            <span className="text-danger">No Resume</span>
+                            "No Resume"
                           )}
                         </td>
 
-                        {/* STATUS */}
                         <td>
                           <span
                             className={`badge ${
@@ -205,14 +207,11 @@ export default function Applications() {
                           </span>
                         </td>
 
-                        {/* ACTION */}
                         <td>
                           <button
                             className="btn btn-success btn-sm me-2"
                             disabled={app.status === "accepted"}
-                            onClick={() =>
-                              updateStatus(app.id, "accepted")
-                            }
+                            onClick={() => updateStatus(app.id, "accepted")}
                           >
                             Accept
                           </button>
@@ -220,9 +219,7 @@ export default function Applications() {
                           <button
                             className="btn btn-danger btn-sm"
                             disabled={app.status === "rejected"}
-                            onClick={() =>
-                              updateStatus(app.id, "rejected")
-                            }
+                            onClick={() => updateStatus(app.id, "rejected")}
                           >
                             Reject
                           </button>
@@ -239,8 +236,7 @@ export default function Applications() {
                 </tbody>
               </table>
 
-              {/* PAGINATION */}
-              <div className="d-flex justify-content-center mt-4 gap-2 flex-wrap">
+              <div className="d-flex justify-content-center mt-4 gap-2">
                 {renderPagination()}
               </div>
 
@@ -248,34 +244,6 @@ export default function Applications() {
           </div>
         </div>
       </div>
-
-      {/* RESUME MODAL */}
-      {resumeUrl && (
-        <div className="modal show d-block" style={{ background: "#00000099" }}>
-          <div className="modal-dialog modal-xl">
-            <div className="modal-content">
-
-              <div className="modal-header">
-                <h5>Resume Preview</h5>
-                <button
-                  className="btn-close"
-                  onClick={() => setResumeUrl(null)}
-                />
-              </div>
-
-              <div className="modal-body">
-                <iframe
-                  src={resumeUrl}
-                  width="100%"
-                  height="500px"
-                  title="Resume"
-                />
-              </div>
-
-            </div>
-          </div>
-        </div>
-      )}
 
       <Footer />
     </>
