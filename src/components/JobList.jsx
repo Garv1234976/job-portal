@@ -13,6 +13,9 @@ function JobList({ filters }) {
 
   const location = useLocation();
 
+  // ✅ CHECK LOGIN
+  const isLoggedIn = !!localStorage.getItem("token");
+
   const getQueryParams = () => {
     const params = new URLSearchParams(location.search);
     return {
@@ -81,16 +84,34 @@ function JobList({ filters }) {
         <p className="text-muted">Explore latest opportunities across India</p>
       </div>
 
-      {loading && <div className="text-center py-5 text-muted">Loading jobs...</div>}
-      {!loading && jobs.length === 0 && (
-        <div className="text-center py-5 text-muted">No jobs found</div>
+      {/* ✅ LOADING */}
+      {loading && (
+        <div className="text-center py-5 text-muted">
+          Loading jobs...
+        </div>
       )}
 
-      {!loading && jobs.map((job) => (
+      {/* ❌ NOT LOGGED IN */}
+      {!loading && !isLoggedIn && (
+        <div className="text-center py-5 text-muted">
+          🔒 Jobs will be visible after login
+        </div>
+      )}
+
+      {/* ✅ LOGGED IN BUT NO JOBS */}
+      {!loading && isLoggedIn && jobs.length === 0 && (
+        <div className="text-center py-5 text-muted">
+          No jobs found
+        </div>
+      )}
+
+      {/* ✅ SHOW JOBS ONLY IF LOGGED IN */}
+      {!loading && isLoggedIn && jobs.map((job) => (
         <JobCard key={job.id} job={job} />
       ))}
 
-      {lastPage > 1 && (
+      {/* ✅ PAGINATION (ONLY IF LOGGED IN) */}
+      {isLoggedIn && lastPage > 1 && (
         <div className="d-flex justify-content-center mt-4 flex-wrap gap-2">
 
           <button
