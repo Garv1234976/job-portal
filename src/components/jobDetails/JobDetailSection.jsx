@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import api from "../../services/api";
+import Swal from "sweetalert2";
 
 import {
   FaMapMarkerAlt,
@@ -16,14 +17,13 @@ function JobDetailSection() {
 
   const [job, setJob] = useState(null);
   const [loading, setLoading] = useState(true);
-
-  const [alreadyApplied, setAlreadyApplied] = useState(false); // ✅ NEW
+  const [alreadyApplied, setAlreadyApplied] = useState(false);
 
   const [form, setForm] = useState({
     name: "",
     email: "",
     portfolio: "",
-    cover_letter: ""
+    cover_letter: "",
   });
 
   const [errors, setErrors] = useState({});
@@ -39,10 +39,7 @@ function JobDetailSection() {
       const jobData = res.data.data;
 
       setJob(jobData);
-
-      // ✅ IMPORTANT
       setAlreadyApplied(jobData.applied || false);
-
     } catch (err) {
       console.log(err);
     } finally {
@@ -53,12 +50,12 @@ function JobDetailSection() {
   const handleChange = (e) => {
     setForm({
       ...form,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
 
     setErrors({
       ...errors,
-      [e.target.name]: ""
+      [e.target.name]: "",
     });
   };
 
@@ -80,27 +77,48 @@ function JobDetailSection() {
     try {
       const res = await api.post("/apply-job", {
         job_id: job.id,
-        ...form
+        ...form,
       });
 
-      alert(res.data.message);
+      // ✅ SweetAlert success
+      Swal.fire({
+        icon: "success",
+        title: "Success",
+        text: res.data.message,
+      });
 
-      // ✅ After apply → hide form
       setAlreadyApplied(true);
 
       setForm({
         name: "",
         email: "",
         portfolio: "",
-        cover_letter: ""
+        cover_letter: "",
       });
 
     } catch (err) {
-      if (err.response?.status === 422) {
-        setErrors(err.response.data.errors || {});
-      } else {
-        alert(err.response?.data?.message || "Error");
+
+      // ✅ Limit reached
+      if (err.response?.data?.limit_reached) {
+        Swal.fire({
+          icon: "warning",
+          title: "Job Closed",
+          text: "This job is no longer accepting applications",
+        });
       }
+      // ✅ Validation error
+      else if (err.response?.status === 422) {
+        setErrors(err.response.data.errors || {});
+      }
+      // ✅ Other error
+      else {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: err.response?.data?.message || "Something went wrong",
+        });
+      }
+
     } finally {
       setSubmitting(false);
     }
@@ -108,6 +126,10 @@ function JobDetailSection() {
 
   if (loading) return <p className="text-center">Loading...</p>;
   if (!job) return <p className="text-center">Job not found</p>;
+
+  // ✅ Job closed condition
+  const isJobClosed =
+    job.application_count >= job.application_limit;
 
   return (
     <div className="container-xxl py-5">
@@ -150,7 +172,7 @@ function JobDetailSection() {
               </div>
             </div>
 
-            {/* ✅ JOB DESCRIPTION (NEW) */}
+            {/* DESCRIPTION */}
             <div className="mb-5">
               <h4 className="mb-3">Job Description</h4>
               <p>{job.job_description}</p>
@@ -159,8 +181,12 @@ function JobDetailSection() {
             {/* APPLY SECTION */}
             <div>
 
-              {/* ✅ IF ALREADY APPLIED */}
-              {alreadyApplied ? (
+              {/* ❌ JOB CLOSED */}
+              {isJobClosed ? (
+                <div className="alert alert-danger text-center">
+                  🚫 Job Closed - Application limit reached
+                </div>
+              ) : alreadyApplied ? (
                 <div className="alert alert-success">
                   ✅ You have already applied for this job
                 </div>
@@ -250,7 +276,7 @@ function JobDetailSection() {
 
           </div>
 
-          {/* RIGHT SIDE */}
+          {/* RIGHT */}
           <div className="col-lg-4">
 
             <div className="bg-light rounded p-4 mb-4">
@@ -263,7 +289,8 @@ function JobDetailSection() {
 
               <p>
                 <FaUserTie className="text-primary me-2" />
-                Vacancy: {job.vacancy || "N/A"}
+                Vacancy:{" "}
+                {job.application_limit - job.application_count} / {job.application_limit}
               </p>
 
               <p>
