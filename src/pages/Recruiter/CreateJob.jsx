@@ -154,6 +154,19 @@ export default function CreateJob() {
                     <small className="text-danger">{errors.company_name}</small>
                   </div>
 
+                  <div className="col-md-3">
+                    <label>
+                      Application Limit <span className="text-danger">*</span>
+                    </label>
+                    <input
+                      type="number"
+                      className="form-control"
+                      name="application_limit"
+                      placeholder="e.g. 1000"
+                      onChange={handleChange}
+                    />
+                  </div>
+
                   {/* CATEGORY */}
                   <div className="col-md-6">
                     <label>
