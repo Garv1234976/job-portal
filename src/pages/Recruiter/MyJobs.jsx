@@ -10,6 +10,9 @@ import RecruiterSidebar from "../../components/RecruiterSidebar";
 export default function MyJobs() {
   const [jobs, setJobs] = useState([]);
   const [search, setSearch] = useState("");
+  const [location, setLocation] = useState(""); // ✅ NEW
+  const [salary, setSalary] = useState(""); // ✅ NEW
+
   const [page, setPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
 
@@ -17,8 +20,13 @@ export default function MyJobs() {
 
   // ✅ FETCH JOBS
   const fetchJobs = () => {
-    API.get("/my-jobs", {
-      params: { page, search }
+    API.get("/jobs", {
+      params: {
+        page,
+        search,
+        location,   // ✅ NEW
+        salary      // ✅ NEW
+      }
     })
       .then((res) => {
         setJobs(res.data.data.data || []);
@@ -29,7 +37,7 @@ export default function MyJobs() {
 
   useEffect(() => {
     fetchJobs();
-  }, [page, search]);
+  }, [page, search, location, salary]);
 
   // ✅ VIEW
   const handleView = (id) => {
@@ -41,7 +49,7 @@ export default function MyJobs() {
     navigate(`/recruiter/edit-job/${id}`);
   };
 
-  // ✅ CLOSE WITH CONFIRM
+  // ✅ CLOSE
   const closeJob = async (id) => {
     const result = await Swal.fire({
       title: "Are you sure?",
@@ -80,7 +88,6 @@ export default function MyJobs() {
     let start = Math.max(1, page - 1);
     let end = Math.min(lastPage, page + 1);
 
-    // PREV
     pages.push(
       <button
         key="prev"
@@ -92,7 +99,6 @@ export default function MyJobs() {
       </button>
     );
 
-    // PAGE NUMBERS
     for (let i = start; i <= end; i++) {
       pages.push(
         <button
@@ -105,7 +111,6 @@ export default function MyJobs() {
       );
     }
 
-    // NEXT
     pages.push(
       <button
         key="next"
@@ -138,15 +143,39 @@ export default function MyJobs() {
 
               <h2 className="mb-3">My Jobs</h2>
 
-              {/* SEARCH */}
+              {/* 🔥 FILTERS */}
               <div className="row mb-3">
-                <div className="col-md-6">
+                <div className="col-md-4">
                   <input
                     className="form-control"
-                    placeholder="Search jobs..."
+                    placeholder="Search job title..."
                     value={search}
                     onChange={(e) => {
                       setSearch(e.target.value);
+                      setPage(1);
+                    }}
+                  />
+                </div>
+
+                <div className="col-md-4">
+                  <input
+                    className="form-control"
+                    placeholder="Filter by location"
+                    value={location}
+                    onChange={(e) => {
+                      setLocation(e.target.value);
+                      setPage(1);
+                    }}
+                  />
+                </div>
+
+                <div className="col-md-4">
+                  <input
+                    className="form-control"
+                    placeholder="Filter by salary"
+                    value={salary}
+                    onChange={(e) => {
+                      setSalary(e.target.value);
                       setPage(1);
                     }}
                   />
@@ -170,62 +199,66 @@ export default function MyJobs() {
 
                   <tbody>
                     {jobs.length > 0 ? (
-                      jobs.map((job, index) => (
-                        <tr key={job.id}>
-                          <td>{(page - 1) * 10 + index + 1}</td>
+                      jobs.map((job, index) => {
+                        const isClosed = job.is_closed; // ✅ NEW
 
-                          <td>{job.job_title}</td>
-                          <td>{job.location}</td>
-                          <td>{job.salary_range}</td>
-                          <td>{job.openings}</td>
+                        return (
+                          <tr key={job.id}>
+                            <td>{(page - 1) * 5 + index + 1}</td>
 
-                          {/* STATUS */}
-                          <td>
-                            {job.status === "closed" ? (
-                              <span className="badge bg-danger">Closed</span>
-                            ) : (
-                              <span className="badge bg-success">Active</span>
-                            )}
-                          </td>
+                            <td>{job.job_title}</td>
+                            <td>{job.location}</td>
+                            <td>{job.salary_range}</td>
+                            <td>{job.openings}</td>
 
-                          <td>
-                            {new Date(job.created_at).toLocaleDateString()}
-                          </td>
+                            {/* STATUS */}
+                            <td>
+                              {isClosed ? (
+                                <span className="badge bg-danger">Closed</span>
+                              ) : (
+                                <span className="badge bg-success">Active</span>
+                              )}
+                            </td>
 
-                          {/* ACTION */}
-                          <td>
-                            <button
-                              className="btn btn-info btn-sm me-2"
-                              onClick={() => handleView(job.id)}
-                            >
-                              View
-                            </button>
+                            <td>
+                              {new Date(job.created_at).toLocaleDateString()}
+                            </td>
 
-                            <button
-                              className="btn btn-primary btn-sm me-2"
-                              onClick={() => handleEdit(job.id)}
-                            >
-                              Edit
-                            </button>
-
-                            {job.status !== "closed" ? (
+                            {/* ACTION */}
+                            <td>
                               <button
-                                className="btn btn-danger btn-sm"
-                                onClick={() => closeJob(job.id)}
+                                className="btn btn-info btn-sm me-2"
+                                onClick={() => handleView(job.id)}
                               >
-                                Close
+                                View
                               </button>
-                            ) : (
+
                               <button
-                                className="btn btn-success btn-sm"
-                                onClick={() => reopenJob(job.id)}
+                                className="btn btn-primary btn-sm me-2"
+                                onClick={() => handleEdit(job.id)}
                               >
-                                Reopen
+                                Edit
                               </button>
-                            )}
-                          </td>
-                        </tr>
-                      ))
+
+                              {!isClosed ? (
+                                <button
+                                  className="btn btn-danger btn-sm"
+                                  onClick={() => closeJob(job.id)}
+                                >
+                                  Close
+                                </button>
+                              ) : (
+                                <button
+                                  className="btn btn-success btn-sm"
+                                  onClick={() => reopenJob(job.id)}
+                                >
+                                  Reopen
+                                </button>
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })
                     ) : (
                       <tr>
                         <td colSpan="8" className="text-center">
