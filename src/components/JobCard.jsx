@@ -120,13 +120,6 @@ function JobCard({ job }) {
               {getDaysAgo(job.created_at)}
             </div>
 
-            {/* ✅ TEXT STATUS (NO ALERT) */}
-            {isJobClosed && (
-              <div className="text-danger small mt-1">
-                🚫 Job Closed 
-              </div>
-            )}
-
           </div>
         </div>
 
