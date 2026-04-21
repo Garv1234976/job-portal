@@ -11,6 +11,7 @@ export default function CreateJob() {
   const [categories, setCategories] = useState([]);
   const [subCategories, setSubCategories] = useState([]);
   const [logoPreview, setLogoPreview] = useState(null);
+  const [isOther, setIsOther] = useState(false);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -123,9 +124,17 @@ export default function CreateJob() {
 
                     <select
                       className="form-control mb-2"
-                      onChange={(e) =>
-                        setForm({ ...form, job_title: e.target.value })
-                      }
+                      onChange={(e) => {
+                        const value = e.target.value;
+
+                        if (value === "Other") {
+                          setIsOther(true);
+                          setForm({ ...form, job_title: "" });
+                        } else {
+                          setIsOther(false);
+                          setForm({ ...form, job_title: value });
+                        }
+                      }}
                     >
                       <option value="">Select</option>
                       <option>Web Developer</option>
@@ -135,12 +144,14 @@ export default function CreateJob() {
                       <option>Other</option>
                     </select>
 
-                    <input
-                      className="form-control"
-                      name="job_title"
-                      placeholder="Or type custom"
-                      onChange={handleChange}
-                    />
+                    {isOther && (
+                      <input
+                        className="form-control"
+                        name="job_title"
+                        placeholder="Enter custom job title"
+                        onChange={handleChange}
+                      />
+                    )}
 
                     <small className="text-danger">{errors.job_title}</small>
                   </div>
@@ -185,7 +196,7 @@ export default function CreateJob() {
                     <small className="text-danger">{errors.company_name}</small>
                   </div>
 
-                  <div className="col-md-3">
+                  <div className="col-md-6">
                     <label>
                       Application Limit <span className="text-danger">*</span>
                     </label>
