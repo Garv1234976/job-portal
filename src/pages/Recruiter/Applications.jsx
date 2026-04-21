@@ -13,24 +13,68 @@ export default function Applications() {
 
   const [applications, setApplications] = useState([]);
   const [resumeUrl, setResumeUrl] = useState(null);
+  const [page, setPage] = useState(1);
+  const [lastPage, setLastPage] = useState(1);
 
   const fetchApplications = () => {
-    API.get(`/job-applications/${id}`)
+    API.get(`/job-applications/${id}`, { params: { page } })
       .then((res) => {
         setApplications(res.data.data.data || []);
+        setLastPage(res.data.data.last_page || 1);
       });
   };
 
   useEffect(() => {
     fetchApplications();
-  }, [id]);
+  }, [id, page]);
 
-  // ✅ UPDATE STATUS
+  // ✅ STATUS UPDATE
   const updateStatus = async (appId, status) => {
     await API.post(`/application-status/${appId}`, { status });
 
     Swal.fire("Success", `Candidate ${status}`, "success");
     fetchApplications();
+  };
+
+  // ✅ PAGINATION
+  const renderPagination = () => {
+    let pages = [];
+
+    pages.push(
+      <button
+        key="prev"
+        className="btn btn-light border"
+        disabled={page === 1}
+        onClick={() => setPage(page - 1)}
+      >
+        Prev
+      </button>
+    );
+
+    for (let i = 1; i <= lastPage; i++) {
+      pages.push(
+        <button
+          key={i}
+          className={`btn ${page === i ? "btn-dark" : "btn-light border"}`}
+          onClick={() => setPage(i)}
+        >
+          {i}
+        </button>
+      );
+    }
+
+    pages.push(
+      <button
+        key="next"
+        className="btn btn-light border"
+        disabled={page === lastPage}
+        onClick={() => setPage(page + 1)}
+      >
+        Next
+      </button>
+    );
+
+    return pages;
   };
 
   return (
@@ -60,7 +104,7 @@ export default function Applications() {
                     <th>#</th>
                     <th>Name</th>
                     <th>Email</th>
-                    <th>Phone</th> {/* ✅ NEW */}
+                    <th>Phone</th>
                     <th>Resume</th>
                     <th>Status</th>
                     <th>Action</th>
@@ -68,91 +112,114 @@ export default function Applications() {
                 </thead>
 
                 <tbody>
-                  {applications.map((app, i) => (
-                    <tr key={app.id}>
-                      <td>{i + 1}</td>
-                      <td>{app.name}</td>
-                      <td>{app.email}</td>
+                  {applications.length > 0 ? (
+                    applications.map((app, i) => (
+                      <tr key={app.id}>
+                        <td>{(page - 1) * 10 + i + 1}</td>
 
-                      {/* ✅ PHONE + WHATSAPP */}
-                      <td>
-                        {app.phone ? (
-                          <a
-                            href={`https://wa.me/${app.phone}`}
-                            target="_blank"
-                            className="btn btn-success btn-sm"
+                        <td>{app.name}</td>
+                        <td>{app.email}</td>
+
+                        {/* ✅ PHONE + WHATSAPP */}
+                        <td>
+                          {app.phone ? (
+                            <>
+                              <div>{app.phone}</div>
+
+                              <a
+                                href={`https://wa.me/91${app.phone}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="btn btn-success btn-sm mt-1"
+                              >
+                                WhatsApp
+                              </a>
+                            </>
+                          ) : (
+                            "-"
+                          )}
+                        </td>
+
+                        {/* ✅ RESUME (UPDATED) */}
+                        <td>
+                          {app.resume_url ? (
+                            <>
+                              <button
+                                className="btn btn-primary btn-sm me-2"
+                                onClick={() => setResumeUrl(app.resume_url)}
+                              >
+                                View
+                              </button>
+
+                              <a
+                                href={app.resume_url}
+                                download
+                                className="btn btn-success btn-sm"
+                              >
+                                Download
+                              </a>
+                            </>
+                          ) : (
+                            "-"
+                          )}
+                        </td>
+
+                        {/* STATUS */}
+                        <td>
+                          {app.status === "accepted" && (
+                            <span className="badge bg-success">Accepted</span>
+                          )}
+                          {app.status === "rejected" && (
+                            <span className="badge bg-danger">Rejected</span>
+                          )}
+                          {app.status === "pending" && (
+                            <span className="badge bg-warning">Pending</span>
+                          )}
+                        </td>
+
+                        {/* ACTION */}
+                        <td>
+                          <button
+                            className="btn btn-success btn-sm me-2"
+                            disabled={app.status === "accepted"}
+                            onClick={() => updateStatus(app.id, "accepted")}
                           >
-                            Chat
-                          </a>
-                        ) : "-"}
-                      </td>
+                            Accept
+                          </button>
 
-                      {/* RESUME */}
-                      <td>
-                        {app.resume ? (
-                          <>
-                            <button
-                              className="btn btn-primary btn-sm me-2"
-                              onClick={() =>
-                                setResumeUrl(`https://server.budes.online/storage/${app.resume}`)
-                              }
-                            >
-                              View
-                            </button>
-
-                            <a
-                              href={`https://server.budes.online/storage/${app.resume}`}
-                              download
-                              className="btn btn-success btn-sm"
-                            >
-                              Download
-                            </a>
-                          </>
-                        ) : (
-                          "-"
-                        )}
-                      </td>
-
-                      {/* STATUS */}
-                      <td>
-                        {app.status === "accepted" && (
-                          <span className="badge bg-success">Accepted</span>
-                        )}
-                        {app.status === "rejected" && (
-                          <span className="badge bg-danger">Rejected</span>
-                        )}
-                        {app.status === "pending" && (
-                          <span className="badge bg-warning">Pending</span>
-                        )}
-                      </td>
-
-                      {/* ACTION */}
-                      <td>
-                        <button
-                          className="btn btn-success btn-sm me-2"
-                          onClick={() => updateStatus(app.id, "accepted")}
-                        >
-                          Accept
-                        </button>
-
-                        <button
-                          className="btn btn-danger btn-sm"
-                          onClick={() => updateStatus(app.id, "rejected")}
-                        >
-                          Reject
-                        </button>
+                          <button
+                            className="btn btn-danger btn-sm"
+                            disabled={app.status === "rejected"}
+                            onClick={() => updateStatus(app.id, "rejected")}
+                          >
+                            Reject
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="7" className="text-center">
+                        No applications found
                       </td>
                     </tr>
-                  ))}
+                  )}
                 </tbody>
               </table>
+
+              {/* PAGINATION */}
+              {lastPage > 1 && (
+                <div className="d-flex justify-content-center mt-4 gap-2 flex-wrap">
+                  {renderPagination()}
+                </div>
+              )}
 
             </div>
           </div>
         </div>
       </div>
 
-      {/* RESUME MODAL */}
+      {/* ✅ RESUME MODAL */}
       {resumeUrl && (
         <div className="modal show d-block" style={{ background: "#00000099" }}>
           <div className="modal-dialog modal-xl">
