@@ -16,11 +16,15 @@ export default function Applications() {
   const [page, setPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
 
+  // ✅ FETCH
   const fetchApplications = () => {
     API.get(`/job-applications/${id}`, { params: { page } })
       .then((res) => {
         setApplications(res.data.data.data || []);
         setLastPage(res.data.data.last_page || 1);
+      })
+      .catch(() => {
+        setApplications([]);
       });
   };
 
@@ -115,17 +119,17 @@ export default function Applications() {
                   {applications.length > 0 ? (
                     applications.map((app, i) => (
                       <tr key={app.id}>
-                        <td>{(page - 1) * 10 + i + 1}</td>
+                        {/* ✅ FIXED SERIAL NUMBER */}
+                        <td>{(page - 1) * 5 + i + 1}</td>
 
                         <td>{app.name}</td>
                         <td>{app.email}</td>
 
-                        {/* ✅ PHONE + WHATSAPP */}
+                        {/* PHONE */}
                         <td>
                           {app.phone ? (
                             <>
                               <div>{app.phone}</div>
-
                               <a
                                 href={`https://wa.me/91${app.phone}`}
                                 target="_blank"
@@ -136,11 +140,11 @@ export default function Applications() {
                               </a>
                             </>
                           ) : (
-                            "-"
+                            <span className="text-muted">No Phone</span>
                           )}
                         </td>
 
-                        {/* ✅ RESUME (UPDATED) */}
+                        {/* RESUME */}
                         <td>
                           {app.resume_url ? (
                             <>
@@ -160,21 +164,15 @@ export default function Applications() {
                               </a>
                             </>
                           ) : (
-                            "-"
+                            <span className="text-danger">No Resume</span>
                           )}
                         </td>
 
                         {/* STATUS */}
                         <td>
-                          {app.status === "accepted" && (
-                            <span className="badge bg-success">Accepted</span>
-                          )}
-                          {app.status === "rejected" && (
-                            <span className="badge bg-danger">Rejected</span>
-                          )}
-                          {app.status === "pending" && (
-                            <span className="badge bg-warning">Pending</span>
-                          )}
+                          <span className="badge bg-secondary">
+                            {app.status}
+                          </span>
                         </td>
 
                         {/* ACTION */}
@@ -219,7 +217,7 @@ export default function Applications() {
         </div>
       </div>
 
-      {/* ✅ RESUME MODAL */}
+      {/* RESUME MODAL */}
       {resumeUrl && (
         <div className="modal show d-block" style={{ background: "#00000099" }}>
           <div className="modal-dialog modal-xl">
