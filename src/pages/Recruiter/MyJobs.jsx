@@ -25,6 +25,7 @@ export default function MyJobs() {
     })
       .then((res) => {
         setJobs(res.data.data.data || []);
+        console.log('qqqq',res.data.data);
         setLastPage(res.data.data.last_page || 1);
       })
       .catch(() => setJobs([]));
