@@ -94,7 +94,7 @@ function JobList({ filters }) {
       {/* ❌ NOT LOGGED IN */}
       {!loading && !isLoggedIn && (
         <div className="text-center py-5 text-muted">
-          🔒 Jobs will be visible after login
+           Jobs will be visible after login
         </div>
       )}
 

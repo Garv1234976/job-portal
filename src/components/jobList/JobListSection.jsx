@@ -233,12 +233,7 @@ function JobListSection() {
           {/* JOB LIST */}
           <div className="col-md-9">
 
-            {/* ❌ NOT LOGGED IN */}
-            {!loading && !isLoggedIn && (
-              <div className="text-center py-5 text-muted">
-                🔒 Jobs will be visible after login
-              </div>
-            )}
+           
 
             {/* ✅ EXISTING SEARCH BAR */}
             <div className="row mb-3">
@@ -278,6 +273,12 @@ function JobListSection() {
             {/* ✅ ONLY SHOW IF LOGGED IN */}
             {!loading && isLoggedIn && jobs.length === 0 && (
               <p>No jobs found</p>
+            )}
+             {/* ❌ NOT LOGGED IN */}
+            {!loading && !isLoggedIn && (
+              <div className="text-center py-5 text-muted">
+                 Jobs will be visible after login
+              </div>
             )}
 
             {!loading && isLoggedIn && jobs.map((job) => (
