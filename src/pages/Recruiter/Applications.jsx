@@ -16,12 +16,14 @@ export default function Applications() {
   const [page, setPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
 
-  // ✅ FETCH
+  // ✅ FETCH APPLICATIONS
   const fetchApplications = () => {
     API.get(`/job-applications/${id}`, { params: { page } })
       .then((res) => {
-        setApplications(res.data.data.data || []);
-        setLastPage(res.data.data.last_page || 1);
+        const data = res.data.data;
+
+        setApplications(data.data || []);
+        setLastPage(data.last_page || 1);
       })
       .catch(() => {
         setApplications([]);
@@ -32,16 +34,29 @@ export default function Applications() {
     fetchApplications();
   }, [id, page]);
 
-  // ✅ STATUS UPDATE
+  // ✅ UPDATE STATUS
   const updateStatus = async (appId, status) => {
-    await API.post(`/application-status/${appId}`, { status });
+    try {
+      await API.post(`/application-status/${appId}`, { status });
 
-    Swal.fire("Success", `Candidate ${status}`, "success");
-    fetchApplications();
+      Swal.fire({
+        title: "Success",
+        text: `Candidate ${status}`,
+        icon: "success",
+        timer: 1500,
+        showConfirmButton: false
+      });
+
+      fetchApplications();
+    } catch {
+      Swal.fire("Error", "Something went wrong", "error");
+    }
   };
 
-  // ✅ PAGINATION
+  // ✅ PAGINATION UI
   const renderPagination = () => {
+    if (lastPage <= 1) return null;
+
     let pages = [];
 
     pages.push(
@@ -88,20 +103,27 @@ export default function Applications() {
       <div className="container-fluid mt-4">
         <div className="row">
 
+          {/* SIDEBAR */}
           <div className="col-md-3">
             <RecruiterSidebar />
           </div>
 
+          {/* MAIN */}
           <div className="col-md-9">
             <div className="container">
 
+              {/* HEADER */}
               <div className="d-flex justify-content-between mb-3">
                 <h3>Applications</h3>
-                <button className="btn btn-secondary" onClick={() => navigate(-1)}>
+                <button
+                  className="btn btn-secondary"
+                  onClick={() => navigate(-1)}
+                >
                   Back
                 </button>
               </div>
 
+              {/* TABLE */}
               <table className="table table-bordered">
                 <thead className="table-dark">
                   <tr>
@@ -119,13 +141,13 @@ export default function Applications() {
                   {applications.length > 0 ? (
                     applications.map((app, i) => (
                       <tr key={app.id}>
-                        {/* ✅ FIXED SERIAL NUMBER */}
+                        {/* SERIAL */}
                         <td>{(page - 1) * 5 + i + 1}</td>
 
                         <td>{app.name}</td>
                         <td>{app.email}</td>
 
-                        {/* PHONE */}
+                        {/* PHONE + WHATSAPP */}
                         <td>
                           {app.phone ? (
                             <>
@@ -170,7 +192,15 @@ export default function Applications() {
 
                         {/* STATUS */}
                         <td>
-                          <span className="badge bg-secondary">
+                          <span
+                            className={`badge ${
+                              app.status === "accepted"
+                                ? "bg-success"
+                                : app.status === "rejected"
+                                ? "bg-danger"
+                                : "bg-warning"
+                            }`}
+                          >
                             {app.status}
                           </span>
                         </td>
@@ -180,7 +210,9 @@ export default function Applications() {
                           <button
                             className="btn btn-success btn-sm me-2"
                             disabled={app.status === "accepted"}
-                            onClick={() => updateStatus(app.id, "accepted")}
+                            onClick={() =>
+                              updateStatus(app.id, "accepted")
+                            }
                           >
                             Accept
                           </button>
@@ -188,7 +220,9 @@ export default function Applications() {
                           <button
                             className="btn btn-danger btn-sm"
                             disabled={app.status === "rejected"}
-                            onClick={() => updateStatus(app.id, "rejected")}
+                            onClick={() =>
+                              updateStatus(app.id, "rejected")
+                            }
                           >
                             Reject
                           </button>
@@ -206,11 +240,9 @@ export default function Applications() {
               </table>
 
               {/* PAGINATION */}
-              {lastPage > 1 && (
-                <div className="d-flex justify-content-center mt-4 gap-2 flex-wrap">
-                  {renderPagination()}
-                </div>
-              )}
+              <div className="d-flex justify-content-center mt-4 gap-2 flex-wrap">
+                {renderPagination()}
+              </div>
 
             </div>
           </div>
