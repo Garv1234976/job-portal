@@ -36,7 +36,7 @@ import CreateJob from "./pages/Recruiter/CreateJob";
 import EditJob from "./pages/Recruiter/EditJob";
 import ApplyJob from "./pages/Recruiter/ApplyJob";
 import MyJobs from "./pages/Recruiter/MyJobs";
-import Applications from "./pages/Recruiter/Applications";
+import JobApplications from "./pages/Recruiter/Applications";
 import ClosedJobs from "./pages/Recruiter/ClosedJobs";
 
 function App() {
@@ -208,10 +208,10 @@ function App() {
         />
 
         <Route
-          path="/recruiter/applications"
+          path="/recruiter/job-applications/:id"
           element={
             <ProtectedRoute roleRequired="recruiter">
-              <Applications />
+              <JobApplications />
             </ProtectedRoute>
           }
         />

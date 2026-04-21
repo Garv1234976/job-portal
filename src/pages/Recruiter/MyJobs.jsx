@@ -10,8 +10,8 @@ import RecruiterSidebar from "../../components/RecruiterSidebar";
 export default function MyJobs() {
   const [jobs, setJobs] = useState([]);
   const [search, setSearch] = useState("");
-  const [location, setLocation] = useState(""); // ✅ NEW
-  const [salary, setSalary] = useState(""); // ✅ NEW
+  const [location, setLocation] = useState("");
+  const [salary, setSalary] = useState("");
 
   const [page, setPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
@@ -21,12 +21,7 @@ export default function MyJobs() {
   // ✅ FETCH JOBS
   const fetchJobs = () => {
     API.get("/jobs", {
-      params: {
-        page,
-        search,
-        location,   // ✅ NEW
-        salary      // ✅ NEW
-      }
+      params: { page, search, location, salary }
     })
       .then((res) => {
         setJobs(res.data.data.data || []);
@@ -39,17 +34,22 @@ export default function MyJobs() {
     fetchJobs();
   }, [page, search, location, salary]);
 
-  // ✅ VIEW
+  // ✅ VIEW JOB
   const handleView = (id) => {
     window.open(`https://budes.online/job/${id}`, "_blank");
   };
 
-  // ✅ EDIT
+  // ✅ EDIT JOB
   const handleEdit = (id) => {
     navigate(`/recruiter/edit-job/${id}`);
   };
 
-  // ✅ CLOSE
+  // ✅ VIEW APPLICATIONS (NEW 🔥)
+  const handleApplications = (id) => {
+    navigate(`/recruiter/job-applications/${id}`);
+  };
+
+  // ✅ CLOSE JOB
   const closeJob = async (id) => {
     const result = await Swal.fire({
       title: "Are you sure?",
@@ -70,7 +70,7 @@ export default function MyJobs() {
     }
   };
 
-  // ✅ REOPEN
+  // ✅ REOPEN JOB
   const reopenJob = async (id) => {
     try {
       await API.post(`/reopen-job/${id}`);
@@ -88,6 +88,7 @@ export default function MyJobs() {
     let start = Math.max(1, page - 1);
     let end = Math.min(lastPage, page + 1);
 
+    // PREV
     pages.push(
       <button
         key="prev"
@@ -99,6 +100,7 @@ export default function MyJobs() {
       </button>
     );
 
+    // PAGE NUMBERS
     for (let i = start; i <= end; i++) {
       pages.push(
         <button
@@ -111,6 +113,7 @@ export default function MyJobs() {
       );
     }
 
+    // NEXT
     pages.push(
       <button
         key="next"
@@ -137,13 +140,13 @@ export default function MyJobs() {
             <RecruiterSidebar />
           </div>
 
-          {/* MAIN */}
+          {/* MAIN CONTENT */}
           <div className="col-md-9 col-lg-10">
             <div className="container">
 
               <h2 className="mb-3">My Jobs</h2>
 
-              {/* 🔥 FILTERS */}
+              {/* FILTERS */}
               <div className="row mb-3">
                 <div className="col-md-4">
                   <input
@@ -182,6 +185,7 @@ export default function MyJobs() {
                 </div>
               </div>
 
+              {/* TABLE */}
               <div className="table-responsive">
                 <table className="table table-bordered">
                   <thead className="table-dark">
@@ -200,7 +204,7 @@ export default function MyJobs() {
                   <tbody>
                     {jobs.length > 0 ? (
                       jobs.map((job, index) => {
-                        const isClosed = job.is_closed; // ✅ NEW
+                        const isClosed = job.is_closed;
 
                         return (
                           <tr key={job.id}>
@@ -211,7 +215,6 @@ export default function MyJobs() {
                             <td>{job.salary_range}</td>
                             <td>{job.openings}</td>
 
-                            {/* STATUS */}
                             <td>
                               {isClosed ? (
                                 <span className="badge bg-danger">Closed</span>
@@ -224,7 +227,7 @@ export default function MyJobs() {
                               {new Date(job.created_at).toLocaleDateString()}
                             </td>
 
-                            {/* ACTION */}
+                            {/* ACTION BUTTONS */}
                             <td>
                               <button
                                 className="btn btn-info btn-sm me-2"
@@ -238,6 +241,14 @@ export default function MyJobs() {
                                 onClick={() => handleEdit(job.id)}
                               >
                                 Edit
+                              </button>
+
+                              {/* ✅ NEW BUTTON */}
+                              <button
+                                className="btn btn-dark btn-sm me-2"
+                                onClick={() => handleApplications(job.id)}
+                              >
+                                Applications
                               </button>
 
                               {!isClosed ? (
