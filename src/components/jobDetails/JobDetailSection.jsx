@@ -121,11 +121,12 @@ function JobDetailSection() {
   if (loading) return <p className="text-center">Loading...</p>;
   if (!job) return <p className="text-center">Job not found</p>;
 
-  // ✅ Job closed check
+  // ✅ UPDATED CLOSED LOGIC (IMPORTANT 🔥)
   const isJobClosed =
+    job.status === "closed" ||
     job.application_count >= job.application_limit;
 
-  // ✅ Remaining vacancy (no negative)
+  // ✅ Remaining vacancy
   const remainingVacancy = Math.max(
     0,
     job.application_limit - job.application_count
@@ -183,7 +184,7 @@ function JobDetailSection() {
 
               {isJobClosed ? (
                 <div className="alert alert-danger text-center">
-                  🚫 Job Closed - Application limit reached
+                  🚫 Job Closed
                 </div>
               ) : alreadyApplied ? (
                 <div className="alert alert-success">

@@ -24,14 +24,13 @@ function JobCard({ job }) {
     setSaved(job.saved || false);
   }, [job]);
 
-  // ✅ JOB CLOSED LOGIC
+  // ✅ UPDATED CLOSED LOGIC
   const isJobClosed =
+    job.status === "closed" ||
     job.application_count >= job.application_limit;
 
-  // ✅ OPTIONAL ROLE CHECK (adjust if needed)
   const isRecruiter = job.is_recruiter || false;
 
-  // ✅ SAVE / UNSAVE
   const toggleSaveJob = async (e) => {
     e.stopPropagation();
 
@@ -54,7 +53,6 @@ function JobCard({ job }) {
     }
   };
 
-  // ✅ DAYS AGO
   const getDaysAgo = (date) => {
     const diff = Math.floor(
       (new Date() - new Date(date)) / (1000 * 60 * 60 * 24)
@@ -68,7 +66,7 @@ function JobCard({ job }) {
   return (
     <div
       className="p-3 mb-3 border rounded shadow-sm bg-white job-card"
-      onClick={() => navigate(`/job/${job.id}`)} // ✅ Always allow view
+      onClick={() => navigate(`/job/${job.id}`)}
       style={{ cursor: "pointer" }}
     >
       <div className="d-flex justify-content-between align-items-start">
@@ -88,15 +86,13 @@ function JobCard({ job }) {
 
           <div className="ms-3">
 
-            {/* ✅ CLOSED BADGE */}
+            {/* CLOSED BADGE */}
             {isJobClosed && (
               <span className="badge bg-danger mb-1">Closed</span>
             )}
 
-            {/* TITLE */}
             <h5 className="fw-bold mb-1">{job.job_title}</h5>
 
-            {/* META */}
             <div className="text-muted small mb-1 d-flex flex-wrap align-items-center gap-2">
               <span>
                 <FaBriefcase className="me-1" /> {job.experience} Years
@@ -109,12 +105,10 @@ function JobCard({ job }) {
               </span>
             </div>
 
-            {/* DESC */}
             <div className="text-muted small mb-1">
               {job.job_description?.slice(0, 120)}...
             </div>
 
-            {/* DATE */}
             <div className="text-muted small">
               <FaClock className="me-1" />
               {getDaysAgo(job.created_at)}
@@ -126,7 +120,6 @@ function JobCard({ job }) {
         {/* RIGHT */}
         <div className="text-end">
 
-          {/* SAVE */}
           <button
             className="btn btn-sm btn-light border mb-2"
             onClick={toggleSaveJob}
@@ -141,7 +134,6 @@ function JobCard({ job }) {
 
           <br />
 
-          {/* APPLY / VIEW BUTTON */}
           {isRecruiter ? (
             <button className="btn btn-sm btn-secondary" disabled>
               View Only
