@@ -29,6 +29,10 @@ function JobDetailSection() {
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
 
+  // ✅ GET USER FROM LOCALSTORAGE
+  const user = JSON.parse(localStorage.getItem("user"));
+  const isRecruiter = user?.role === "recruiter";
+
   useEffect(() => {
     fetchJob();
   }, [id]);
@@ -125,9 +129,6 @@ function JobDetailSection() {
   const isJobClosed =
     job.status === "closed" ||
     job.application_count >= job.application_limit;
-
-  // ✅ NEW: RECRUITER CHECK
-  const isRecruiter = job.is_recruiter || false;
 
   // ✅ Vacancy
   const remainingVacancy = Math.max(
