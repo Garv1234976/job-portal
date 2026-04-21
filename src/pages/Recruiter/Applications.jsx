@@ -1,169 +1,184 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import API from "../../services/api";
+import Swal from "sweetalert2";
 
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import RecruiterSidebar from "../../components/RecruiterSidebar";
 
 export default function Applications() {
-  const { id } = useParams(); // ✅ job_id
+  const { id } = useParams();
   const navigate = useNavigate();
 
   const [applications, setApplications] = useState([]);
-  const [page, setPage] = useState(1);
-  const [lastPage, setLastPage] = useState(1);
+  const [resumeUrl, setResumeUrl] = useState(null);
 
-  // ✅ FETCH APPLICATIONS BY JOB
   const fetchApplications = () => {
-    API.get(`/job-applications/${id}`, {
-      params: { page }
-    })
+    API.get(`/job-applications/${id}`)
       .then((res) => {
         setApplications(res.data.data.data || []);
-        setLastPage(res.data.data.last_page || 1);
-      })
-      .catch(() => setApplications([]));
+      });
   };
 
   useEffect(() => {
     fetchApplications();
-  }, [id, page]);
+  }, [id]);
 
-  // ✅ PAGINATION
-  const renderPagination = () => {
-    let pages = [];
+  // ✅ UPDATE STATUS
+  const updateStatus = async (appId, status) => {
+    await API.post(`/application-status/${appId}`, { status });
 
-    pages.push(
-      <button
-        key="prev"
-        className="btn btn-light border"
-        disabled={page === 1}
-        onClick={() => setPage(page - 1)}
-      >
-        Prev
-      </button>
-    );
-
-    for (let i = 1; i <= lastPage; i++) {
-      pages.push(
-        <button
-          key={i}
-          className={`btn ${page === i ? "btn-dark" : "btn-light border"}`}
-          onClick={() => setPage(i)}
-        >
-          {i}
-        </button>
-      );
-    }
-
-    pages.push(
-      <button
-        key="next"
-        className="btn btn-light border"
-        disabled={page === lastPage}
-        onClick={() => setPage(page + 1)}
-      >
-        Next
-      </button>
-    );
-
-    return pages;
+    Swal.fire("Success", `Candidate ${status}`, "success");
+    fetchApplications();
   };
 
   return (
     <>
       <Navbar />
 
-      <div className="container-fluid mt-4 mb-5">
+      <div className="container-fluid mt-4">
         <div className="row">
 
-          {/* SIDEBAR */}
-          <div className="col-md-3 col-lg-2">
+          <div className="col-md-3">
             <RecruiterSidebar />
           </div>
 
-          {/* MAIN */}
-          <div className="col-md-9 col-lg-10">
+          <div className="col-md-9">
             <div className="container">
 
-              <div className="d-flex justify-content-between align-items-center mb-3">
+              <div className="d-flex justify-content-between mb-3">
                 <h3>Applications</h3>
-
-                {/* BACK BUTTON */}
-                <button
-                  className="btn btn-secondary"
-                  onClick={() => navigate(-1)}
-                >
+                <button className="btn btn-secondary" onClick={() => navigate(-1)}>
                   Back
                 </button>
               </div>
 
-              <div className="table-responsive">
-                <table className="table table-bordered">
-                  <thead className="table-dark">
-                    <tr>
-                      <th>#</th>
-                      <th>Name</th>
-                      <th>Email</th>
-                      <th>Portfolio</th>
-                      <th>Cover Letter</th>
-                      <th>Date</th>
+              <table className="table table-bordered">
+                <thead className="table-dark">
+                  <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th> {/* ✅ NEW */}
+                    <th>Resume</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {applications.map((app, i) => (
+                    <tr key={app.id}>
+                      <td>{i + 1}</td>
+                      <td>{app.name}</td>
+                      <td>{app.email}</td>
+
+                      {/* ✅ PHONE + WHATSAPP */}
+                      <td>
+                        {app.phone ? (
+                          <a
+                            href={`https://wa.me/${app.phone}`}
+                            target="_blank"
+                            className="btn btn-success btn-sm"
+                          >
+                            Chat
+                          </a>
+                        ) : "-"}
+                      </td>
+
+                      {/* RESUME */}
+                      <td>
+                        {app.resume ? (
+                          <>
+                            <button
+                              className="btn btn-primary btn-sm me-2"
+                              onClick={() =>
+                                setResumeUrl(`https://server.budes.online/storage/${app.resume}`)
+                              }
+                            >
+                              View
+                            </button>
+
+                            <a
+                              href={`https://server.budes.online/storage/${app.resume}`}
+                              download
+                              className="btn btn-success btn-sm"
+                            >
+                              Download
+                            </a>
+                          </>
+                        ) : (
+                          "-"
+                        )}
+                      </td>
+
+                      {/* STATUS */}
+                      <td>
+                        {app.status === "accepted" && (
+                          <span className="badge bg-success">Accepted</span>
+                        )}
+                        {app.status === "rejected" && (
+                          <span className="badge bg-danger">Rejected</span>
+                        )}
+                        {app.status === "pending" && (
+                          <span className="badge bg-warning">Pending</span>
+                        )}
+                      </td>
+
+                      {/* ACTION */}
+                      <td>
+                        <button
+                          className="btn btn-success btn-sm me-2"
+                          onClick={() => updateStatus(app.id, "accepted")}
+                        >
+                          Accept
+                        </button>
+
+                        <button
+                          className="btn btn-danger btn-sm"
+                          onClick={() => updateStatus(app.id, "rejected")}
+                        >
+                          Reject
+                        </button>
+                      </td>
                     </tr>
-                  </thead>
-
-                  <tbody>
-                    {applications.length > 0 ? (
-                      applications.map((app, index) => (
-                        <tr key={app.id}>
-                          <td>{(page - 1) * 10 + index + 1}</td>
-
-                          <td>{app.name}</td>
-                          <td>{app.email}</td>
-
-                          <td>
-                            {app.portfolio ? (
-                              <a href={app.portfolio} target="_blank">
-                                View
-                              </a>
-                            ) : (
-                              "-"
-                            )}
-                          </td>
-
-                          <td>
-                            {app.cover_letter
-                              ? app.cover_letter.slice(0, 50) + "..."
-                              : "-"}
-                          </td>
-
-                          <td>
-                            {new Date(app.created_at).toLocaleDateString()}
-                          </td>
-                        </tr>
-                      ))
-                    ) : (
-                      <tr>
-                        <td colSpan="6" className="text-center">
-                          No applications found
-                        </td>
-                      </tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-
-              {/* PAGINATION */}
-              {lastPage > 1 && (
-                <div className="d-flex justify-content-center mt-4 gap-2 flex-wrap">
-                  {renderPagination()}
-                </div>
-              )}
+                  ))}
+                </tbody>
+              </table>
 
             </div>
           </div>
         </div>
       </div>
+
+      {/* RESUME MODAL */}
+      {resumeUrl && (
+        <div className="modal show d-block" style={{ background: "#00000099" }}>
+          <div className="modal-dialog modal-xl">
+            <div className="modal-content">
+
+              <div className="modal-header">
+                <h5>Resume Preview</h5>
+                <button
+                  className="btn-close"
+                  onClick={() => setResumeUrl(null)}
+                />
+              </div>
+
+              <div className="modal-body">
+                <iframe
+                  src={resumeUrl}
+                  width="100%"
+                  height="500px"
+                  title="Resume"
+                />
+              </div>
+
+            </div>
+          </div>
+        </div>
+      )}
 
       <Footer />
     </>
