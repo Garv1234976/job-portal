@@ -23,7 +23,7 @@ function JobDetailSection() {
     name: "",
     email: "",
     portfolio: "",
-    cover_letter"
+    cover_letter: ""
   });
 
   const [errors, setErrors] = useState({});
