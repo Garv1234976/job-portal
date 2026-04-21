@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import api from "../../services/api";
 import Swal from "sweetalert2";
 import Select from "react-select";
+import Navbar from "../../components/Navbar";
+import Footer from "../../components/Footer";
 
 const qualificationOptions = [
   { value: "10th", label: "10th" },
@@ -238,6 +240,9 @@ function RegisterCandidate() {
   };
 
   return (
+     <>
+      {/* ✅ NAVBAR */}
+      <Navbar />
     <div className="container py-5">
       <div className="row justify-content-center">
         <div className="col-lg-8">
@@ -658,6 +663,8 @@ function RegisterCandidate() {
         </div>
       </div>
     </div>
+     <Footer />
+    </>
   );
 }
 
