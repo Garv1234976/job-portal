@@ -143,7 +143,7 @@ function Navbar() {
 
                 <Link
                   to="/register/candidate"
-                  className="btn btn-outline-primary ms-2 px-3 d-flex align-items-center gap-2"
+                  className="nav-link d-flex align-items-center gap-2"
                 >
                   Register
                 </Link>

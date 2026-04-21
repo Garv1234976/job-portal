@@ -192,7 +192,7 @@ function JobDetailSection() {
 
               ) : isRecruiter ? (
                 <div className="alert alert-info text-center">
-                  👨‍💼 You can view this job but cannot apply
+                   You can view this job but cannot apply
                 </div>
 
               ) : alreadyApplied ? (
