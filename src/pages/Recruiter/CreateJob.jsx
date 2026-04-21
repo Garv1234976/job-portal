@@ -10,10 +10,28 @@ export default function CreateJob() {
   const [errors, setErrors] = useState({});
   const [categories, setCategories] = useState([]);
   const [subCategories, setSubCategories] = useState([]);
+  const [logoPreview, setLogoPreview] = useState(null);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
     setErrors({ ...errors, [e.target.name]: "" });
+  };
+
+  const handleLogoChange = (e) => {
+    const file = e.target.files[0];
+
+    if (!file) return;
+
+    const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
+
+    if (!allowedTypes.includes(file.type)) {
+      Swal.fire("Error", "Only JPG, JPEG, PNG files allowed", "error");
+      return;
+    }
+
+    setForm({ ...form, logo: file });
+
+    setLogoPreview(URL.createObjectURL(file));
   };
 
   const validate = () => {
@@ -29,6 +47,7 @@ export default function CreateJob() {
     if (!form.openings) newErrors.openings = "Required";
     if (!form.category_id) newErrors.category_id = "Required";
     if (!form.company_name) newErrors.company_name = "Required";
+    if (!form.application_limit) newErrors.application_limit = "Required";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -135,10 +154,22 @@ export default function CreateJob() {
                       type="file"
                       name="logo"
                       className="form-control"
-                      onChange={(e) =>
-                        setForm({ ...form, logo: e.target.files[0] })
-                      }
+                      accept="image/png, image/jpeg, image/jpg"
+                      onChange={handleLogoChange}
                     />
+                    {logoPreview && (
+                      <div className="mt-2">
+                        <img
+                          src={logoPreview}
+                          alt="Logo Preview"
+                          style={{
+                            width: "100px",
+                            height: "100px",
+                            objectFit: "cover",
+                          }}
+                        />
+                      </div>
+                    )}
                   </div>
 
                   <div className="col-md-6">
