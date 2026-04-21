@@ -33,6 +33,7 @@ import Resume from "./pages/Candidate/Resume";
 import RecruiterDashboard from "./pages/Recruiter/Dashboard";
 import Plans from "./pages/Recruiter/Plans";
 import CreateJob from "./pages/Recruiter/CreateJob";
+import EditJob from "./pages/Recruiter/EditJob";
 import ApplyJob from "./pages/Recruiter/ApplyJob";
 import MyJobs from "./pages/Recruiter/MyJobs";
 import Applications from "./pages/Recruiter/Applications";
@@ -175,6 +176,15 @@ function App() {
           element={
             <ProtectedRoute roleRequired="recruiter">
               <CreateJob />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/recruiter/edit-job/:id"
+          element={
+            <ProtectedRoute roleRequired="recruiter">
+              <EditJob />
             </ProtectedRoute>
           }
         />
