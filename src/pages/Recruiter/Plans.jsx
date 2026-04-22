@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import API from "../../services/api";
 import Swal from "sweetalert2";
+import Navbar from "../../components/Navbar";
+import Footer from "../../components/Footer";
+import RecruiterSidebar from "../../components/RecruiterSidebar";
 
 export default function Plans() {
   const [plans, setPlans] = useState([]);
@@ -31,7 +34,13 @@ export default function Plans() {
   };
 
   return (
+     <>
+      <Navbar />
     <div className="container mt-4">
+       {/* SIDEBAR */}
+                <div className="col-md-3 col-lg-2">
+                  <RecruiterSidebar />
+                </div>
       <h2>Recruiter Plans</h2>
 
       {activePlan && (
@@ -88,5 +97,7 @@ export default function Plans() {
         ))}
       </div>
     </div>
+    <Footer />
+    </>
   );
 }
