@@ -31,7 +31,7 @@ export default function RecruiterRegistration() {
     setErrors({ ...errors, [e.target.name]: "" });
   };
 
-  // 🔹 File Handling (UPDATED)
+  // 🔹 File Handling (ONLY ADDED VALIDATION)
   const handleFileChange = (e) => {
     const { name, files } = e.target;
     const file = files[0];
@@ -39,8 +39,8 @@ export default function RecruiterRegistration() {
     if (!file) return;
 
     if (name === "logo") {
+      // ✅ ONLY IMAGE
       const allowed = ["image/jpeg", "image/png", "image/jpg"];
-
       if (!allowed.includes(file.type)) {
         setErrors({ ...errors, logo: "Only JPG, JPEG, PNG allowed" });
         return;
@@ -52,6 +52,7 @@ export default function RecruiterRegistration() {
     }
 
     if (name === "documents") {
+      // ✅ ONLY DOC/PDF
       const allowed = [
         "application/pdf",
         "application/msword",
@@ -67,7 +68,7 @@ export default function RecruiterRegistration() {
     }
   };
 
-  // 🔹 Validation
+  // 🔹 Validation (UNCHANGED except altContact)
   const validate = () => {
     let newErrors = {};
 
@@ -79,7 +80,7 @@ export default function RecruiterRegistration() {
     else if (!/^[0-9]{10}$/.test(form.contact))
       newErrors.contact = "Must be 10 digits";
 
-    // ✅ NEW: alt contact validation (no removal)
+    // ✅ Added (not removing anything)
     if (form.altContact && !/^[0-9]{10}$/.test(form.altContact))
       newErrors.altContact = "Must be 10 digits";
 
@@ -126,7 +127,7 @@ export default function RecruiterRegistration() {
         showConfirmButton: false,
       });
 
-      // ✅ FIXED REDIRECT (ONLY CHANGE)
+      // ✅ ONLY CHANGE HERE (redirect)
       setTimeout(() => {
         navigate("/login/recruiter");
       }, 1500);
@@ -167,9 +168,9 @@ export default function RecruiterRegistration() {
               <label>Contact <span className="text-danger">*</span></label>
               <input
                 type="tel"
+                inputMode="numeric"
                 name="contact"
                 maxLength="10"
-                inputMode="numeric"
                 className={`form-control ${errors.contact && "is-invalid"}`}
                 onChange={(e) =>
                   /^[0-9]*$/.test(e.target.value) && handleChange(e)
@@ -183,9 +184,9 @@ export default function RecruiterRegistration() {
               <label>Alternative Contact</label>
               <input
                 type="tel"
+                inputMode="numeric"
                 name="altContact"
                 maxLength="10"
-                inputMode="numeric"
                 className={`form-control ${errors.altContact && "is-invalid"}`}
                 onChange={(e) =>
                   /^[0-9]*$/.test(e.target.value) && handleChange(e)
@@ -218,6 +219,50 @@ export default function RecruiterRegistration() {
               <div className="invalid-feedback">{errors.address}</div>
             </div>
 
+            {/* Profession */}
+            <div className="col-md-6 mb-3">
+              <label>Profession</label>
+              <input
+                type="text"
+                name="profession"
+                className="form-control"
+                onChange={handleChange}
+              />
+            </div>
+
+            {/* Employer Name */}
+            <div className="col-md-6 mb-3">
+              <label>Employer Name</label>
+              <input
+                type="text"
+                name="employerName"
+                className="form-control"
+                onChange={handleChange}
+              />
+            </div>
+
+            {/* Position */}
+            <div className="col-md-6 mb-3">
+              <label>Position</label>
+              <input
+                type="text"
+                name="position"
+                className="form-control"
+                onChange={handleChange}
+              />
+            </div>
+
+            {/* Since */}
+            <div className="col-md-6 mb-3">
+              <label>Registered Since</label>
+              <input
+                type="date"
+                name="since"
+                className="form-control"
+                onChange={handleChange}
+              />
+            </div>
+
             {/* Logo */}
             <div className="col-md-6 mb-3">
               <label>Company Logo <span className="text-danger">*</span></label>
@@ -231,7 +276,12 @@ export default function RecruiterRegistration() {
               <div className="invalid-feedback">{errors.logo}</div>
 
               {preview && (
-                <img src={preview} className="mt-2" height="60" />
+                <img
+                  src={preview}
+                  alt="preview"
+                  className="mt-2"
+                  height="60"
+                />
               )}
             </div>
 
