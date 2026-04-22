@@ -38,7 +38,10 @@ export default function Applications() {
   const updateStatus = async (appId, status) => {
     const result = await Swal.fire({
       title: "Are you sure?",
-      text: `You want to ${status} this candidate?`,
+      text:
+        status === "selected"
+          ? "Shortlist this candidate and send email?"
+          : "Reject this candidate?",
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: "Yes",
@@ -48,6 +51,8 @@ export default function Applications() {
 
     try {
       await API.post(`/application-status/${appId}`, { status });
+
+      // 🔄 refresh list
       fetchApplications();
     } catch {
       Swal.fire("Error", "Something went wrong", "error");
@@ -118,7 +123,7 @@ export default function Applications() {
                 </button>
               </div>
 
-              {/* 🔥 FILTER TABS */}
+              {/* 🔥 FILTER */}
               <div className="mb-3 d-flex gap-2">
                 {["all", "selected", "rejected"].map((f) => (
                   <button
@@ -136,10 +141,10 @@ export default function Applications() {
                 ))}
               </div>
 
-              {/* SEARCH */}
+              {/* 🔥 SEARCH (NOW WORKS WITH PHONE ALSO) */}
               <input
                 className="form-control mb-3"
-                placeholder="Search name or email..."
+                placeholder="Search name, email or phone..."
                 value={search}
                 onChange={(e) => {
                   setSearch(e.target.value);
@@ -192,18 +197,30 @@ export default function Applications() {
                             ) : "No Phone"}
                           </td>
 
+                          {/* 🔥 RESUME */}
                           <td>
                             {resumeUrl ? (
-                              <a
-                                href={resumeUrl}
-                                target="_blank"
-                                className="btn btn-primary btn-sm"
-                              >
-                                View Resume
-                              </a>
+                              <>
+                                <a
+                                  href={resumeUrl}
+                                  target="_blank"
+                                  className="btn btn-primary btn-sm me-2"
+                                >
+                                  View
+                                </a>
+
+                                <a
+                                  href={resumeUrl}
+                                  download
+                                  className="btn btn-success btn-sm"
+                                >
+                                  Download
+                                </a>
+                              </>
                             ) : "No Resume"}
                           </td>
 
+                          {/* STATUS */}
                           <td>
                             <span
                               className={`badge ${
@@ -214,7 +231,9 @@ export default function Applications() {
                                   : "bg-warning"
                               }`}
                             >
-                              {app.status}
+                              {app.status === "selected"
+                                ? "Shortlisted"
+                                : app.status}
                             </span>
                           </td>
 
@@ -227,7 +246,7 @@ export default function Applications() {
                                   updateStatus(app.id, "selected")
                                 }
                               >
-                                Select
+                                Shortlist & Email
                               </button>
                             )}
 
