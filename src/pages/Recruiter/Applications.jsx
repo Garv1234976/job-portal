@@ -36,12 +36,15 @@ export default function Applications() {
 
   // ✅ CONFIRM + UPDATE
   const updateStatus = async (appId, status) => {
+    const textMap = {
+      shortlisted: "Shortlist this candidate?",
+      selected: "Select this candidate and send email?",
+      rejected: "Reject this candidate?",
+    };
+
     const result = await Swal.fire({
       title: "Are you sure?",
-      text:
-        status === "selected"
-          ? "Shortlist this candidate and send email?"
-          : "Reject this candidate?",
+      text: textMap[status],
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: "Yes",
@@ -51,8 +54,6 @@ export default function Applications() {
 
     try {
       await API.post(`/application-status/${appId}`, { status });
-
-      // 🔄 refresh list
       fetchApplications();
     } catch {
       Swal.fire("Error", "Something went wrong", "error");
@@ -123,9 +124,9 @@ export default function Applications() {
                 </button>
               </div>
 
-              {/* 🔥 FILTER */}
+              {/* FILTER */}
               <div className="mb-3 d-flex gap-2">
-                {["all", "selected", "rejected"].map((f) => (
+                {["all", "shortlisted", "selected", "rejected"].map((f) => (
                   <button
                     key={f}
                     className={`btn ${
@@ -141,7 +142,7 @@ export default function Applications() {
                 ))}
               </div>
 
-              {/* 🔥 SEARCH (NOW WORKS WITH PHONE ALSO) */}
+              {/* SEARCH */}
               <input
                 className="form-control mb-3"
                 placeholder="Search name, email or phone..."
@@ -197,7 +198,7 @@ export default function Applications() {
                             ) : "No Phone"}
                           </td>
 
-                          {/* 🔥 RESUME */}
+                          {/* RESUME */}
                           <td>
                             {resumeUrl ? (
                               <>
@@ -208,7 +209,6 @@ export default function Applications() {
                                 >
                                   View
                                 </a>
-
                                 <a
                                   href={resumeUrl}
                                   download
@@ -224,21 +224,32 @@ export default function Applications() {
                           <td>
                             <span
                               className={`badge ${
-                                app.status === "selected"
+                                app.status === "shortlisted"
+                                  ? "bg-info"
+                                  : app.status === "selected"
                                   ? "bg-success"
                                   : app.status === "rejected"
                                   ? "bg-danger"
                                   : "bg-warning"
                               }`}
                             >
-                              {app.status === "selected"
-                                ? "Shortlisted"
-                                : app.status}
+                              {app.status}
                             </span>
                           </td>
 
-                          {/* 🔥 ACTIONS */}
+                          {/* ACTIONS */}
                           <td>
+                            {app.status !== "shortlisted" && (
+                              <button
+                                className="btn btn-info btn-sm me-2"
+                                onClick={() =>
+                                  updateStatus(app.id, "shortlisted")
+                                }
+                              >
+                                Shortlist
+                              </button>
+                            )}
+
                             {app.status !== "selected" && (
                               <button
                                 className="btn btn-success btn-sm me-2"
@@ -246,7 +257,7 @@ export default function Applications() {
                                   updateStatus(app.id, "selected")
                                 }
                               >
-                                Shortlist & Email
+                                Select & Email
                               </button>
                             )}
 
