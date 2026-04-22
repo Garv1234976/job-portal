@@ -82,6 +82,7 @@ function JobCard({ job }) {
             alt="logo"
             style={{ width: 60, height: 60, objectFit: "cover" }}
             className="rounded border"
+            loading="lazy"
           />
 
           <div className="ms-3">

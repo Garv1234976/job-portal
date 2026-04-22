@@ -128,7 +128,7 @@ export default function EditJob() {
                       onChange={handleLogoChange}
                     />
                     {logoPreview && (
-                      <img src={logoPreview} style={{ width: 100 }} />
+                      <img src={logoPreview} style={{ width: 100 }} loading="lazy" />
                     )}
                   </div>
 

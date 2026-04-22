@@ -154,6 +154,7 @@ function JobDetailSection() {
                 style={{ width: 80, height: 80 }}
                 alt=""
                 className="border rounded"
+                loading="lazy"
               />
 
               <div className="ps-4">

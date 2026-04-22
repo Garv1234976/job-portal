@@ -13,6 +13,7 @@ function About() {
                   className="img-fluid w-100"
                   src="/assets/img/about-1.jpg"
                   alt="about"
+                  loading="lazy"
                 />
               </div>
 
@@ -22,6 +23,7 @@ function About() {
                   src="/assets/img/about-2.jpg"
                   alt="about"
                   style={{ width: "85%", marginTop: "15%" }}
+                  loading="lazy"
                 />
               </div>
 
@@ -31,6 +33,7 @@ function About() {
                   src="/assets/img/about-3.jpg"
                   alt="about"
                   style={{ width: "85%" }}
+                  loading="lazy"
                 />
               </div>
 
@@ -39,6 +42,7 @@ function About() {
                   className="img-fluid w-100"
                   src="/assets/img/about-4.jpg"
                   alt="about"
+                  loading="lazy"
                 />
               </div>
             </div>

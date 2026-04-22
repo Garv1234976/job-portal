@@ -251,6 +251,7 @@ export default function RecruiterRegistration() {
                   alt="preview"
                   className="mt-2"
                   height="60"
+                  loading="lazy"
                 />
               )}
             </div>

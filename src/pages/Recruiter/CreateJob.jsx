@@ -178,6 +178,7 @@ export default function CreateJob() {
                             height: "100px",
                             objectFit: "cover",
                           }}
+                          loading="lazy"
                         />
                       </div>
                     )}

@@ -114,6 +114,7 @@ export default function CandidateDashboard() {
                       className="rounded-circle mb-3"
                       style={{ width: 80, height: 80, objectFit: "cover" }}
                       alt=""
+                      loading="lazy"
                     />
 
                     <h5 className="fw-bold">

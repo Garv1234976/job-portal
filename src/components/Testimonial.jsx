@@ -114,6 +114,7 @@ function Testimonial() {
                   border: "3px solid #00B074",
                   marginBottom: 10,
                 }}
+                loading="lazy"
               />
 
               <h5 className="mb-0 fw-bold">{current.name}</h5>

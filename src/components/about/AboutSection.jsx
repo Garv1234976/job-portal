@@ -15,6 +15,7 @@ function AboutSection() {
                   className="img-fluid w-100"
                   src="/assets/img/about-1.jpg"
                   alt="jobs"
+                  loading="lazy"
                 />
               </div>
 
@@ -24,6 +25,7 @@ function AboutSection() {
                   src="/assets/img/about-2.jpg"
                   alt="career"
                   style={{ width: "85%", marginTop: "15%" }}
+                  loading="lazy"
                 />
               </div>
 
@@ -33,6 +35,7 @@ function AboutSection() {
                   src="/assets/img/about-3.jpg"
                   alt="hiring"
                   style={{ width: "85%" }}
+                  loading="lazy"
                 />
               </div>
 
@@ -41,6 +44,7 @@ function AboutSection() {
                   className="img-fluid w-100"
                   src="/assets/img/about-4.jpg"
                   alt="company"
+                  loading="lazy"
                 />
               </div>
 

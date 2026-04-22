@@ -140,6 +140,7 @@ function Profile() {
                         objectFit: "cover",
                         cursor: "pointer",
                       }}
+                      loading="lazy"
                     />
 
                     <div
