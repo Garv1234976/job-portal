@@ -52,12 +52,6 @@ export default function Applications() {
     }
   };
 
-  // ✅ GOOGLE VIEWER
-  const openResume = (url) => {
-    const viewer = `https://docs.google.com/gview?embedded=1&url=${encodeURIComponent(url)}`;
-    window.open(viewer, "_blank");
-  };
-
   // ✅ PAGINATION
   const renderPagination = () => {
     if (lastPage <= 1) return null;
@@ -148,84 +142,122 @@ export default function Applications() {
 
                 <tbody>
                   {applications.length > 0 ? (
-                    applications.map((app, i) => (
-                      <tr key={app.id}>
-                        <td>{(page - 1) * 5 + i + 1}</td>
+                    applications.map((app, i) => {
+                      const fileName = app.resume_url
+                        ? app.resume_url.split("/").pop()
+                        : "";
 
-                        <td>{app.name}</td>
-                        <td>{app.email}</td>
+                      const isPDF = app.resume_url
+                        ?.toLowerCase()
+                        .endsWith(".pdf");
 
-                        <td>
-                          {app.phone ? (
-                            <>
-                              <div>{app.phone}</div>
-                              <a
-                                href={`https://wa.me/91${app.phone}`}
-                                target="_blank"
-                                className="btn btn-success btn-sm mt-1"
-                              >
-                                WhatsApp
-                              </a>
-                            </>
-                          ) : "No Phone"}
-                        </td>
+                      return (
+                        <tr key={app.id}>
+                          <td>{(page - 1) * 5 + i + 1}</td>
 
-                        <td>
-                          {app.resume_url ? (
-                            <>
-                              <button
-                                className="btn btn-primary btn-sm me-2"
-                                onClick={() => openResume(app.resume_url)}
-                              >
-                                View
-                              </button>
+                          <td>{app.name}</td>
+                          <td>{app.email}</td>
 
-                              <a
-                                href={app.resume_url}
-                                download
-                                className="btn btn-success btn-sm"
-                              >
-                                Download
-                              </a>
-                            </>
-                          ) : (
-                            "No Resume"
-                          )}
-                        </td>
+                          <td>
+                            {app.phone ? (
+                              <>
+                                <div>{app.phone}</div>
+                                <a
+                                  href={`https://wa.me/91${app.phone}`}
+                                  target="_blank"
+                                  className="btn btn-success btn-sm mt-1"
+                                >
+                                  WhatsApp
+                                </a>
+                              </>
+                            ) : "No Phone"}
+                          </td>
 
-                        <td>
-                          <span
-                            className={`badge ${
-                              app.status === "accepted"
-                                ? "bg-success"
-                                : app.status === "rejected"
-                                ? "bg-danger"
-                                : "bg-warning"
-                            }`}
-                          >
-                            {app.status}
-                          </span>
-                        </td>
+                          {/* ✅ UPDATED RESUME UI */}
+                          <td style={{ minWidth: "300px" }}>
+                            {app.resume_url ? (
+                              <div className="card p-2">
 
-                        <td>
-                          <button
-                            className="btn btn-success btn-sm me-2"
-                            disabled={app.status === "accepted"}
-                            onClick={() => updateStatus(app.id, "accepted")}
-                          >
-                            Accept
-                          </button>
+                                {/* FILE INFO */}
+                                <div className="d-flex justify-content-between align-items-center mb-2 flex-wrap">
+                                  <small className="fw-bold">{fileName}</small>
 
-                          <button
-                            className="btn btn-danger btn-sm"
-                            disabled={app.status === "rejected"}
-                            onClick={() => updateStatus(app.id, "rejected")}
-                          >
-                            Reject
-                          </button>
-                        </td>
-                      </tr>
-                    ))
+                                  <div className="d-flex gap-1">
+                                    <a
+                                      href={`https://docs.google.com/gview?url=${encodeURIComponent(app.resume_url)}&embedded=true`}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="btn btn-outline-primary btn-sm"
+                                    >
+                                      View
+                                    </a>
+
+                                    <a
+                                      href={app.resume_url}
+                                      download
+                                      className="btn btn-success btn-sm"
+                                    >
+                                      Download
+                                    </a>
+                                  </div>
+                                </div>
+
+                                {/* PREVIEW */}
+                                <div style={{ border: "1px solid #ddd" }}>
+                                  {isPDF ? (
+                                    <iframe
+                                      src={app.resume_url}
+                                      width="100%"
+                                      height="250px"
+                                      title="Resume"
+                                    />
+                                  ) : (
+                                    <div className="text-center p-2 bg-light">
+                                      <small>Preview not available</small>
+                                    </div>
+                                  )}
+                                </div>
+
+                              </div>
+                            ) : (
+                              "No Resume"
+                            )}
+                          </td>
+
+                          <td>
+                            <span
+                              className={`badge ${
+                                app.status === "accepted"
+                                  ? "bg-success"
+                                  : app.status === "rejected"
+                                  ? "bg-danger"
+                                  : "bg-warning"
+                              }`}
+                            >
+                              {app.status}
+                            </span>
+                          </td>
+
+                          <td>
+                            <button
+                              className="btn btn-success btn-sm me-2"
+                              disabled={app.status === "accepted"}
+                              onClick={() => updateStatus(app.id, "accepted")}
+                            >
+                              Accept
+                            </button>
+
+                            <button
+                              className="btn btn-danger btn-sm"
+                              disabled={app.status === "rejected"}
+                              onClick={() => updateStatus(app.id, "rejected")}
+                            >
+                              Reject
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })
                   ) : (
                     <tr>
                       <td colSpan="7" className="text-center">
