@@ -15,11 +15,12 @@ export default function Applications() {
   const [page, setPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
   const [search, setSearch] = useState("");
+  const [filter, setFilter] = useState("all");
 
   // ✅ FETCH
   const fetchApplications = () => {
     API.get(`/job-applications/${id}`, {
-      params: { page, search },
+      params: { page, search, status: filter },
     })
       .then((res) => {
         const data = res.data.data;
@@ -31,21 +32,22 @@ export default function Applications() {
 
   useEffect(() => {
     fetchApplications();
-  }, [id, page, search]);
+  }, [id, page, search, filter]);
 
-  // ✅ STATUS UPDATE
+  // ✅ CONFIRM + UPDATE
   const updateStatus = async (appId, status) => {
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: `You want to ${status} this candidate?`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes",
+    });
+
+    if (!result.isConfirmed) return;
+
     try {
       await API.post(`/application-status/${appId}`, { status });
-
-      Swal.fire({
-        title: "Success",
-        text: `Candidate ${status}`,
-        icon: "success",
-        timer: 1500,
-        showConfirmButton: false,
-      });
-
       fetchApplications();
     } catch {
       Swal.fire("Error", "Something went wrong", "error");
@@ -56,7 +58,7 @@ export default function Applications() {
   const renderPagination = () => {
     if (lastPage <= 1) return null;
 
-    const pages = [];
+    let pages = [];
 
     pages.push(
       <button
@@ -111,12 +113,27 @@ export default function Applications() {
 
               <div className="d-flex justify-content-between mb-3">
                 <h3>Applications</h3>
-                <button
-                  className="btn btn-secondary"
-                  onClick={() => navigate(-1)}
-                >
+                <button className="btn btn-secondary" onClick={() => navigate(-1)}>
                   Back
                 </button>
+              </div>
+
+              {/* 🔥 FILTER TABS */}
+              <div className="mb-3 d-flex gap-2">
+                {["all", "selected", "rejected"].map((f) => (
+                  <button
+                    key={f}
+                    className={`btn ${
+                      filter === f ? "btn-dark" : "btn-outline-dark"
+                    }`}
+                    onClick={() => {
+                      setFilter(f);
+                      setPage(1);
+                    }}
+                  >
+                    {f.toUpperCase()}
+                  </button>
+                ))}
               </div>
 
               {/* SEARCH */}
@@ -146,16 +163,12 @@ export default function Applications() {
                 <tbody>
                   {applications.length > 0 ? (
                     applications.map((app, i) => {
-                      // ✅ HANDLE FULL + RELATIVE URL
+
                       const resumeUrl = app.resume_url?.startsWith("http")
                         ? app.resume_url
                         : app.resume_url
-                        ? `https://server.budes.online/public/${app.resume_url}`
+                        ? `https://server.budes.online/${app.resume_url}`
                         : null;
-
-                      const fileName = resumeUrl
-                        ? resumeUrl.split("/").pop()
-                        : "";
 
                       return (
                         <tr key={app.id}>
@@ -171,47 +184,24 @@ export default function Applications() {
                                 <a
                                   href={`https://wa.me/91${app.phone}`}
                                   target="_blank"
-                                  rel="noopener noreferrer"
                                   className="btn btn-success btn-sm mt-1"
                                 >
                                   WhatsApp
                                 </a>
                               </>
-                            ) : (
-                              "No Phone"
-                            )}
+                            ) : "No Phone"}
                           </td>
 
-                          {/* ✅ RESUME (NO PREVIEW) */}
                           <td>
                             {resumeUrl ? (
-                              <div>
-                                <div className="fw-bold small mb-1">
-                                  {fileName}
-                                </div>
-
-                                <div className="d-flex gap-2">
-                                  <a
-                                    href={`https://docs.google.com/gview?url=${encodeURIComponent(resumeUrl)}&embedded=true`}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="btn btn-outline-primary btn-sm"
-                                  >
-                                    View
-                                  </a>
-
-                                  <a
-                                    href={resumeUrl}
-                                    download
-                                    className="btn btn-success btn-sm"
-                                  >
-                                    Download
-                                  </a>
-                                </div>
-                              </div>
-                            ) : (
-                              "No Resume"
-                            )}
+                              <a
+                                href={resumeUrl}
+                                target="_blank"
+                                className="btn btn-primary btn-sm"
+                              >
+                                View Resume
+                              </a>
+                            ) : "No Resume"}
                           </td>
 
                           <td>
@@ -228,26 +218,29 @@ export default function Applications() {
                             </span>
                           </td>
 
+                          {/* 🔥 ACTIONS */}
                           <td>
-                            <button
-                              className="btn btn-success btn-sm me-2"
-                              disabled={app.status === "selected"}
-                              onClick={() =>
-                                updateStatus(app.id, "selected")
-                              }
-                            >
-                              Accept
-                            </button>
+                            {app.status !== "selected" && (
+                              <button
+                                className="btn btn-success btn-sm me-2"
+                                onClick={() =>
+                                  updateStatus(app.id, "selected")
+                                }
+                              >
+                                Select
+                              </button>
+                            )}
 
-                            <button
-                              className="btn btn-danger btn-sm"
-                              disabled={app.status === "rejected"}
-                              onClick={() =>
-                                updateStatus(app.id, "rejected")
-                              }
-                            >
-                              Reject
-                            </button>
+                            {app.status !== "rejected" && (
+                              <button
+                                className="btn btn-danger btn-sm"
+                                onClick={() =>
+                                  updateStatus(app.id, "rejected")
+                                }
+                              >
+                                Reject
+                              </button>
+                            )}
                           </td>
                         </tr>
                       );
