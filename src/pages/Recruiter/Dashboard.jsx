@@ -6,7 +6,6 @@ import Swal from "sweetalert2";
 // ✅ IMPORT THESE
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
-import RecruiterSidebar from "../../components/RecruiterSidebar"; // ✅ NEW
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -87,13 +86,13 @@ export default function Dashboard() {
                 <div className="col-md-3">
                   <div className="card shadow p-3 text-center h-100 dashboard-card">
                     <i className="fa fa-users fa-2x text-warning mb-2"></i>
-                    <h5>Applications</h5>
-                    <p>Check applicants</p>
+                    <h5>Plans</h5>
+                    <p>Check Plans</p>
                     <button
                       className="btn btn-warning w-100"
-                      onClick={() => navigate("/recruiter/applications")}
+                      onClick={() => navigate("/recruiter/plans")}
                     >
-                      View Applications
+                      View Plans
                     </button>
                   </div>
                 </div>
