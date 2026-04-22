@@ -257,7 +257,7 @@ export default function Applications() {
                                   updateStatus(app.id, "selected")
                                 }
                               >
-                                Select & Email
+                                Select
                               </button>
                             )}
 
