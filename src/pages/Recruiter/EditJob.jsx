@@ -113,7 +113,7 @@ export default function EditJob() {
 
                   {/* Job Title */}
                   <div className="col-md-6">
-                    <label>Job Title *</label>
+                    <label>Job Title <span className="text-danger">*</span></label>
                     <input className="form-control" name="job_title" value={form.job_title || ""} onChange={handleChange} />
                   </div>
 
@@ -125,18 +125,18 @@ export default function EditJob() {
                   </div>
 
                   <div className="col-md-6">
-                    <label>Company Name *</label>
+                    <label>Company Name<span className="text-danger">*</span></label>
                     <input className="form-control" name="company_name" value={form.company_name || ""} onChange={handleChange} />
                   </div>
 
                   <div className="col-md-6">
-                    <label>Application Limit *</label>
+                    <label>Application Limit <span className="text-danger">*</span></label>
                     <input type="number" className="form-control" name="application_limit" value={form.application_limit || ""} onChange={handleChange} />
                   </div>
 
                   {/* Category */}
                   <div className="col-md-6">
-                    <label>Category *</label>
+                    <label>Category <span className="text-danger">*</span></label>
                     <select className="form-control" value={form.parent_category || ""} onChange={handleCategoryChange}>
                       <option value="">Select</option>
                       {categories.map((c) => (
@@ -146,7 +146,7 @@ export default function EditJob() {
                   </div>
 
                   <div className="col-md-6">
-                    <label>Sub Category *</label>
+                    <label>Sub Category <span className="text-danger">*</span></label>
                     <select className="form-control" name="category_id" value={form.category_id || ""} onChange={handleChange}>
                       <option value="">Select</option>
                       {subCategories.map((s) => (
@@ -157,7 +157,7 @@ export default function EditJob() {
 
                   {/* Description */}
                   <div className="col-md-12">
-                    <label>Job Description *</label>
+                    <label>Job Description <span className="text-danger">*</span></label>
                     <textarea className="form-control" name="job_description" value={form.job_description || ""} onChange={handleChange} />
                   </div>
 
@@ -168,17 +168,17 @@ export default function EditJob() {
                   </div>
 
                   <div className="col-md-4">
-                    <label>Education *</label>
+                    <label>Education <span className="text-danger">*</span></label>
                     <input className="form-control" name="education" value={form.education || ""} onChange={handleChange} />
                   </div>
 
                   <div className="col-md-4">
-                    <label>Experience *</label>
+                    <label>Experience <span className="text-danger">*</span></label>
                     <input className="form-control" name="experience" value={form.experience || ""} onChange={handleChange} />
                   </div>
 
                   <div className="col-md-4">
-                    <label>Gender *</label>
+                    <label>Gender <span className="text-danger">*</span></label>
                     <select className="form-control" name="gender" value={form.gender || ""} onChange={handleChange}>
                       <option value="">Select</option>
                       <option>Male</option>
@@ -219,12 +219,12 @@ export default function EditJob() {
                   </div>
 
                   <div className="col-md-4">
-                    <label>Location *</label>
+                    <label>Location <span className="text-danger">*</span></label>
                     <input className="form-control" name="location" value={form.location || ""} onChange={handleChange} />
                   </div>
 
                   <div className="col-md-4">
-                    <label>Salary *</label>
+                    <label>Salary <span className="text-danger">*</span></label>
                     <input className="form-control" name="salary_range" value={form.salary_range || ""} onChange={handleChange} />
                   </div>
 
@@ -254,7 +254,7 @@ export default function EditJob() {
                   </div>
 
                   <div className="col-md-3">
-                    <label>Openings *</label>
+                    <label>Openings <span className="text-danger">*</span></label>
                     <input type="number" className="form-control" name="openings" value={form.openings || ""} onChange={handleChange} />
                   </div>
 
@@ -270,15 +270,12 @@ export default function EditJob() {
                     Update Job
                   </button>
                 </div>
-
+                
               </div>
-
             </div>
           </div>
-
         </div>
       </div>
-
       <Footer />
     </>
   );
