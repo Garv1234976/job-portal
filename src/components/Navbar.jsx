@@ -17,7 +17,6 @@ import {
   FaPlus,
 } from "react-icons/fa";
 
-
 function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -56,11 +55,9 @@ function Navbar() {
     navigate("/login");
   };
 
-  // ✅ ACTIVE CHECK
   const isActive = (path) => location.pathname === path;
 
   return (
-    // ✅ FIX: Added navbar-light
     <nav className="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top py-2">
       <div className="container">
         {/* LOGO */}
@@ -204,7 +201,7 @@ function Navbar() {
           </div>
 
           {/* POST JOB BUTTON */}
-          {token && role === "recruiter" && (
+          {token && role === "recruiter" ? (
             <button
               onClick={handlePostJob}
               className="btn btn-primary ms-lg-3 px-4 fw-semibold d-flex align-items-center gap-2"
@@ -212,6 +209,43 @@ function Navbar() {
             >
               <FaPlus /> Post Job
             </button>
+          ) : (
+            <div className="d-flex align-items-center gap-3 ms-lg-3">
+
+              {/* FOR EMPLOYERS DROPDOWN */}
+              <div className="dropdown">
+                <button
+                  className="btn border-0 fw-semibold dropdown-toggle"
+                  data-bs-toggle="dropdown"
+                  style={{ borderBottom: "2px solid #ff5a3c" }}
+                >
+                  For Recuiter
+                </button>
+
+                <div className="dropdown-menu dropdown-menu-end shadow border-0 p-2">
+                  <button
+                    className="dropdown-item"
+                    onClick={() => navigate("/recruiter/plans")}
+                  >
+                    Buy Online
+                  </button>
+
+                  <button
+                    className="dropdown-item"
+                    onClick={() => navigate("/login/recruiter")}
+                  >
+                    Employer Login
+                  </button>
+
+                  <button
+                    className="dropdown-item"
+                    onClick={() => navigate("/register/recruiter")}
+                  >
+                    Employer Register
+                  </button>
+                </div>
+              </div>
+            </div>
           )}
         </div>
       </div>
@@ -254,6 +288,20 @@ function Navbar() {
 
           .navbar-toggler:focus {
             box-shadow: none;
+          }
+
+          .dropdown-menu {
+            min-width: 200px;
+            border-radius: 10px;
+          }
+
+          .dropdown-item {
+            padding: 10px 15px;
+            font-size: 14px;
+          }
+
+          .dropdown-item:hover {
+            background: #f5f7fa;
           }
         `}
       </style>
