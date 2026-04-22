@@ -111,7 +111,10 @@ export default function Applications() {
 
               <div className="d-flex justify-content-between mb-3">
                 <h3>Applications</h3>
-                <button className="btn btn-secondary" onClick={() => navigate(-1)}>
+                <button
+                  className="btn btn-secondary"
+                  onClick={() => navigate(-1)}
+                >
                   Back
                 </button>
               </div>
@@ -143,13 +146,16 @@ export default function Applications() {
                 <tbody>
                   {applications.length > 0 ? (
                     applications.map((app, i) => {
-                      const fileName = app.resume_url
-                        ? app.resume_url.split("/").pop()
-                        : "";
+                      // ✅ HANDLE FULL + RELATIVE URL
+                      const resumeUrl = app.resume_url?.startsWith("http")
+                        ? app.resume_url
+                        : app.resume_url
+                        ? `https://server.budes.online/public/${app.resume_url}`
+                        : null;
 
-                      const isPDF = app.resume_url
-                        ?.toLowerCase()
-                        .endsWith(".pdf");
+                      const fileName = resumeUrl
+                        ? resumeUrl.split("/").pop()
+                        : "";
 
                       return (
                         <tr key={app.id}>
@@ -165,59 +171,43 @@ export default function Applications() {
                                 <a
                                   href={`https://wa.me/91${app.phone}`}
                                   target="_blank"
+                                  rel="noopener noreferrer"
                                   className="btn btn-success btn-sm mt-1"
                                 >
                                   WhatsApp
                                 </a>
                               </>
-                            ) : "No Phone"}
+                            ) : (
+                              "No Phone"
+                            )}
                           </td>
 
-                          {/* ✅ UPDATED RESUME UI */}
-                          <td style={{ minWidth: "300px" }}>
-                            {app.resume_url ? (
-                              <div className="card p-2">
-
-                                {/* FILE INFO */}
-                                <div className="d-flex justify-content-between align-items-center mb-2 flex-wrap">
-                                  <small className="fw-bold">{fileName}</small>
-
-                                  <div className="d-flex gap-1">
-                                    <a
-                                      href={`https://docs.google.com/gview?url=${encodeURIComponent(app.resume_url)}&embedded=true`}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
-                                      className="btn btn-outline-primary btn-sm"
-                                    >
-                                      View
-                                    </a>
-
-                                    <a
-                                      href={app.resume_url}
-                                      download
-                                      className="btn btn-success btn-sm"
-                                    >
-                                      Download
-                                    </a>
-                                  </div>
+                          {/* ✅ RESUME (NO PREVIEW) */}
+                          <td>
+                            {resumeUrl ? (
+                              <div>
+                                <div className="fw-bold small mb-1">
+                                  {fileName}
                                 </div>
 
-                                {/* PREVIEW */}
-                                <div style={{ border: "1px solid #ddd" }}>
-                                  {isPDF ? (
-                                    <iframe
-                                      src={app.resume_url}
-                                      width="100%"
-                                      height="250px"
-                                      title="Resume"
-                                    />
-                                  ) : (
-                                    <div className="text-center p-2 bg-light">
-                                      <small>Preview not available</small>
-                                    </div>
-                                  )}
-                                </div>
+                                <div className="d-flex gap-2">
+                                  <a
+                                    href={`https://docs.google.com/gview?url=${encodeURIComponent(resumeUrl)}&embedded=true`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="btn btn-outline-primary btn-sm"
+                                  >
+                                    View
+                                  </a>
 
+                                  <a
+                                    href={resumeUrl}
+                                    download
+                                    className="btn btn-success btn-sm"
+                                  >
+                                    Download
+                                  </a>
+                                </div>
                               </div>
                             ) : (
                               "No Resume"
@@ -242,7 +232,9 @@ export default function Applications() {
                             <button
                               className="btn btn-success btn-sm me-2"
                               disabled={app.status === "accepted"}
-                              onClick={() => updateStatus(app.id, "accepted")}
+                              onClick={() =>
+                                updateStatus(app.id, "accepted")
+                              }
                             >
                               Accept
                             </button>
@@ -250,7 +242,9 @@ export default function Applications() {
                             <button
                               className="btn btn-danger btn-sm"
                               disabled={app.status === "rejected"}
-                              onClick={() => updateStatus(app.id, "rejected")}
+                              onClick={() =>
+                                updateStatus(app.id, "rejected")
+                              }
                             >
                               Reject
                             </button>
