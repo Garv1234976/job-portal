@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import api from "../../services/api";
 
 export default function RecruiterRegistration() {
   const [form, setForm] = useState({
@@ -84,27 +85,23 @@ export default function RecruiterRegistration() {
     try {
       setLoading(true);
 
-      const res = await axios.post(
-        "http://localhost:8000/api/register/recruiter",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-    sessionStorage.setItem("login_id", res.data.login_id);
-    Swal.fire({
-      icon: "success",
-      title: "Success",
-      text: "Registered Successfully\nYour Login ID: " + res.data.login_id,
-      timer: 1500,
-      showConfirmButton: false,
-    });
+      const res = await api.post("/register/recruiter", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      sessionStorage.setItem("login_id", res.data.login_id);
+      Swal.fire({
+        icon: "success",
+        title: "Success",
+        text: "Registered Successfully\nYour Login ID: " + res.data.login_id,
+        timer: 1500,
+        showConfirmButton: false,
+      });
 
-    setTimeout(() => {
-      navigate("/recruiter/dashboard");
-    }, 1500);
+      setTimeout(() => {
+        navigate("/recruiter/dashboard");
+      }, 1500);
     } catch (err) {
       console.error(err);
       alert("Error submitting form");
@@ -116,7 +113,6 @@ export default function RecruiterRegistration() {
   return (
     <div className="container mt-5">
       <div className="card shadow p-4">
-
         {/* HEADER */}
         <h2 className="text-center text-success mb-4">
           <b>Recruiter Registration</b>
@@ -124,10 +120,11 @@ export default function RecruiterRegistration() {
 
         <form onSubmit={handleSubmit}>
           <div className="row">
-
             {/* Email */}
             <div className="col-md-6 mb-3">
-              <label>Email <span className="text-danger">*</span></label>
+              <label>
+                Email <span className="text-danger">*</span>
+              </label>
               <input
                 type="email"
                 name="email"
@@ -139,7 +136,9 @@ export default function RecruiterRegistration() {
 
             {/* Contact */}
             <div className="col-md-6 mb-3">
-              <label>Contact <span className="text-danger">*</span></label>
+              <label>
+                Contact <span className="text-danger">*</span>
+              </label>
               <input
                 type="text"
                 name="contact"
@@ -168,7 +167,9 @@ export default function RecruiterRegistration() {
 
             {/* Company Name */}
             <div className="col-md-6 mb-3">
-              <label>Company Name <span className="text-danger">*</span></label>
+              <label>
+                Company Name <span className="text-danger">*</span>
+              </label>
               <input
                 type="text"
                 name="company_name"
@@ -180,7 +181,9 @@ export default function RecruiterRegistration() {
 
             {/* Address */}
             <div className="col-md-6 mb-3">
-              <label>Address <span className="text-danger">*</span></label>
+              <label>
+                Address <span className="text-danger">*</span>
+              </label>
               <input
                 type="text"
                 name="address"
@@ -236,7 +239,9 @@ export default function RecruiterRegistration() {
 
             {/* Logo */}
             <div className="col-md-6 mb-3">
-              <label>Company Logo <span className="text-danger">*</span></label>
+              <label>
+                Company Logo <span className="text-danger">*</span>
+              </label>
               <input
                 type="file"
                 name="logo"
@@ -266,19 +271,14 @@ export default function RecruiterRegistration() {
                 onChange={handleFileChange}
               />
             </div>
-
           </div>
 
           {/* Submit */}
           <div className="text-center mt-3">
-            <button
-              className="btn btn-success px-5"
-              disabled={loading}
-            >
+            <button className="btn btn-success px-5" disabled={loading}>
               {loading ? "Submitting..." : "Register"}
             </button>
           </div>
-
         </form>
       </div>
     </div>
