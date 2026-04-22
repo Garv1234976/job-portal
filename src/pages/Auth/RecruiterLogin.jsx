@@ -10,7 +10,7 @@ function RecruiterLogin() {
 
   const [form, setForm] = useState({
     login_id: sessionStorage.getItem("login_id") || "",
-    role: "",
+    role: "recruiter", // ✅ DEFAULT FIXED
     otp_type: "",
   });
 
@@ -24,13 +24,11 @@ function RecruiterLogin() {
   const [timer, setTimer] = useState(0);
   const [canResend, setCanResend] = useState(true);
 
-  // 🔹 Handle Input
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
     setErrors({ ...errors, [e.target.name]: "" });
   };
 
-  // 🔹 OTP INPUT CHANGE
   const handleOtpChange = (value, index) => {
     if (!/^[0-9]?$/.test(value)) return;
 
@@ -49,14 +47,12 @@ function RecruiterLogin() {
     }
   };
 
-  // 🔹 PASTE OTP
   const handlePaste = (e) => {
     const paste = e.clipboardData.getData("text");
     const match = paste.match(/\d{6}/);
     if (match) setOtp(match[0].split(""));
   };
 
-  // 🔹 TIMER
   useEffect(() => {
     if (timer > 0) {
       const interval = setInterval(() => {
@@ -68,19 +64,17 @@ function RecruiterLogin() {
     }
   }, [timer]);
 
-  // 🔹 VALIDATION
   const validate = () => {
     let newErrors = {};
 
     if (!form.login_id) newErrors.login_id = "Login ID is required";
-    if (!form.role) newErrors.role = "Please select role";
+    // ❌ role validation removed
     if (!form.otp_type) newErrors.otp_type = "Please select OTP method";
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  // 🔹 SEND OTP
   const handleSendOtp = async () => {
     if (!validate()) return;
 
@@ -104,7 +98,6 @@ function RecruiterLogin() {
     }
   };
 
-  // 🔹 SEND OTP
   const handleResendOtp = async () => {
     if (!validate()) return;
 
@@ -128,7 +121,6 @@ function RecruiterLogin() {
     }
   };
 
-  // 🔹 VERIFY OTP
   const handleVerifyOtp = async () => {
     const finalOtp = otp.join("");
 
@@ -154,12 +146,14 @@ function RecruiterLogin() {
         timer: 1500,
         showConfirmButton: false,
       });
+
       sessionStorage.removeItem("login_id");
+
       setTimeout(() => {
         navigate(
           res.data.role === "candidate"
             ? "/candidate/dashboard"
-            : "/recruiter/dashboard",
+            : "/recruiter/dashboard"
         );
       }, 1500);
     } catch (err) {
@@ -170,141 +164,136 @@ function RecruiterLogin() {
   };
 
   return (
-      <>
-      {/* ✅ NAVBAR */}
+    <>
       <Navbar />
-    <div className="d-flex justify-content-center align-items-center vh-100 bg-light">
-      <div className="card p-4 shadow" style={{ width: "400px" }}>
-        <h3 className="text-center mb-3">Login</h3>
 
-        {/* Role */}
-        <div className="mb-2">
-          <label className="form-label">
-            Login As <span className="text-danger">*</span>
-          </label>
-          <select
-            name="role"
-            onChange={handleChange}
-            className={`form-control ${errors.role ? "is-invalid" : ""}`}
-          >
-            <option value="">Select Role </option>
-            <option value="candidate">Candidate</option>
-            <option value="recruiter">Recruiter</option>
-          </select>
-          {errors.role && <small className="text-danger">{errors.role}</small>}
-        </div>
+      <div className="d-flex justify-content-center align-items-center vh-100 bg-light">
+        <div className="card p-4 shadow" style={{ width: "400px" }}>
+          <h3 className="text-center mb-3">Login</h3>
 
-        {/* Login ID */}
-        <div className="mb-2">
-          <label className="form-label">
-            Login ID <span className="text-danger">*</span>
-          </label>
-          <input
-            name="login_id"
-            value={form.login_id} 
-            placeholder="Enter Login ID"
-            className={`form-control ${errors.login_id ? "is-invalid" : ""}`}
-            onChange={handleChange}
-          />
-          {errors.login_id && (
-            <small className="text-danger">{errors.login_id}</small>
-          )}
-        </div>
-
-        {/* OTP Type */}
-        <div className="mb-2">
-          <label className="form-label">
-            Receive OTP via <span className="text-danger">*</span>
-          </label>
-
-          <div className="d-flex gap-3 mt-1">
-            <label>
-              <input
-                type="radio"
-                name="otp_type"
-                value="email"
-                onChange={handleChange}
-              />{" "}
-              Email
+          {/* ✅ ROLE (READ ONLY) */}
+          <div className="mb-2">
+            <label className="form-label">
+              Login As <span className="text-danger">*</span>
             </label>
-
-            <label>
-              <input
-                type="radio"
-                name="otp_type"
-                value="phone"
-                onChange={handleChange}
-              />{" "}
-              Phone
-            </label>
+            <input
+              type="text"
+              value="Recruiter"
+              className="form-control"
+              readOnly
+            />
           </div>
 
-          {errors.otp_type && (
-            <small className="text-danger">{errors.otp_type}</small>
-          )}
-        </div>
+          {/* Login ID */}
+          <div className="mb-2">
+            <label className="form-label">
+              Login ID <span className="text-danger">*</span>
+            </label>
+            <input
+              name="login_id"
+              value={form.login_id}
+              placeholder="Enter Login ID"
+              className={`form-control ${errors.login_id ? "is-invalid" : ""}`}
+              onChange={handleChange}
+            />
+            {errors.login_id && (
+              <small className="text-danger">{errors.login_id}</small>
+            )}
+          </div>
 
-        {!showOtp && (
-          <button onClick={handleSendOtp} className="btn btn-primary w-100">
-            {loading ? "Sending..." : "Send OTP"}
-          </button>
-        )}
+          {/* OTP TYPE */}
+          <div className="mb-2">
+            <label className="form-label">
+              Receive OTP via <span className="text-danger">*</span>
+            </label>
 
-        {showOtp && (
-          <>
-            {/* OTP BOXES */}
-            <div
-              className="d-flex justify-content-between mt-3"
-              onPaste={handlePaste}
-            >
-              {otp.map((digit, index) => (
+            <div className="d-flex gap-3 mt-1">
+              <label>
                 <input
-                  key={index}
-                  maxLength="1"
-                  value={digit}
-                  ref={(el) => (inputsRef.current[index] = el)}
-                  onChange={(e) => handleOtpChange(e.target.value, index)}
-                  onKeyDown={(e) => handleKeyDown(e, index)}
-                  className="form-control text-center"
-                  style={{ width: "40px", fontSize: "20px" }}
-                />
-              ))}
+                  type="radio"
+                  name="otp_type"
+                  value="email"
+                  onChange={handleChange}
+                />{" "}
+                Email
+              </label>
+
+              <label>
+                <input
+                  type="radio"
+                  name="otp_type"
+                  value="phone"
+                  onChange={handleChange}
+                />{" "}
+                Phone
+              </label>
             </div>
 
-            {/* VERIFY */}
-            <button
-              className="btn btn-success w-100 mt-3"
-              onClick={handleVerifyOtp}
-              disabled={loading}
-            >
-              {loading ? "Verifying..." : "Verify OTP"}
+            {errors.otp_type && (
+              <small className="text-danger">{errors.otp_type}</small>
+            )}
+          </div>
+
+          {!showOtp && (
+            <button onClick={handleSendOtp} className="btn btn-primary w-100">
+              {loading ? "Sending..." : "Send OTP"}
             </button>
+          )}
 
-            {/* RESEND */}
-            <div className="text-center mt-2">
-              {!canResend ? (
-                <small>Resend in {timer}s</small>
-              ) : (
-                <button className="btn btn-link" onClick={handleResendOtp}>
-                  Resend OTP
-                </button>
-              )}
-            </div>
-          </>
-        )}
-        <div className="text-center mt-3">
-          If you have an account?{" "}
-          <span
-            className="text-primary fw-bold"
-            style={{ cursor: "pointer" }}
-            onClick={() => navigate("/register/candidate")}
-          >
-            Registration here
-          </span>
+          {showOtp && (
+            <>
+              <div
+                className="d-flex justify-content-between mt-3"
+                onPaste={handlePaste}
+              >
+                {otp.map((digit, index) => (
+                  <input
+                    key={index}
+                    maxLength="1"
+                    value={digit}
+                    ref={(el) => (inputsRef.current[index] = el)}
+                    onChange={(e) => handleOtpChange(e.target.value, index)}
+                    onKeyDown={(e) => handleKeyDown(e, index)}
+                    className="form-control text-center"
+                    style={{ width: "40px", fontSize: "20px" }}
+                  />
+                ))}
+              </div>
+
+              <button
+                className="btn btn-success w-100 mt-3"
+                onClick={handleVerifyOtp}
+                disabled={loading}
+              >
+                {loading ? "Verifying..." : "Verify OTP"}
+              </button>
+
+              <div className="text-center mt-2">
+                {!canResend ? (
+                  <small>Resend in {timer}s</small>
+                ) : (
+                  <button className="btn btn-link" onClick={handleResendOtp}>
+                    Resend OTP
+                  </button>
+                )}
+              </div>
+            </>
+          )}
+
+          <div className="text-center mt-3">
+            If you have an account?{" "}
+            <span
+              className="text-primary fw-bold"
+              style={{ cursor: "pointer" }}
+              onClick={() => navigate("/register/recruiter")}
+            >
+              Registration here
+            </span>
+          </div>
         </div>
       </div>
-    </div>
-     <Footer />
+
+      <Footer />
     </>
   );
 }
