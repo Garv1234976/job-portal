@@ -86,7 +86,7 @@ export default function Dashboard() {
 
                 <div className="col-md-3">
                   <div className="card shadow p-3 text-center h-100 dashboard-card">
-                    <i className="fa fa-users fa-2x text-warning mb-2"></i>
+                    <i className="fa-credit-card fa-2x text-warning mb-2"></i>
                     <h5>Plans</h5>
                     <p>Check Plans</p>
                     <button
