@@ -223,25 +223,19 @@ function Navbar() {
                 </button>
 
                 <div className="dropdown-menu dropdown-menu-end shadow border-0 p-2">
+                
                   <button
                     className="dropdown-item"
-                    onClick={() => navigate("/recruiter/plans")}
+                    onClick={() => navigate("/recruiter/login")}
                   >
-                    Buy Online
-                  </button>
-
-                  <button
-                    className="dropdown-item"
-                    onClick={() => navigate("/login/recruiter")}
-                  >
-                    Employer Login
+                    Recruiter Login
                   </button>
 
                   <button
                     className="dropdown-item"
                     onClick={() => navigate("/register/recruiter")}
                   >
-                    Employer Register
+                    Recruiter Register
                   </button>
                 </div>
               </div>

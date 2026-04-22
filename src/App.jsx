@@ -64,7 +64,7 @@ function App() {
         />
 
         <Route
-          path="/recruiter-login"
+          path="/recruiter/login"
           element={
             <GuestRoute>
               <RecruiterLogin />
