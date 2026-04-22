@@ -109,7 +109,7 @@ export default function ClosedJobs() {
                       <th>Location</th>
                       <th>Salary</th>
                       <th>Openings</th>
-                      <th>Date</th>
+                      <th>Closed Date</th>
                       <th>Status</th>
                     </tr>
                   </thead>
@@ -118,16 +118,19 @@ export default function ClosedJobs() {
                     {jobs.length > 0 ? (
                       jobs.map((job, i) => (
                         <tr key={job.id}>
-                          <td>{(page - 1) * 10 + i + 1}</td>
+                          <td>{(page - 1) * 5 + i + 1}</td>
 
                           <td>{job.job_title}</td>
                           <td>{job.location}</td>
                           <td>{job.salary_range || "-"}</td>
                           <td>{job.openings || "-"}</td>
 
+                          {/* ✅ FIXED DATE */}
                           <td>
-                            {job.created_at
-                              ? new Date(job.created_at).toLocaleDateString()
+                            {job.closed_at
+                              ? new Date(job.closed_at).toLocaleDateString()
+                              : job.closed_date
+                              ? job.closed_date
                               : "-"}
                           </td>
 
