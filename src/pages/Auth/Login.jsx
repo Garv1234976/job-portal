@@ -115,6 +115,7 @@ function Login() {
       await api.post("/resend-otp", {
         login_id: form.login_id,
         otp_type: form.otp_type,
+        role: form.role,
       });
 
       Swal.fire("Success", "OTP Resent", "success");
