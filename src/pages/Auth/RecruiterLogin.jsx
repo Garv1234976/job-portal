@@ -84,6 +84,7 @@ function RecruiterLogin() {
       await api.post("/send-otp", {
         login_id: form.login_id,
         otp_type: form.otp_type,
+        role: form.role,
       });
 
       Swal.fire("Success", "OTP sent", "success");
