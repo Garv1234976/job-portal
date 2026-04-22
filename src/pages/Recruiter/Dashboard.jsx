@@ -6,6 +6,7 @@ import Swal from "sweetalert2";
 // ✅ IMPORT THESE
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
+import RecruiterSidebar from "../../components/RecruiterSidebar";
 
 export default function Dashboard() {
   const navigate = useNavigate();
