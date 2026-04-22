@@ -13,6 +13,12 @@ export default function Dashboard() {
   const [activePlan, setActivePlan] = useState(null);
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      return; 
+    }
+
     API.get("/dashboard")
       .then((res) => {
         setActivePlan(res.data.active_plan);
@@ -42,7 +48,6 @@ export default function Dashboard() {
       {/* ✅ MAIN WRAPPER (UPDATED) */}
       <div className="container-fluid mt-4 mb-5">
         <div className="row">
-
           {/* ✅ SIDEBAR */}
           <div className="col-md-3 col-lg-2 mb-3">
             <RecruiterSidebar handlePostJob={handlePostJob} />
@@ -50,12 +55,10 @@ export default function Dashboard() {
 
           {/* ✅ MAIN CONTENT (YOUR ORIGINAL CODE INSIDE) */}
           <div className="col-md-9 col-lg-10">
-
             <div className="container">
               <h2 className="mb-4">Recruiter Dashboard</h2>
 
               <div className="row g-4">
-
                 <div className="col-md-3">
                   <div className="card shadow p-3 text-center h-100 dashboard-card">
                     <i className="fa fa-plus-circle fa-2x text-primary mb-2"></i>
@@ -111,12 +114,9 @@ export default function Dashboard() {
                     </button>
                   </div>
                 </div>
-
               </div>
             </div>
-
           </div>
-
         </div>
       </div>
 
