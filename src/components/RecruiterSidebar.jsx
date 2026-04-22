@@ -6,7 +6,7 @@ export default function RecruiterSidebar({ handlePostJob }) {
 
   const menu = [
     { name: "Dashboard", icon: "fa-home", path: "/recruiter/dashboard" },
-    { name: "Post Job", icon: "fa-plus-circle", path: "/recruiter/post-job" },
+    { name: "Post Job", icon: "fa-plus-circle", path: "/recruiter/create-job" },
     { name: "My Jobs", icon: "fa-briefcase", path: "/recruiter/jobs" },
     { name: "Closed Jobs", icon: "fa-times-circle", path: "/recruiter/closed-jobs" },
     { name: "Plans", icon: "fa-credit-card", path: "/recruiter/plans" },
