@@ -31,18 +31,39 @@ export default function RecruiterRegistration() {
     setErrors({ ...errors, [e.target.name]: "" });
   };
 
-  // 🔹 File Handling
+  // 🔹 File Handling (UPDATED)
   const handleFileChange = (e) => {
     const { name, files } = e.target;
+    const file = files[0];
+
+    if (!file) return;
 
     if (name === "logo") {
-      setLogo(files[0]);
-      setPreview(URL.createObjectURL(files[0]));
+      const allowed = ["image/jpeg", "image/png", "image/jpg"];
+
+      if (!allowed.includes(file.type)) {
+        setErrors({ ...errors, logo: "Only JPG, JPEG, PNG allowed" });
+        return;
+      }
+
+      setLogo(file);
+      setPreview(URL.createObjectURL(file));
       setErrors({ ...errors, logo: "" });
     }
 
     if (name === "documents") {
-      setDocuments(files[0]);
+      const allowed = [
+        "application/pdf",
+        "application/msword",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      ];
+
+      if (!allowed.includes(file.type)) {
+        Swal.fire("Error", "Only PDF, DOC, DOCX allowed", "error");
+        return;
+      }
+
+      setDocuments(file);
     }
   };
 
@@ -57,6 +78,10 @@ export default function RecruiterRegistration() {
     if (!form.contact) newErrors.contact = "Contact required";
     else if (!/^[0-9]{10}$/.test(form.contact))
       newErrors.contact = "Must be 10 digits";
+
+    // ✅ NEW: alt contact validation (no removal)
+    if (form.altContact && !/^[0-9]{10}$/.test(form.altContact))
+      newErrors.altContact = "Must be 10 digits";
 
     if (!form.company_name) newErrors.company_name = "Company name required";
     if (!form.address) newErrors.address = "Address required";
@@ -90,7 +115,9 @@ export default function RecruiterRegistration() {
           "Content-Type": "multipart/form-data",
         },
       });
+
       sessionStorage.setItem("login_id", res.data.login_id);
+
       Swal.fire({
         icon: "success",
         title: "Success",
@@ -99,9 +126,11 @@ export default function RecruiterRegistration() {
         showConfirmButton: false,
       });
 
+      // ✅ FIXED REDIRECT (ONLY CHANGE)
       setTimeout(() => {
-        navigate("/recruiter/dashboard");
+        navigate("/login/recruiter");
       }, 1500);
+
     } catch (err) {
       console.error(err);
       alert("Error submitting form");
@@ -113,18 +142,17 @@ export default function RecruiterRegistration() {
   return (
     <div className="container mt-5">
       <div className="card shadow p-4">
-        {/* HEADER */}
+
         <h2 className="text-center text-success mb-4">
           <b>Recruiter Registration</b>
         </h2>
 
         <form onSubmit={handleSubmit}>
           <div className="row">
+
             {/* Email */}
             <div className="col-md-6 mb-3">
-              <label>
-                Email <span className="text-danger">*</span>
-              </label>
+              <label>Email <span className="text-danger">*</span></label>
               <input
                 type="email"
                 name="email"
@@ -136,13 +164,12 @@ export default function RecruiterRegistration() {
 
             {/* Contact */}
             <div className="col-md-6 mb-3">
-              <label>
-                Contact <span className="text-danger">*</span>
-              </label>
+              <label>Contact <span className="text-danger">*</span></label>
               <input
-                type="text"
+                type="tel"
                 name="contact"
                 maxLength="10"
+                inputMode="numeric"
                 className={`form-control ${errors.contact && "is-invalid"}`}
                 onChange={(e) =>
                   /^[0-9]*$/.test(e.target.value) && handleChange(e)
@@ -155,21 +182,21 @@ export default function RecruiterRegistration() {
             <div className="col-md-6 mb-3">
               <label>Alternative Contact</label>
               <input
-                type="text"
+                type="tel"
                 name="altContact"
                 maxLength="10"
-                className="form-control"
+                inputMode="numeric"
+                className={`form-control ${errors.altContact && "is-invalid"}`}
                 onChange={(e) =>
                   /^[0-9]*$/.test(e.target.value) && handleChange(e)
                 }
               />
+              <div className="invalid-feedback">{errors.altContact}</div>
             </div>
 
             {/* Company Name */}
             <div className="col-md-6 mb-3">
-              <label>
-                Company Name <span className="text-danger">*</span>
-              </label>
+              <label>Company Name <span className="text-danger">*</span></label>
               <input
                 type="text"
                 name="company_name"
@@ -181,9 +208,7 @@ export default function RecruiterRegistration() {
 
             {/* Address */}
             <div className="col-md-6 mb-3">
-              <label>
-                Address <span className="text-danger">*</span>
-              </label>
+              <label>Address <span className="text-danger">*</span></label>
               <input
                 type="text"
                 name="address"
@@ -193,71 +218,20 @@ export default function RecruiterRegistration() {
               <div className="invalid-feedback">{errors.address}</div>
             </div>
 
-            {/* Profession */}
-            <div className="col-md-6 mb-3">
-              <label>Profession</label>
-              <input
-                type="text"
-                name="profession"
-                className="form-control"
-                onChange={handleChange}
-              />
-            </div>
-
-            {/* Employer Name */}
-            <div className="col-md-6 mb-3">
-              <label>Employer Name</label>
-              <input
-                type="text"
-                name="employerName"
-                className="form-control"
-                onChange={handleChange}
-              />
-            </div>
-
-            {/* Position */}
-            <div className="col-md-6 mb-3">
-              <label>Position</label>
-              <input
-                type="text"
-                name="position"
-                className="form-control"
-                onChange={handleChange}
-              />
-            </div>
-
-            {/* Since */}
-            <div className="col-md-6 mb-3">
-              <label>Registered Since</label>
-              <input
-                type="date"
-                name="since"
-                className="form-control"
-                onChange={handleChange}
-              />
-            </div>
-
             {/* Logo */}
             <div className="col-md-6 mb-3">
-              <label>
-                Company Logo <span className="text-danger">*</span>
-              </label>
+              <label>Company Logo <span className="text-danger">*</span></label>
               <input
                 type="file"
                 name="logo"
+                accept=".jpg,.jpeg,.png"
                 className={`form-control ${errors.logo && "is-invalid"}`}
                 onChange={handleFileChange}
               />
               <div className="invalid-feedback">{errors.logo}</div>
 
               {preview && (
-                <img
-                  src={preview}
-                  alt="preview"
-                  className="mt-2"
-                  height="60"
-                  loading="lazy"
-                />
+                <img src={preview} className="mt-2" height="60" />
               )}
             </div>
 
@@ -267,18 +241,20 @@ export default function RecruiterRegistration() {
               <input
                 type="file"
                 name="documents"
+                accept=".pdf,.doc,.docx"
                 className="form-control"
                 onChange={handleFileChange}
               />
             </div>
+
           </div>
 
-          {/* Submit */}
           <div className="text-center mt-3">
             <button className="btn btn-success px-5" disabled={loading}>
               {loading ? "Submitting..." : "Register"}
             </button>
           </div>
+
         </form>
       </div>
     </div>
