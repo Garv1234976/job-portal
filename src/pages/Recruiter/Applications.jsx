@@ -217,7 +217,7 @@ export default function Applications() {
                           <td>
                             <span
                               className={`badge ${
-                                app.status === "accepted"
+                                app.status === "selected"
                                   ? "bg-success"
                                   : app.status === "rejected"
                                   ? "bg-danger"
@@ -231,9 +231,9 @@ export default function Applications() {
                           <td>
                             <button
                               className="btn btn-success btn-sm me-2"
-                              disabled={app.status === "accepted"}
+                              disabled={app.status === "selected"}
                               onClick={() =>
-                                updateStatus(app.id, "accepted")
+                                updateStatus(app.id, "selected")
                               }
                             >
                               Accept
