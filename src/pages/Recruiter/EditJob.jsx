@@ -98,7 +98,7 @@ export default function EditJob() {
     return Object.keys(newErrors).length === 0;
   };
 
-  // UPDATE
+  // ✅ UPDATE (FIXED)
   const submit = async () => {
     if (!validate()) return;
 
@@ -106,7 +106,15 @@ export default function EditJob() {
       const formData = new FormData();
 
       Object.keys(form).forEach((key) => {
-        formData.append(key, form[key]);
+
+        // 🚨 FIX: DO NOT SEND OLD LOGO STRING
+        if (key === "logo" && !(form.logo instanceof File)) {
+          return;
+        }
+
+        if (form[key] !== null && form[key] !== undefined) {
+          formData.append(key, form[key]);
+        }
       });
 
       formData.append("_method", "PUT");
@@ -117,6 +125,7 @@ export default function EditJob() {
         window.location.href = "/recruiter/jobs";
       });
     } catch (err) {
+      console.log(err.response); // DEBUG
       Swal.fire("Error", err.response?.data?.message || "Error", "error");
     }
   };
@@ -140,13 +149,11 @@ export default function EditJob() {
 
                 <div className="row g-3">
 
-                  {/* Job Title */}
                   <div className="col-md-6">
                     <label>Job Title <span className="text-danger">*</span></label>
                     <input className="form-control" name="job_title" value={form.job_title || ""} onChange={handleChange} />
                   </div>
 
-                  {/* Logo */}
                   <div className="col-md-6">
                     <label>Logo</label>
                     <input type="file" className="form-control" onChange={handleLogoChange}/>
