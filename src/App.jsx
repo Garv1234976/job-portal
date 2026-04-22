@@ -11,6 +11,7 @@ import Profile from "./pages/Profile";
 
 // Auth
 import Login from "./pages/Auth/Login";
+import RecruiterLogin from "./pages/Auth/RecruiterLogin";
 import RegisterCandidate from "./pages/Auth/RegisterCandidate";
 import RegisterRecruiter from "./pages/Auth/RegisterRecruiter";
 import Logout from "./pages/Auth/Logout";
@@ -58,6 +59,15 @@ function App() {
           element={
             <GuestRoute>
               <Login />
+            </GuestRoute>
+          }
+        />
+
+        <Route
+          path="/recruiter-login"
+          element={
+            <GuestRoute>
+              <RecruiterLogin />
             </GuestRoute>
           }
         />
