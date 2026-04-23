@@ -74,7 +74,7 @@ export default function Applications() {
         onClick={() => setPage(page - 1)}
       >
         Prev
-      </button>
+      </button>,
     );
 
     for (let i = 1; i <= lastPage; i++) {
@@ -85,7 +85,7 @@ export default function Applications() {
           onClick={() => setPage(i)}
         >
           {i}
-        </button>
+        </button>,
       );
     }
 
@@ -97,7 +97,7 @@ export default function Applications() {
         onClick={() => setPage(page + 1)}
       >
         Next
-      </button>
+      </button>,
     );
 
     return pages;
@@ -109,17 +109,18 @@ export default function Applications() {
 
       <div className="container-fluid mt-4 mb-5">
         <div className="row">
-
           <div className="col-md-3">
             <RecruiterSidebar />
           </div>
 
           <div className="col-md-9">
             <div className="container">
-
               <div className="d-flex justify-content-between mb-3">
                 <h3>Applications</h3>
-                <button className="btn btn-secondary" onClick={() => navigate(-1)}>
+                <button
+                  className="btn btn-secondary"
+                  onClick={() => navigate(-1)}
+                >
                   Back
                 </button>
               </div>
@@ -169,12 +170,11 @@ export default function Applications() {
                 <tbody>
                   {applications.length > 0 ? (
                     applications.map((app, i) => {
-
                       const resumeUrl = app.resume_url?.startsWith("http")
                         ? app.resume_url
                         : app.resume_url
-                        ? `https://server.budes.online/${app.resume_url}`
-                        : null;
+                          ? `https://server.budes.online/${app.resume_url}`
+                          : null;
 
                       return (
                         <tr key={app.id}>
@@ -195,7 +195,9 @@ export default function Applications() {
                                   WhatsApp
                                 </a>
                               </>
-                            ) : "No Phone"}
+                            ) : (
+                              "No Phone"
+                            )}
                           </td>
 
                           {/* RESUME */}
@@ -203,9 +205,10 @@ export default function Applications() {
                             {resumeUrl ? (
                               <>
                                 <a
-                                  href={resumeUrl}
+                                  href={`https://docs.google.com/gview?url=${encodeURIComponent(resumeUrl)}&embedded=true`}
                                   target="_blank"
-                                  className="btn btn-primary btn-sm me-2"
+                                  rel="noopener noreferrer"
+                                  className="btn btn-outline-primary btn-sm"
                                 >
                                   View
                                 </a>
@@ -217,7 +220,9 @@ export default function Applications() {
                                   Download
                                 </a>
                               </>
-                            ) : "No Resume"}
+                            ) : (
+                              "No Resume"
+                            )}
                           </td>
 
                           {/* STATUS */}
@@ -227,10 +232,10 @@ export default function Applications() {
                                 app.status === "shortlisted"
                                   ? "bg-info"
                                   : app.status === "selected"
-                                  ? "bg-success"
-                                  : app.status === "rejected"
-                                  ? "bg-danger"
-                                  : "bg-warning"
+                                    ? "bg-success"
+                                    : app.status === "rejected"
+                                      ? "bg-danger"
+                                      : "bg-warning"
                               }`}
                             >
                               {app.status}
@@ -253,9 +258,7 @@ export default function Applications() {
                             {app.status !== "selected" && (
                               <button
                                 className="btn btn-success btn-sm me-2"
-                                onClick={() =>
-                                  updateStatus(app.id, "selected")
-                                }
+                                onClick={() => updateStatus(app.id, "selected")}
                               >
                                 Select
                               </button>
@@ -264,9 +267,7 @@ export default function Applications() {
                             {app.status !== "rejected" && (
                               <button
                                 className="btn btn-danger btn-sm"
-                                onClick={() =>
-                                  updateStatus(app.id, "rejected")
-                                }
+                                onClick={() => updateStatus(app.id, "rejected")}
                               >
                                 Reject
                               </button>
@@ -288,7 +289,6 @@ export default function Applications() {
               <div className="d-flex justify-content-center mt-4 gap-2">
                 {renderPagination()}
               </div>
-
             </div>
           </div>
         </div>
