@@ -20,7 +20,7 @@ export default function MyJobs() {
 
   // ✅ FETCH JOBS
   const fetchJobs = () => {
-    API.get("/jobs", {
+    API.get("/my-jobs", {
       params: { page, search, location, salary }
     })
       .then((res) => {
