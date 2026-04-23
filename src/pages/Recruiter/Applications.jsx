@@ -176,6 +176,8 @@ export default function Applications() {
                         ? `https://server.budes.online/public/${app.resume_url}`
                         : null;
 
+                        console.log("Resume URL:", resumeUrl);
+
                       return (
                         <tr key={app.id}>
                           <td>{(page - 1) * 5 + i + 1}</td>
