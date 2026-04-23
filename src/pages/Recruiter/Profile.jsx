@@ -22,39 +22,61 @@ export default function RecruiterProfile() {
       const res = await API.get("/recruiter/profile");
       setProfile(res.data.data || {});
       setLoading(false);
-    } catch {
+    } catch (err) {
+      console.error(err);
       setLoading(false);
     }
   };
 
   // ✅ LOGO UPLOAD
   const handleLogoUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+    try {
+      const file = e.target.files[0];
+      if (!file) return;
 
-    const formData = new FormData();
-    formData.append("logo", file);
+      const formData = new FormData();
+      formData.append("logo", file);
 
-    await API.post("/recruiter/update-profile", formData);
-    Swal.fire("Success", "Logo updated", "success");
-    fetchProfile();
+      const res = await API.post("/recruiter/update-profile", formData);
+
+      if (res.data.status) {
+        Swal.fire("Success", "Logo updated", "success");
+        fetchProfile();
+      } else {
+        Swal.fire("Error", "Logo update failed", "error");
+      }
+    } catch (err) {
+      console.error(err);
+      Swal.fire("Error", "Upload failed", "error");
+    }
   };
 
-  // ✅ SAVE
+  // ✅ SAVE PROFILE
   const handleSave = async () => {
-    const formData = new FormData();
+    try {
+      const formData = new FormData();
 
-    Object.keys(form).forEach((key) => {
-      formData.append(key, form[key]);
-    });
+      Object.keys(form).forEach((key) => {
+        if (form[key] !== undefined && form[key] !== null) {
+          formData.append(key, form[key]);
+        }
+      });
 
-    if (logo) formData.append("logo", logo);
+      if (logo) formData.append("logo", logo);
 
-    await API.post("/recruiter/update-profile", formData);
+      const res = await API.post("/recruiter/update-profile", formData);
 
-    Swal.fire("Success", "Profile Updated", "success");
-    setEditSection(null);
-    fetchProfile();
+      if (res.data.status) {
+        Swal.fire("Success", "Profile Updated", "success");
+        setEditSection(null);
+        fetchProfile();
+      } else {
+        Swal.fire("Error", "Update failed", "error");
+      }
+    } catch (err) {
+      console.error(err);
+      Swal.fire("Error", "Something went wrong", "error");
+    }
   };
 
   if (loading) return <p className="text-center mt-5">Loading...</p>;
@@ -82,7 +104,7 @@ export default function RecruiterProfile() {
 
                   {/* LOGO */}
                   <div
-                    style={{ cursor: "pointer" }}
+                    style={{ position: "relative", cursor: "pointer" }}
                     onClick={() =>
                       document.getElementById("logoInput").click()
                     }
@@ -100,6 +122,21 @@ export default function RecruiterProfile() {
                         objectFit: "cover",
                       }}
                     />
+
+                    {/* EDIT ICON */}
+                    <div
+                      style={{
+                        position: "absolute",
+                        bottom: 0,
+                        right: 0,
+                        background: "#fff",
+                        borderRadius: "50%",
+                        padding: 6,
+                        boxShadow: "0 2px 6px rgba(0,0,0,0.2)",
+                      }}
+                    >
+                      <FaEdit size={12} />
+                    </div>
 
                     <input
                       type="file"
