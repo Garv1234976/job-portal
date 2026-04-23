@@ -112,7 +112,7 @@ export default function RecruiterProfile() {
                     <img
                       src={
                         profile.logo
-                          ? `https://server.budes.online/${profile.logo}`
+                          ? `https://server.budes.online/public/${profile.logo}`
                           : "/assets/img/default.png"
                       }
                       style={{
