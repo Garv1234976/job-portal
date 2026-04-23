@@ -213,7 +213,7 @@ function Navbar() {
                   data-bs-toggle="dropdown"
                   style={{ borderBottom: "2px solid #ff5a3c" }}
                 >
-                  For Recuiter
+                  For Recruiter
                 </button>
 
                 <div className="dropdown-menu dropdown-menu-end shadow border-0 p-2">
