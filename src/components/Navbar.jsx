@@ -50,11 +50,6 @@ function Navbar() {
     }
   };
 
-  const handleLogout = () => {
-    localStorage.clear();
-    navigate("/login");
-  };
-
   const isActive = (path) => location.pathname === path;
 
   return (
@@ -190,7 +185,7 @@ function Navbar() {
 
                   {/* LOGOUT */}
                   <button
-                    onClick={handleLogout}
+                    onClick={() => navigate("/logout")}
                     className="dropdown-item text-danger d-flex align-items-center gap-2"
                   >
                     <FaSignOutAlt /> Logout
@@ -211,7 +206,6 @@ function Navbar() {
             </button>
           ) : (
             <div className="d-flex align-items-center gap-3 ms-lg-3">
-
               {/* FOR EMPLOYERS DROPDOWN */}
               <div className="dropdown">
                 <button
@@ -223,7 +217,6 @@ function Navbar() {
                 </button>
 
                 <div className="dropdown-menu dropdown-menu-end shadow border-0 p-2">
-                
                   <button
                     className="dropdown-item"
                     onClick={() => navigate("/recruiter/login")}

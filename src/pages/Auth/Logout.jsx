@@ -18,15 +18,15 @@ function Logout() {
 
 
         if (role === "recruiter") {
-          navigate("/recruiter/login111");
+          navigate("/recruiter/login");
         } else {
-          navigate("/login11");
+          navigate("/login");
         }
 
       } catch (err) {
         console.error(err);
 
-        navigate("/login11");
+        navigate("/login");
       }
     };
 
