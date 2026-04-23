@@ -112,7 +112,7 @@ function RecruiterLogin() {
       });
 
       Swal.fire("Success", "OTP Resent", "success");
-
+      
       setShowOtp(true);
       setTimer(30);
       setCanResend(false);

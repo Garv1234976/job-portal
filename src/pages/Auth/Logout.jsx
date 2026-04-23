@@ -10,10 +10,12 @@ function Logout() {
     const logoutUser = async () => {
       try {
         const role = localStorage.getItem("role");
-
+        console.log("Logging out user with role:", role);
         await api.post("/logout");
 
+
         localStorage.clear();
+
 
         if (role === "recruiter") {
           navigate("/recruiter/login");
