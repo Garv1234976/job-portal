@@ -3,35 +3,45 @@ import API from "../../services/api";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import RecruiterSidebar from "../../components/RecruiterSidebar";
+import { FaEdit, FaBuilding, FaPhone } from "react-icons/fa";
 import Swal from "sweetalert2";
 
 export default function RecruiterProfile() {
+  const [profile, setProfile] = useState({});
+  const [loading, setLoading] = useState(true);
+  const [editSection, setEditSection] = useState(null);
   const [form, setForm] = useState({});
   const [logo, setLogo] = useState(null);
-  const [preview, setPreview] = useState(null);
 
   useEffect(() => {
-    API.get("/recruiter/profile").then((res) => {
-      setForm(res.data.data || {});
-    });
+    fetchProfile();
   }, []);
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+  const fetchProfile = async () => {
+    try {
+      const res = await API.get("/recruiter/profile");
+      setProfile(res.data.data || {});
+      setLoading(false);
+    } catch {
+      setLoading(false);
+    }
   };
 
-  const handleLogo = (e) => {
+  // ✅ LOGO UPLOAD
+  const handleLogoUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    setLogo(file);
-    setPreview(URL.createObjectURL(file));
+    const formData = new FormData();
+    formData.append("logo", file);
+
+    await API.post("/recruiter/update-profile", formData);
+    Swal.fire("Success", "Logo updated", "success");
+    fetchProfile();
   };
 
-  // 🔥 SAVE PROFILE
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
+  // ✅ SAVE
+  const handleSave = async () => {
     const formData = new FormData();
 
     Object.keys(form).forEach((key) => {
@@ -43,7 +53,11 @@ export default function RecruiterProfile() {
     await API.post("/recruiter/update-profile", formData);
 
     Swal.fire("Success", "Profile Updated", "success");
+    setEditSection(null);
+    fetchProfile();
   };
+
+  if (loading) return <p className="text-center mt-5">Loading...</p>;
 
   return (
     <>
@@ -52,117 +66,224 @@ export default function RecruiterProfile() {
       <div className="container-fluid mt-4 mb-5">
         <div className="row">
 
+          {/* SIDEBAR */}
           <div className="col-md-3 col-lg-2">
             <RecruiterSidebar />
           </div>
 
+          {/* MAIN */}
           <div className="col-md-9 col-lg-10">
-            <div className="container">
 
-              <h3 className="mb-4">Recruiter Profile</h3>
+            {/* HEADER (LIKE CANDIDATE PROFILE) */}
+            <div className="card p-4 mb-4 shadow-sm rounded-4">
+              <div className="d-flex justify-content-between align-items-center">
 
-              <form onSubmit={handleSubmit}>
+                <div className="d-flex gap-3 align-items-center">
 
-                {/* COMPANY */}
-                <div className="card p-4 mb-4 shadow-sm">
-                  <h5>Company Info</h5>
+                  {/* LOGO */}
+                  <div
+                    style={{ position: "relative", cursor: "pointer" }}
+                    onClick={() =>
+                      document.getElementById("logoInput").click()
+                    }
+                  >
+                    <img
+                      src={
+                        profile.logo
+                          ? `https://server.budes.online/public/${profile.logo}`
+                          : "/assets/img/default.png"
+                      }
+                      style={{
+                        width: 90,
+                        height: 90,
+                        borderRadius: "50%",
+                        objectFit: "cover",
+                      }}
+                    />
 
+                    <div
+                      style={{
+                        position: "absolute",
+                        bottom: 0,
+                        right: 0,
+                        background: "#fff",
+                        borderRadius: "50%",
+                        padding: 5,
+                      }}
+                    >
+                      <FaEdit />
+                    </div>
+
+                    <input
+                      type="file"
+                      id="logoInput"
+                      hidden
+                      onChange={handleLogoUpload}
+                    />
+                  </div>
+
+                  {/* COMPANY INFO */}
+                  <div>
+                    <h4>{profile.company_name || "Company Name"}</h4>
+                    <p><FaBuilding /> {profile.industry}</p>
+                    <p><FaPhone /> {profile.phone}</p>
+                  </div>
+                </div>
+
+                <button
+                  className="btn btn-primary"
+                  onClick={() => {
+                    setEditSection("basic");
+                    setForm({
+                      company_name: profile.company_name,
+                      industry: profile.industry,
+                      phone: profile.phone,
+                    });
+                  }}
+                >
+                  Edit
+                </button>
+              </div>
+            </div>
+
+            {/* COMPANY DETAILS */}
+            <div className="card p-4 mb-3">
+              <div className="d-flex justify-content-between">
+                <h5>Company Details</h5>
+                <button
+                  className="btn btn-light btn-sm border"
+                  onClick={() => {
+                    setEditSection("company");
+                    setForm({
+                      company_website: profile.company_website,
+                      company_size: profile.company_size,
+                    });
+                  }}
+                >
+                  <FaEdit />
+                </button>
+              </div>
+
+              <p>Website: {profile.company_website}</p>
+              <p>Size: {profile.company_size}</p>
+            </div>
+
+            {/* DESCRIPTION */}
+            <div className="card p-4 mb-3">
+              <div className="d-flex justify-content-between">
+                <h5>Description</h5>
+                <button
+                  className="btn btn-light btn-sm border"
+                  onClick={() => {
+                    setEditSection("desc");
+                    setForm({
+                      company_description: profile.company_description,
+                    });
+                  }}
+                >
+                  <FaEdit />
+                </button>
+              </div>
+
+              <p>{profile.company_description}</p>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      {/* MODAL (LIKE CANDIDATE PROFILE) */}
+      {editSection && (
+        <div className="modal d-block" style={{ background: "#00000080" }}>
+          <div className="modal-dialog">
+            <div className="modal-content p-3">
+
+              <h5>Edit {editSection}</h5>
+
+              {editSection === "basic" && (
+                <>
                   <input
-                    name="company_name"
+                    className="form-control mb-2"
                     placeholder="Company Name"
-                    className="form-control mb-2"
                     value={form.company_name || ""}
-                    onChange={handleChange}
+                    onChange={(e) =>
+                      setForm({ ...form, company_name: e.target.value })
+                    }
                   />
 
                   <input
-                    name="company_website"
-                    placeholder="Website"
                     className="form-control mb-2"
-                    value={form.company_website || ""}
-                    onChange={handleChange}
-                  />
-
-                  <input
-                    name="industry"
                     placeholder="Industry"
-                    className="form-control mb-2"
                     value={form.industry || ""}
-                    onChange={handleChange}
+                    onChange={(e) =>
+                      setForm({ ...form, industry: e.target.value })
+                    }
                   />
 
                   <input
-                    name="company_size"
-                    placeholder="Company Size"
                     className="form-control"
-                    value={form.company_size || ""}
-                    onChange={handleChange}
-                  />
-                </div>
-
-                {/* CONTACT */}
-                <div className="card p-4 mb-4 shadow-sm">
-                  <h5>Contact Person</h5>
-
-                  <input
-                    name="contact_person"
-                    placeholder="Name"
-                    className="form-control mb-2"
-                    value={form.contact_person || ""}
-                    onChange={handleChange}
-                  />
-
-                  <input
-                    name="designation"
-                    placeholder="Designation"
-                    className="form-control mb-2"
-                    value={form.designation || ""}
-                    onChange={handleChange}
-                  />
-
-                  <input
-                    name="phone"
                     placeholder="Phone"
-                    className="form-control"
                     value={form.phone || ""}
-                    onChange={handleChange}
+                    onChange={(e) =>
+                      setForm({ ...form, phone: e.target.value })
+                    }
                   />
-                </div>
+                </>
+              )}
 
-                {/* LOGO */}
-                <div className="card p-4 mb-4 shadow-sm text-center">
-                  <h5>Company Logo</h5>
+              {editSection === "company" && (
+                <>
+                  <input
+                    className="form-control mb-2"
+                    placeholder="Website"
+                    value={form.company_website || ""}
+                    onChange={(e) =>
+                      setForm({ ...form, company_website: e.target.value })
+                    }
+                  />
 
-                  {preview ? (
-                    <img src={preview} height="80" />
-                  ) : form.logo ? (
-                    <img src={`https://server.budes.online/public/${form.logo}`} height="80" />
-                  ) : null}
-
-                  <input type="file" onChange={handleLogo} className="form-control mt-2" />
-                </div>
-
-                {/* DESCRIPTION */}
-                <div className="card p-4 mb-4 shadow-sm">
-                  <h5>Company Description</h5>
-
-                  <textarea
-                    name="company_description"
+                  <input
                     className="form-control"
-                    rows="4"
-                    value={form.company_description || ""}
-                    onChange={handleChange}
+                    placeholder="Company Size"
+                    value={form.company_size || ""}
+                    onChange={(e) =>
+                      setForm({ ...form, company_size: e.target.value })
+                    }
                   />
-                </div>
+                </>
+              )}
 
-                <button className="btn btn-success px-5">Save Profile</button>
+              {editSection === "desc" && (
+                <textarea
+                  className="form-control"
+                  rows="4"
+                  value={form.company_description || ""}
+                  onChange={(e) =>
+                    setForm({
+                      ...form,
+                      company_description: e.target.value,
+                    })
+                  }
+                />
+              )}
 
-              </form>
+              <div className="mt-3 text-end">
+                <button
+                  className="btn btn-secondary me-2"
+                  onClick={() => setEditSection(null)}
+                >
+                  Cancel
+                </button>
+
+                <button className="btn btn-primary" onClick={handleSave}>
+                  Save
+                </button>
+              </div>
 
             </div>
           </div>
         </div>
-      </div>
+      )}
 
       <Footer />
     </>
