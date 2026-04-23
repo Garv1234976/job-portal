@@ -7,7 +7,7 @@ import Contact from "./pages/Contact";
 import JobList from "./pages/JobList";
 import JobDetail from "./pages/JobDetail";
 import Category from "./pages/Category";
-import CandidateProfile from "./pages/Recuiter/Profile";
+import Profile from "./pages/Profile";
 
 // Auth
 import Login from "./pages/Auth/Login";
