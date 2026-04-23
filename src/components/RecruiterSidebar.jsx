@@ -4,9 +4,24 @@ export default function RecruiterSidebar({ handlePostJob }) {
   const navigate = useNavigate();
   const location = useLocation();
 
+    const handlePostJob = () => {
+      if (!activePlan || activePlan.jobs_remaining <= 0) {
+        Swal.fire({
+          icon: "warning",
+          title: "Plan Required",
+          text: "Please buy or upgrade your plan",
+        }).then(() => {
+          navigate("/recruiter/plans");
+        });
+      } else {
+        navigate("/recruiter/create-job");
+      }
+    };
+
+
   const menu = [
     { name: "Dashboard", icon: "fa-home", path: "/recruiter/dashboard" },
-    { name: "Post Job", icon: "fa-plus-circle", path: "/recruiter/create-job" },
+    { name: "Post Job", icon: "fa-plus-circle", onClick: handlePostJob },
     { name: "My Jobs", icon: "fa-briefcase", path: "/recruiter/jobs" },
     { name: "Closed Jobs", icon: "fa-times-circle", path: "/recruiter/closed-jobs" },
     { name: "Plans", icon: "fa-credit-card", path: "/recruiter/plans" },
