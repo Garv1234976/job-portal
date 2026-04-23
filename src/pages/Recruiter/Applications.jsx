@@ -173,16 +173,14 @@ export default function Applications() {
                       const resumeUrl = app.resume_url?.startsWith("http")
                         ? app.resume_url
                         : app.resume_url
-                        ? `https://server.budes.online/public/${app.resume_url}`
+                        ? `https://server.budes.online/${app.resume_url}`
                         : null;
-
-                        console.log("Resume URL:", resumeUrl);
 
                       return (
                         <tr key={app.id}>
                           <td>{(page - 1) * 5 + i + 1}</td>
 
-                          <td>{app.name1111}</td>
+                          <td>{app.name}</td>
                           <td>{app.email}</td>
 
                           <td>
