@@ -16,7 +16,7 @@ function Logout() {
         localStorage.clear();
 
         if (role === "recruiter") {
-          navigate("/login/recruiter");
+          navigate("/recruiter/login");
         } else {
           navigate("/login");
         }
