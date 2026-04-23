@@ -74,7 +74,7 @@ export default function RecruiterProfile() {
           {/* MAIN */}
           <div className="col-md-9 col-lg-10">
 
-            {/* HEADER (LIKE CANDIDATE PROFILE) */}
+            {/* HEADER */}
             <div className="card p-4 mb-4 shadow-sm rounded-4">
               <div className="d-flex justify-content-between align-items-center">
 
@@ -82,7 +82,7 @@ export default function RecruiterProfile() {
 
                   {/* LOGO */}
                   <div
-                    style={{ position: "relative", cursor: "pointer" }}
+                    style={{ cursor: "pointer" }}
                     onClick={() =>
                       document.getElementById("logoInput").click()
                     }
@@ -90,7 +90,7 @@ export default function RecruiterProfile() {
                     <img
                       src={
                         profile.logo
-                          ? `https://server.budes.online/public/${profile.logo}`
+                          ? `https://server.budes.online/${profile.logo}`
                           : "/assets/img/default.png"
                       }
                       style={{
@@ -101,19 +101,6 @@ export default function RecruiterProfile() {
                       }}
                     />
 
-                    <div
-                      style={{
-                        position: "absolute",
-                        bottom: 0,
-                        right: 0,
-                        background: "#fff",
-                        borderRadius: "50%",
-                        padding: 5,
-                      }}
-                    >
-                      <FaEdit />
-                    </div>
-
                     <input
                       type="file"
                       id="logoInput"
@@ -122,11 +109,11 @@ export default function RecruiterProfile() {
                     />
                   </div>
 
-                  {/* COMPANY INFO */}
+                  {/* INFO */}
                   <div>
                     <h4>{profile.company_name || "Company Name"}</h4>
-                    <p><FaBuilding /> {profile.industry}</p>
-                    <p><FaPhone /> {profile.phone}</p>
+                    <p><FaBuilding /> {profile.profession}</p>
+                    <p><FaPhone /> {profile.contact}</p>
                   </div>
                 </div>
 
@@ -136,8 +123,8 @@ export default function RecruiterProfile() {
                     setEditSection("basic");
                     setForm({
                       company_name: profile.company_name,
-                      industry: profile.industry,
-                      phone: profile.phone,
+                      profession: profile.profession,
+                      contact: profile.contact,
                     });
                   }}
                 >
@@ -155,8 +142,10 @@ export default function RecruiterProfile() {
                   onClick={() => {
                     setEditSection("company");
                     setForm({
-                      company_website: profile.company_website,
-                      company_size: profile.company_size,
+                      address: profile.address,
+                      employer_name: profile.employer_name,
+                      position: profile.position,
+                      registered_since: profile.registered_since,
                     });
                   }}
                 >
@@ -164,41 +153,23 @@ export default function RecruiterProfile() {
                 </button>
               </div>
 
-              <p>Website: {profile.company_website}</p>
-              <p>Size: {profile.company_size}</p>
-            </div>
-
-            {/* DESCRIPTION */}
-            <div className="card p-4 mb-3">
-              <div className="d-flex justify-content-between">
-                <h5>Description</h5>
-                <button
-                  className="btn btn-light btn-sm border"
-                  onClick={() => {
-                    setEditSection("desc");
-                    setForm({
-                      company_description: profile.company_description,
-                    });
-                  }}
-                >
-                  <FaEdit />
-                </button>
-              </div>
-
-              <p>{profile.company_description}</p>
+              <p><b>Address:</b> {profile.address}</p>
+              <p><b>Employer:</b> {profile.employer_name}</p>
+              <p><b>Position:</b> {profile.position}</p>
+              <p><b>Since:</b> {profile.registered_since}</p>
             </div>
 
           </div>
         </div>
       </div>
 
-      {/* MODAL (LIKE CANDIDATE PROFILE) */}
+      {/* MODAL */}
       {editSection && (
         <div className="modal d-block" style={{ background: "#00000080" }}>
           <div className="modal-dialog">
             <div className="modal-content p-3">
 
-              <h5>Edit {editSection}</h5>
+              <h5>Edit Profile</h5>
 
               {editSection === "basic" && (
                 <>
@@ -213,19 +184,19 @@ export default function RecruiterProfile() {
 
                   <input
                     className="form-control mb-2"
-                    placeholder="Industry"
-                    value={form.industry || ""}
+                    placeholder="Profession"
+                    value={form.profession || ""}
                     onChange={(e) =>
-                      setForm({ ...form, industry: e.target.value })
+                      setForm({ ...form, profession: e.target.value })
                     }
                   />
 
                   <input
                     className="form-control"
-                    placeholder="Phone"
-                    value={form.phone || ""}
+                    placeholder="Contact"
+                    value={form.contact || ""}
                     onChange={(e) =>
-                      setForm({ ...form, phone: e.target.value })
+                      setForm({ ...form, contact: e.target.value })
                     }
                   />
                 </>
@@ -235,36 +206,43 @@ export default function RecruiterProfile() {
                 <>
                   <input
                     className="form-control mb-2"
-                    placeholder="Website"
-                    value={form.company_website || ""}
+                    placeholder="Address"
+                    value={form.address || ""}
                     onChange={(e) =>
-                      setForm({ ...form, company_website: e.target.value })
+                      setForm({ ...form, address: e.target.value })
                     }
                   />
 
                   <input
-                    className="form-control"
-                    placeholder="Company Size"
-                    value={form.company_size || ""}
+                    className="form-control mb-2"
+                    placeholder="Employer Name"
+                    value={form.employer_name || ""}
                     onChange={(e) =>
-                      setForm({ ...form, company_size: e.target.value })
+                      setForm({ ...form, employer_name: e.target.value })
+                    }
+                  />
+
+                  <input
+                    className="form-control mb-2"
+                    placeholder="Position"
+                    value={form.position || ""}
+                    onChange={(e) =>
+                      setForm({ ...form, position: e.target.value })
+                    }
+                  />
+
+                  <input
+                    type="date"
+                    className="form-control"
+                    value={form.registered_since || ""}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        registered_since: e.target.value,
+                      })
                     }
                   />
                 </>
-              )}
-
-              {editSection === "desc" && (
-                <textarea
-                  className="form-control"
-                  rows="4"
-                  value={form.company_description || ""}
-                  onChange={(e) =>
-                    setForm({
-                      ...form,
-                      company_description: e.target.value,
-                    })
-                  }
-                />
               )}
 
               <div className="mt-3 text-end">
