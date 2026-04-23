@@ -130,10 +130,9 @@ function JobDetailSection() {
   const isRecruiter = job.is_recruiter;
 
   // ✅ Vacancy
-  const remainingVacancy = Math.max(
-    0,
-    job.application_limit - job.application_count
-  );
+ const remainingVacancy = isJobClosed
+  ? 0
+  : Math.max(0, job.application_limit - job.application_count);
 
   return (
     <div className="container-xxl py-5">
