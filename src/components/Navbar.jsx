@@ -175,7 +175,7 @@ function Navbar() {
 
                   {/* PROFILE */}
                   <Link
-                    to="/profile"
+                    to="/recruiter/profile"
                     className="dropdown-item d-flex align-items-center gap-2"
                   >
                     <FaUser /> Profile

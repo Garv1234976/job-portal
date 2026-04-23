@@ -7,6 +7,7 @@ import Contact from "./pages/Contact";
 import JobList from "./pages/JobList";
 import JobDetail from "./pages/JobDetail";
 import Category from "./pages/Category";
+import CandidateProfile from "./pages/Recuiter/Profile";
 
 // Auth
 import Login from "./pages/Auth/Login";
@@ -37,8 +38,8 @@ import EditJob from "./pages/Recruiter/EditJob";
 import ApplyJob from "./pages/Recruiter/ApplyJob";
 import MyJobs from "./pages/Recruiter/MyJobs";
 import JobApplications from "./pages/Recruiter/Applications";
+import ClosedJobs from "./pages/Recruiter/ClosedJobs";
 import RecruiterProfile from "./pages/Recruiter/Profile";
-
 
 function App() {
   return (
@@ -104,7 +105,15 @@ function App() {
           }
         />
 
-    
+        {/* PROFILE */}
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute roleRequired="candidate">
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
 
         <Route
           path="/candidate/profile"
@@ -164,8 +173,7 @@ function App() {
           }
         />
 
-            {/* PROFILE */}
-        <Route
+          <Route
           path="/recruiter/profile"
           element={
             <ProtectedRoute roleRequired="recruiter">
@@ -173,6 +181,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+
 
         <Route
           path="/recruiter/plans"
