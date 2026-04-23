@@ -1,25 +1,38 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import api from "../services/api";
 
-const handleLogout = async () => {
-  try {
-    const res = await api.post("/logout");
+function Logout() {
+  const navigate = useNavigate();
 
-    const role = res.data.role;
+  useEffect(() => {
 
-    // ✅ remove token
-    localStorage.removeItem("token");
+    const logoutUser = async () => {
+      try {
+        const role = localStorage.getItem("role");
 
-    // ✅ redirect based on role
-    if (role === "recruiter") {
-      navigate("/recruiter/login");
-    } else {
-      navigate("/login");
-    }
+        await api.post("/logout");
 
-  } catch (err) {
-    console.error(err);
-  }
-};
+        localStorage.clear();
+
+        if (role === "recruiter") {
+          navigate("/login/recruiter");
+        } else {
+          navigate("/login");
+        }
+
+      } catch (err) {
+        console.error(err);
+
+        navigate("/login");
+      }
+    };
+
+    logoutUser();
+
+  }, []);
+
+  return null;
+}
 
 export default Logout;
