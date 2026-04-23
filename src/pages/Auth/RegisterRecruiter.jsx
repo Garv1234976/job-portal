@@ -129,7 +129,7 @@ export default function RecruiterRegistration() {
       });
 
       setTimeout(() => {
-        navigate("/login/recruiter");
+        navigate("/recruiter/login");
       }, 1500);
 
     } catch (err) {
@@ -326,7 +326,7 @@ export default function RecruiterRegistration() {
             <span
               className="text-primary fw-bold"
               style={{ cursor: "pointer" }}
-              onClick={() => navigate("/login/recruiter")}
+              onClick={() => navigate("/recruiter/login")}
             >
               Login Here
             </span>
