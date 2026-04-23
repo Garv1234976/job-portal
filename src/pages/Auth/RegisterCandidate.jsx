@@ -284,6 +284,9 @@ const validate = () => {
                       className="form-control"
                       onChange={handleChange}
                     />
+                     {errors.aadhar_number && (
+                      <small className="text-danger">{errors.aadhar_number}</small>
+                    )}
                   </div>
 
                   {/* Gender */}
