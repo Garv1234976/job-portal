@@ -182,7 +182,7 @@ export default function Applications() {
                         <tr key={app.id}>
                           <td>{(page - 1) * 5 + i + 1}</td>
 
-                          <td>{app.name}</td>
+                          <td>{app.name1111}</td>
                           <td>{app.email}</td>
 
                           <td>
