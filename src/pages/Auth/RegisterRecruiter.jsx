@@ -1,8 +1,11 @@
 import React, { useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import api from "../../services/api";
+
+// ✅ ADD NAVBAR + FOOTER
+import Navbar from "../../components/Navbar";
+import Footer from "../../components/Footer";
 
 export default function RecruiterRegistration() {
   const [form, setForm] = useState({
@@ -31,7 +34,7 @@ export default function RecruiterRegistration() {
     setErrors({ ...errors, [e.target.name]: "" });
   };
 
-  // 🔹 File Handling (ONLY ADDED VALIDATION)
+  // 🔹 File Handling (UNCHANGED + VALIDATION)
   const handleFileChange = (e) => {
     const { name, files } = e.target;
     const file = files[0];
@@ -39,8 +42,8 @@ export default function RecruiterRegistration() {
     if (!file) return;
 
     if (name === "logo") {
-      // ✅ ONLY IMAGE
       const allowed = ["image/jpeg", "image/png", "image/jpg"];
+
       if (!allowed.includes(file.type)) {
         setErrors({ ...errors, logo: "Only JPG, JPEG, PNG allowed" });
         return;
@@ -52,7 +55,6 @@ export default function RecruiterRegistration() {
     }
 
     if (name === "documents") {
-      // ✅ ONLY DOC/PDF
       const allowed = [
         "application/pdf",
         "application/msword",
@@ -68,7 +70,7 @@ export default function RecruiterRegistration() {
     }
   };
 
-  // 🔹 Validation (UNCHANGED except altContact)
+  // 🔹 Validation (UNCHANGED)
   const validate = () => {
     let newErrors = {};
 
@@ -80,7 +82,6 @@ export default function RecruiterRegistration() {
     else if (!/^[0-9]{10}$/.test(form.contact))
       newErrors.contact = "Must be 10 digits";
 
-    // ✅ Added (not removing anything)
     if (form.altContact && !/^[0-9]{10}$/.test(form.altContact))
       newErrors.altContact = "Must be 10 digits";
 
@@ -127,186 +128,215 @@ export default function RecruiterRegistration() {
         showConfirmButton: false,
       });
 
-      // ✅ ONLY CHANGE HERE (redirect)
       setTimeout(() => {
         navigate("/login/recruiter");
       }, 1500);
 
     } catch (err) {
-      console.error(err);
-      alert("Error submitting form");
+
+      // ✅ HANDLE UNIQUE ERRORS (IMPORTANT)
+      if (err.response && err.response.status === 422) {
+        const backendErrors = err.response.data.errors;
+
+        let newErrors = {};
+
+        Object.keys(backendErrors).forEach((key) => {
+          newErrors[key] = backendErrors[key][0];
+        });
+
+        setErrors(newErrors);
+
+      } else {
+        Swal.fire("Error", "Something went wrong", "error");
+      }
+
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="container mt-5">
-      <div className="card shadow p-4">
+    <>
+      {/* ✅ NAVBAR */}
+      <Navbar />
 
-        <h2 className="text-center text-success mb-4">
-          <b>Recruiter Registration</b>
-        </h2>
+      <div className="container mt-5 mb-5">
+        <div className="card shadow p-4">
 
-        <form onSubmit={handleSubmit}>
-          <div className="row">
+          <h2 className="text-center text-success mb-4">
+            <b>Recruiter Registration</b>
+          </h2>
 
-            {/* Email */}
-            <div className="col-md-6 mb-3">
-              <label>Email <span className="text-danger">*</span></label>
-              <input
-                type="email"
-                name="email"
-                className={`form-control ${errors.email && "is-invalid"}`}
-                onChange={handleChange}
-              />
-              <div className="invalid-feedback">{errors.email}</div>
-            </div>
+          <form onSubmit={handleSubmit}>
+            <div className="row">
 
-            {/* Contact */}
-            <div className="col-md-6 mb-3">
-              <label>Contact <span className="text-danger">*</span></label>
-              <input
-                type="tel"
-                inputMode="numeric"
-                name="contact"
-                maxLength="10"
-                className={`form-control ${errors.contact && "is-invalid"}`}
-                onChange={(e) =>
-                  /^[0-9]*$/.test(e.target.value) && handleChange(e)
-                }
-              />
-              <div className="invalid-feedback">{errors.contact}</div>
-            </div>
-
-            {/* Alt Contact */}
-            <div className="col-md-6 mb-3">
-              <label>Alternative Contact</label>
-              <input
-                type="tel"
-                inputMode="numeric"
-                name="altContact"
-                maxLength="10"
-                className={`form-control ${errors.altContact && "is-invalid"}`}
-                onChange={(e) =>
-                  /^[0-9]*$/.test(e.target.value) && handleChange(e)
-                }
-              />
-              <div className="invalid-feedback">{errors.altContact}</div>
-            </div>
-
-            {/* Company Name */}
-            <div className="col-md-6 mb-3">
-              <label>Company Name <span className="text-danger">*</span></label>
-              <input
-                type="text"
-                name="company_name"
-                className={`form-control ${errors.company_name && "is-invalid"}`}
-                onChange={handleChange}
-              />
-              <div className="invalid-feedback">{errors.company_name}</div>
-            </div>
-
-            {/* Address */}
-            <div className="col-md-6 mb-3">
-              <label>Address <span className="text-danger">*</span></label>
-              <input
-                type="text"
-                name="address"
-                className={`form-control ${errors.address && "is-invalid"}`}
-                onChange={handleChange}
-              />
-              <div className="invalid-feedback">{errors.address}</div>
-            </div>
-
-            {/* Profession */}
-            <div className="col-md-6 mb-3">
-              <label>Profession</label>
-              <input
-                type="text"
-                name="profession"
-                className="form-control"
-                onChange={handleChange}
-              />
-            </div>
-
-            {/* Employer Name */}
-            <div className="col-md-6 mb-3">
-              <label>Employer Name</label>
-              <input
-                type="text"
-                name="employerName"
-                className="form-control"
-                onChange={handleChange}
-              />
-            </div>
-
-            {/* Position */}
-            <div className="col-md-6 mb-3">
-              <label>Position</label>
-              <input
-                type="text"
-                name="position"
-                className="form-control"
-                onChange={handleChange}
-              />
-            </div>
-
-            {/* Since */}
-            <div className="col-md-6 mb-3">
-              <label>Registered Since</label>
-              <input
-                type="date"
-                name="since"
-                className="form-control"
-                onChange={handleChange}
-              />
-            </div>
-
-            {/* Logo */}
-            <div className="col-md-6 mb-3">
-              <label>Company Logo <span className="text-danger">*</span></label>
-              <input
-                type="file"
-                name="logo"
-                accept=".jpg,.jpeg,.png"
-                className={`form-control ${errors.logo && "is-invalid"}`}
-                onChange={handleFileChange}
-              />
-              <div className="invalid-feedback">{errors.logo}</div>
-
-              {preview && (
-                <img
-                  src={preview}
-                  alt="preview"
-                  className="mt-2"
-                  height="60"
+              {/* Email */}
+              <div className="col-md-6 mb-3">
+                <label>Email <span className="text-danger">*</span></label>
+                <input
+                  type="email"
+                  name="email"
+                  className={`form-control ${errors.email && "is-invalid"}`}
+                  onChange={handleChange}
                 />
-              )}
+                <div className="invalid-feedback">{errors.email}</div>
+              </div>
+
+              {/* Contact */}
+              <div className="col-md-6 mb-3">
+                <label>Contact <span className="text-danger">*</span></label>
+                <input
+                  type="tel"
+                  inputMode="numeric"
+                  name="contact"
+                  maxLength="10"
+                  className={`form-control ${errors.contact && "is-invalid"}`}
+                  onChange={(e) =>
+                    /^[0-9]*$/.test(e.target.value) && handleChange(e)
+                  }
+                />
+                <div className="invalid-feedback">{errors.contact}</div>
+              </div>
+
+              {/* Alt Contact */}
+              <div className="col-md-6 mb-3">
+                <label>Alternative Contact</label>
+                <input
+                  type="tel"
+                  inputMode="numeric"
+                  name="altContact"
+                  maxLength="10"
+                  className={`form-control ${errors.altContact && "is-invalid"}`}
+                  onChange={(e) =>
+                    /^[0-9]*$/.test(e.target.value) && handleChange(e)
+                  }
+                />
+                <div className="invalid-feedback">{errors.altContact}</div>
+              </div>
+
+              {/* Company Name */}
+              <div className="col-md-6 mb-3">
+                <label>Company Name <span className="text-danger">*</span></label>
+                <input
+                  type="text"
+                  name="company_name"
+                  className={`form-control ${errors.company_name && "is-invalid"}`}
+                  onChange={handleChange}
+                />
+                <div className="invalid-feedback">{errors.company_name}</div>
+              </div>
+
+              {/* Address */}
+              <div className="col-md-6 mb-3">
+                <label>Address <span className="text-danger">*</span></label>
+                <input
+                  type="text"
+                  name="address"
+                  className={`form-control ${errors.address && "is-invalid"}`}
+                  onChange={handleChange}
+                />
+                <div className="invalid-feedback">{errors.address}</div>
+              </div>
+
+              {/* Profession */}
+              <div className="col-md-6 mb-3">
+                <label>Profession</label>
+                <input
+                  type="text"
+                  name="profession"
+                  className="form-control"
+                  onChange={handleChange}
+                />
+              </div>
+
+              {/* Employer Name */}
+              <div className="col-md-6 mb-3">
+                <label>Employer Name</label>
+                <input
+                  type="text"
+                  name="employerName"
+                  className="form-control"
+                  onChange={handleChange}
+                />
+              </div>
+
+              {/* Position */}
+              <div className="col-md-6 mb-3">
+                <label>Position</label>
+                <input
+                  type="text"
+                  name="position"
+                  className="form-control"
+                  onChange={handleChange}
+                />
+              </div>
+
+              {/* Since */}
+              <div className="col-md-6 mb-3">
+                <label>Registered Since</label>
+                <input
+                  type="date"
+                  name="since"
+                  className="form-control"
+                  onChange={handleChange}
+                />
+              </div>
+
+              {/* Logo */}
+              <div className="col-md-6 mb-3">
+                <label>Company Logo <span className="text-danger">*</span></label>
+                <input
+                  type="file"
+                  name="logo"
+                  accept=".jpg,.jpeg,.png"
+                  className={`form-control ${errors.logo && "is-invalid"}`}
+                  onChange={handleFileChange}
+                />
+                <div className="invalid-feedback">{errors.logo}</div>
+
+                {preview && (
+                  <img src={preview} alt="preview" className="mt-2" height="60" />
+                )}
+              </div>
+
+              {/* Documents */}
+              <div className="col-md-6 mb-3">
+                <label>Documents</label>
+                <input
+                  type="file"
+                  name="documents"
+                  accept=".pdf,.doc,.docx"
+                  className="form-control"
+                  onChange={handleFileChange}
+                />
+              </div>
+
             </div>
 
-            {/* Documents */}
-            <div className="col-md-6 mb-3">
-              <label>Documents</label>
-              <input
-                type="file"
-                name="documents"
-                accept=".pdf,.doc,.docx"
-                className="form-control"
-                onChange={handleFileChange}
-              />
+            <div className="text-center mt-3">
+              <button className="btn btn-success px-5" disabled={loading}>
+                {loading ? "Submitting..." : "Register"}
+              </button>
             </div>
 
-          </div>
+          </form>
 
           <div className="text-center mt-3">
-            <button className="btn btn-success px-5" disabled={loading}>
-              {loading ? "Submitting..." : "Register"}
-            </button>
+            If you have an account?{" "}
+            <span
+              className="text-primary fw-bold"
+              style={{ cursor: "pointer" }}
+              onClick={() => navigate("/login/recruiter")}
+            >
+              Login Here
+            </span>
           </div>
 
-        </form>
+        </div>
       </div>
-    </div>
+
+      {/* ✅ FOOTER */}
+      <Footer />
+    </>
   );
 }
