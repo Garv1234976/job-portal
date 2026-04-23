@@ -1,35 +1,47 @@
 import { useNavigate, useLocation } from "react-router-dom";
+import Swal from "sweetalert2";
+import { useEffect, useState } from "react";
+import API from "../services/api"; // adjust path if needed
 
-export default function RecruiterSidebar({ handlePostJob }) {
+export default function RecruiterSidebar() {
   const navigate = useNavigate();
   const location = useLocation();
 
-    const handlePostJob = () => {
-      if (!activePlan || activePlan.jobs_remaining <= 0) {
-        Swal.fire({
-          icon: "warning",
-          title: "Plan Required",
-          text: "Please buy or upgrade your plan",
-        }).then(() => {
-          navigate("/recruiter/plans");
-        });
-      } else {
-        navigate("/recruiter/create-job");
-      }
-    };
+  const [activePlan, setActivePlan] = useState(null);
 
+  // ✅ FETCH PLAN
+  useEffect(() => {
+    API.get("/dashboard")
+      .then((res) => {
+        setActivePlan(res.data.active_plan);
+      })
+      .catch(() => {});
+  }, []);
+
+  // ✅ DEFINE HERE (NOT PROP)
+  const handlePostJob = () => {
+    if (!activePlan || activePlan.jobs_remaining <= 0) {
+      Swal.fire({
+        icon: "warning",
+        title: "Plan Required",
+        text: "Please buy or upgrade your plan",
+      }).then(() => {
+        navigate("/recruiter/plans");
+      });
+    } else {
+      navigate("/recruiter/create-job");
+    }
+  };
 
   const menu = [
     { name: "Dashboard", icon: "fa-home", path: "/recruiter/dashboard" },
-    { name: "Post Job", icon: "fa-plus-circle", onClick: handlePostJob },
+    { name: "Post Job", icon: "fa-plus-circle", action: handlePostJob },
     { name: "My Jobs", icon: "fa-briefcase", path: "/recruiter/jobs" },
     { name: "Closed Jobs", icon: "fa-times-circle", path: "/recruiter/closed-jobs" },
     { name: "Plans", icon: "fa-credit-card", path: "/recruiter/plans" },
   ];
 
-  const isActive = (path) => {
-    return location.pathname.startsWith(path);
-  };
+  const isActive = (path) => location.pathname.startsWith(path);
 
   return (
     <div
@@ -39,10 +51,8 @@ export default function RecruiterSidebar({ handlePostJob }) {
       <h5 className="mb-3 fw-bold">Recruiter Panel</h5>
 
       <ul className="list-unstyled">
-
         {menu.map((item, i) => (
           <li key={i} className="mb-2">
-
             <div
               className={`d-flex align-items-center justify-content-between p-2 rounded sidebar-item ${
                 item.path && isActive(item.path) ? "active" : ""
@@ -65,13 +75,11 @@ export default function RecruiterSidebar({ handlePostJob }) {
                 <i className="fa fa-chevron-right small"></i>
               )}
             </div>
-
           </li>
         ))}
-
       </ul>
 
-      {/* ✅ STYLING */}
+      {/* ✅ STYLE */}
       <style>
         {`
           .sidebar-item {
