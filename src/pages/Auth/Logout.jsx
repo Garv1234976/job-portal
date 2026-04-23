@@ -1,19 +1,18 @@
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+const handleLogout = async () => {
+  try {
+    const res = await api.post("/logout");
 
-function Logout() {
-  const navigate = useNavigate();
+    const role = res.data.role;
 
-  useEffect(() => {
-    localStorage.clear();
+    localStorage.removeItem("token");
 
-    // optional: call API logout
-    // await api.post("/logout");
+    if (role === "recruiter") {
+      navigate("/recruiter/login");
+    } else {
+      navigate("/login");
+    }
 
-    navigate("/login");
-  }, []);
-
-  return null;
-}
-
-export default Logout;
+  } catch (err) {
+    console.error(err);
+  }
+};
