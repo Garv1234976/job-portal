@@ -173,7 +173,7 @@ export default function Applications() {
                       const resumeUrl = app.resume_url?.startsWith("http")
                         ? app.resume_url
                         : app.resume_url
-                        ? `https://server.budes.online/${app.resume_url}`
+                        ? `https://server.budes.online/public/${app.resume_url}`
                         : null;
 
                       return (
