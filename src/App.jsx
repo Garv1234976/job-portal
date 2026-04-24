@@ -12,6 +12,7 @@ import Profile from "./pages/Profile";
 // Auth
 import Login from "./pages/Auth/Login";
 import RecruiterLogin from "./pages/Auth/RecruiterLogin";
+import AdminLogin from "./pages/Auth/AdminLogin";
 import RegisterCandidate from "./pages/Auth/RegisterCandidate";
 import RegisterRecruiter from "./pages/Auth/RegisterRecruiter";
 import Logout from "./pages/Auth/Logout";
@@ -45,7 +46,6 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-
         {/* ================= PUBLIC ROUTES ================= */}
         <Route path="/" element={<Home />} />
         <Route path="/about" element={<About />} />
@@ -60,6 +60,15 @@ function App() {
           element={
             <GuestRoute>
               <Login />
+            </GuestRoute>
+          }
+        />
+
+        <Route
+          path="/login/admin"
+          element={
+            <GuestRoute>
+              <AdminLogin />
             </GuestRoute>
           }
         />
@@ -173,7 +182,7 @@ function App() {
           }
         />
 
-          <Route
+        <Route
           path="/recruiter/profile"
           element={
             <ProtectedRoute roleRequired="recruiter">
@@ -181,7 +190,6 @@ function App() {
             </ProtectedRoute>
           }
         />
-
 
         <Route
           path="/recruiter/plans"
@@ -245,7 +253,6 @@ function App() {
             </ProtectedRoute>
           }
         />
-
       </Routes>
     </BrowserRouter>
   );
