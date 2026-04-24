@@ -6,32 +6,31 @@ function Logout() {
   const navigate = useNavigate();
 
   useEffect(() => {
-
     const logoutUser = async () => {
       try {
         const role = localStorage.getItem("role");
         console.log("Logging out user with role:", role);
-        await api.post("/logout");
 
+        await api.post("/logout");
 
         localStorage.clear();
 
-
-        if (role === "recruiter") {
+        //  ROLE BASED REDIRECT
+        if (role === "admin") {
+          navigate("/login/admin");
+        } else if (role === "recruiter") {
           navigate("/recruiter/login");
         } else {
-          navigate("/login");
+          navigate("/login"); // candidate
         }
 
       } catch (err) {
         console.error(err);
-
         navigate("/login");
       }
     };
 
     logoutUser();
-
   }, []);
 
   return null;
