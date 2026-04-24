@@ -256,17 +256,17 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+        <Route
+          path="/admin/dashboard"
+          element={
+            <AdminRoute>
+              <AdminDashboard />
+            </AdminRoute>
+          }
+        />
+        
       </Routes>
-
-      <Route
-        path="/admin/dashboard"
-        element={
-          <AdminRoute>
-            <AdminDashboard />
-          </AdminRoute>
-        }
-      />
-
     </BrowserRouter>
   );
 }
