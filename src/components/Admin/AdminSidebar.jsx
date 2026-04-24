@@ -8,7 +8,8 @@ import {
   FaList,
   FaHome
 } from "react-icons/fa";
-import "../../components/Category.css"
+
+import "../../components/Category.css";
 
 export default function AdminSidebar() {
   const navigate = useNavigate();
@@ -16,7 +17,7 @@ export default function AdminSidebar() {
 
   const menu = [
     {
-      name: "Visit Website", 
+      name: "Visit Website",
       icon: <FaHome />,
       action: () => window.open("/", "_blank"),
     },
@@ -53,15 +54,15 @@ export default function AdminSidebar() {
   };
 
   return (
-    <div className="admin-sidebar">
+    <div className="admin-sidebar d-flex flex-column">
 
-      {/* LOGO */}
-      <div className="sidebar-header">
-        <h4>Admin Panel</h4>
+      {/* HEADER */}
+      <div className="sidebar-header text-center">
+        <h4 className="fw-bold mb-0">Admin Panel</h4>
       </div>
 
       {/* MENU */}
-      <div className="sidebar-menu">
+      <div className="sidebar-menu flex-grow-1">
         {menu.map((item, index) => {
           const isActive = location.pathname === item.path;
 
@@ -69,20 +70,25 @@ export default function AdminSidebar() {
             <div
               key={index}
               className={`sidebar-item ${isActive ? "active" : ""}`}
-              onClick={() => item.path ? navigate(item.path) : item.action()}
+              onClick={() =>
+                item.path ? navigate(item.path) : item.action()
+              }
             >
               <span className="icon">{item.icon}</span>
-              <span>{item.name}</span>
+              <span className="label">{item.name}</span>
             </div>
           );
         })}
       </div>
 
       {/* FOOTER */}
-      <div className="sidebar-footer">
-        <div className="sidebar-item logout" onClick={handleLogout}>
+      <div className="sidebar-footer mt-auto">
+        <div
+          className="sidebar-item logout"
+          onClick={handleLogout}
+        >
           <FaSignOutAlt />
-          <span>Logout</span>
+          <span className="label">Logout</span>
         </div>
       </div>
 

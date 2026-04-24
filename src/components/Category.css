@@ -90,54 +90,62 @@
 .admin-sidebar {
     width: 240px;
     height: 100vh;
-    background: #111827;
+    background: #0f172a;
     color: #fff;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
 }
+
+
+/* HEADER */
 
 .sidebar-header {
     padding: 20px;
-    text-align: center;
-    font-weight: bold;
-    font-size: 18px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
+
+/* MENU */
+
 .sidebar-menu {
-    padding: 15px;
+    padding: 10px;
 }
+
+
+/* ITEM */
 
 .sidebar-item {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 12px 15px;
+    padding: 12px 14px;
     border-radius: 8px;
     cursor: pointer;
     transition: 0.3s;
     color: #cbd5e1;
+    font-size: 14px;
 }
 
 .sidebar-item:hover {
-    background: #1f2937;
+    background: #1e293b;
     color: #fff;
 }
 
 .sidebar-item.active {
     background: #2563eb;
     color: #fff;
-    font-weight: 500;
 }
 
 .sidebar-item .icon {
     font-size: 16px;
 }
 
+
+/* FOOTER */
+
 .sidebar-footer {
-    padding: 15px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .logout {
