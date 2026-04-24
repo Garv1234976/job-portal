@@ -41,6 +41,9 @@ import MyJobs from "./pages/Recruiter/MyJobs";
 import JobApplications from "./pages/Recruiter/Applications";
 import ClosedJobs from "./pages/Recruiter/ClosedJobs";
 import RecruiterProfile from "./pages/Recruiter/Profile";
+import Users from "./pages/Admin/Users";
+import Jobs from "./pages/Admin/Jobs";
+import Applications from "./pages/Admin/Applications";
 
 //Admin
 import AdminDashboard from "./pages/Admin/Dashboard";
@@ -265,7 +268,33 @@ function App() {
             </AdminRoute>
           }
         />
-        
+
+        <Route
+          path="/admin/users"
+          element={
+            <AdminRoute>
+              <Users />
+            </AdminRoute>
+          }
+        />
+
+        <Route
+          path="/admin/jobs"
+          element={
+            <AdminRoute>
+              <Jobs />
+            </AdminRoute>
+          }
+        />
+
+        <Route
+          path="/admin/applications"
+          element={
+            <AdminRoute>
+              <Applications />
+            </AdminRoute>
+          }
+        />
       </Routes>
     </BrowserRouter>
   );
