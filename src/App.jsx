@@ -47,6 +47,7 @@ import Applications from "./pages/Admin/Applications";
 
 //Admin
 import AdminDashboard from "./pages/Admin/Dashboard";
+import Categories from "./pages/Admin/Categories";
 
 function App() {
   return (
@@ -295,6 +296,16 @@ function App() {
             </AdminRoute>
           }
         />
+
+        <Route
+          path="/admin/categories"
+          element={
+            <AdminRoute>
+              <Categories />
+            </AdminRoute>
+          }
+        />
+
       </Routes>
     </BrowserRouter>
   );
