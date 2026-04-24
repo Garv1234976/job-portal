@@ -2,7 +2,6 @@ import Swal from "sweetalert2";
 import API from "../services/api";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { BASE_URL } from "../../config/constants";
 //  React Icons
 import {
   FaBriefcase,
@@ -11,6 +10,7 @@ import {
   FaBookmark,
   FaRegBookmark
 } from "react-icons/fa";
+import { BASE_URL } from "../config/constants";
 
 function JobCard({ job }) {
   const [applied, setApplied] = useState(false);

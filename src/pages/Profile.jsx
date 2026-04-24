@@ -7,7 +7,7 @@ import CandidateSidebar from "../components/candidate/CandidateSidebar";
 import { FaEdit, FaMapMarkerAlt, FaPhone } from "react-icons/fa";
 import Swal from "sweetalert2";
 import Select from "react-select";
-import { BASE_URL } from "../../config/constants";
+import { BASE_URL } from "../config/constants"; 
 
 function Profile() {
   const [profile, setProfile] = useState({});
