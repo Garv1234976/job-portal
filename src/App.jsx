@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-
+import AdminRoute from "./components/AdminRoute";
 // Public Pages
 import Home from "./pages/Home";
 import About from "./pages/About";
@@ -41,6 +41,9 @@ import MyJobs from "./pages/Recruiter/MyJobs";
 import JobApplications from "./pages/Recruiter/Applications";
 import ClosedJobs from "./pages/Recruiter/ClosedJobs";
 import RecruiterProfile from "./pages/Recruiter/Profile";
+
+//Admin
+import AdminDashboard from "./pages/Admin/Dashboard";
 
 function App() {
   return (
@@ -254,6 +257,16 @@ function App() {
           }
         />
       </Routes>
+
+      <Route
+        path="/admin/dashboard"
+        element={
+          <AdminRoute>
+            <AdminDashboard />
+          </AdminRoute>
+        }
+      />
+
     </BrowserRouter>
   );
 }
