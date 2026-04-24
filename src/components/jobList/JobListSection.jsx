@@ -3,6 +3,41 @@ import { useLocation } from "react-router-dom";
 import API from "../../services/api";
 import JobCard from "../../components/JobCard";
 
+function JobCardSkeleton() {
+  return (
+    <div className="p-3 mb-3 border rounded shadow-sm bg-white">
+      <div className="d-flex justify-content-between align-items-start">
+
+        {/* LEFT */}
+        <div className="d-flex">
+          <div
+            className="bg-light rounded border skeleton"
+            style={{ width: 60, height: 60 }}
+          ></div>
+
+          <div className="ms-3 w-100">
+            <div className="skeleton mb-2" style={{ width: "120px", height: "16px" }}></div>
+
+            <div className="skeleton mb-2" style={{ width: "200px", height: "14px" }}></div>
+
+            <div className="skeleton mb-2" style={{ width: "250px", height: "12px" }}></div>
+
+            <div className="skeleton" style={{ width: "100px", height: "12px" }}></div>
+          </div>
+        </div>
+
+        {/* RIGHT */}
+        <div className="text-end">
+          <div className="skeleton mb-2" style={{ width: 80, height: 30 }}></div>
+          <div className="skeleton" style={{ width: 100, height: 30 }}></div>
+        </div>
+
+      </div>
+    </div>
+  );
+}
+
+
 function JobListSection() {
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -268,7 +303,7 @@ function JobListSection() {
 
             </div>
 
-            {loading && <p>Loading jobs...</p>}
+            {loading && <JobCardSkeleton />}
 
             {/* ✅ ONLY SHOW IF LOGGED IN */}
             {!loading && isLoggedIn && jobs.length === 0 && (
@@ -281,6 +316,7 @@ function JobListSection() {
               </div>
             )}
 
+            
             {!loading && isLoggedIn && jobs.map((job) => (
               <JobCard key={job.id} job={job} />
             ))}
