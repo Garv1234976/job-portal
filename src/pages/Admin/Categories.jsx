@@ -2,9 +2,7 @@ import { useEffect, useState } from "react";
 import API from "../../services/api";
 import AdminLayout from "./Layout";
 import Swal from "sweetalert2";
-import { Modal, Button } from "react-bootstrap";
 
-// 🔥 ICON OPTIONS (can extend)
 const ICONS = [
   "fa fa-laptop",
   "fa fa-code",
@@ -123,7 +121,6 @@ export default function Categories() {
   return (
     <AdminLayout>
       <div className="container-fluid">
-
         <div className="d-flex justify-content-between mb-3">
           <h4 className="fw-bold">Manage Categories</h4>
           <button className="btn btn-primary" onClick={() => openModal()}>
@@ -160,9 +157,7 @@ export default function Categories() {
                 <tr key={cat.id}>
                   <td>{(page - 1) * 10 + i + 1}</td>
                   <td>{cat.name}</td>
-                  <td>
-                    {cat.icon ? <i className={cat.icon}></i> : "-"}
-                  </td>
+                  <td>{cat.icon ? <i className={cat.icon}></i> : "-"}</td>
                   <td>{cat.parent?.name || "Main"}</td>
                   <td>
                     <button
@@ -221,66 +216,62 @@ export default function Categories() {
             Next
           </button>
         </div>
+        {showModal && (
+          <div className="modal-overlay">
+            <div className="modal-box">
+              <h5 className="mb-3">
+                {editId ? "Edit Category" : "Add Category"}
+              </h5>
 
-        {/* 🔥 MODAL */}
-        <Modal show={showModal} onHide={() => setShowModal(false)}>
-          <Modal.Header closeButton>
-            <Modal.Title>{editId ? "Edit" : "Add"} Category</Modal.Title>
-          </Modal.Header>
+              <input
+                className="form-control mb-2"
+                placeholder="Category Name"
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+              />
 
-          <Modal.Body>
-            <input
-              className="form-control mb-2"
-              placeholder="Category Name"
-              value={form.name}
-              onChange={(e) =>
-                setForm({ ...form, name: e.target.value })
-              }
-            />
+              <select
+                className="form-control mb-2"
+                value={form.parent_id}
+                onChange={(e) =>
+                  setForm({ ...form, parent_id: e.target.value })
+                }
+              >
+                <option value="">Main Category</option>
+                {flatCategories.map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.name}
+                  </option>
+                ))}
+              </select>
 
-            {/* PARENT */}
-            <select
-              className="form-control mb-2"
-              value={form.parent_id}
-              onChange={(e) =>
-                setForm({ ...form, parent_id: e.target.value })
-              }
-            >
-              <option value="">Main Category</option>
-              {flatCategories.map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {cat.name}
-                </option>
-              ))}
-            </select>
+              <div className="d-flex gap-2 flex-wrap mb-3">
+                {ICONS.map((ic) => (
+                  <div
+                    key={ic}
+                    className={`icon-box ${form.icon === ic ? "active" : ""}`}
+                    onClick={() => setForm({ ...form, icon: ic })}
+                  >
+                    <i className={ic}></i>
+                  </div>
+                ))}
+              </div>
 
-            {/* ICON PICKER */}
-            <div className="d-flex gap-2 flex-wrap">
-              {ICONS.map((ic) => (
-                <div
-                  key={ic}
-                  className={`p-2 border ${
-                    form.icon === ic ? "bg-primary text-white" : ""
-                  }`}
-                  style={{ cursor: "pointer" }}
-                  onClick={() => setForm({ ...form, icon: ic })}
+              <div className="d-flex justify-content-end gap-2">
+                <button
+                  className="btn btn-secondary"
+                  onClick={() => setShowModal(false)}
                 >
-                  <i className={ic}></i>
-                </div>
-              ))}
+                  Cancel
+                </button>
+
+                <button className="btn btn-primary" onClick={handleSubmit}>
+                  Save
+                </button>
+              </div>
             </div>
-          </Modal.Body>
-
-          <Modal.Footer>
-            <Button variant="secondary" onClick={() => setShowModal(false)}>
-              Cancel
-            </Button>
-            <Button variant="primary" onClick={handleSubmit}>
-              Save
-            </Button>
-          </Modal.Footer>
-        </Modal>
-
+          </div>
+        )}
       </div>
     </AdminLayout>
   );
