@@ -9,7 +9,7 @@ export default function RecruiterSidebar() {
 
   const [activePlan, setActivePlan] = useState(null);
 
-  // ✅ FETCH PLAN
+  //  FETCH PLAN
   useEffect(() => {
     API.get("/dashboard")
       .then((res) => {
@@ -18,7 +18,7 @@ export default function RecruiterSidebar() {
       .catch(() => {});
   }, []);
 
-  // ✅ DEFINE HERE (NOT PROP)
+  //  DEFINE HERE (NOT PROP)
   const handlePostJob = () => {
     if (!activePlan || activePlan.jobs_remaining <= 0) {
       Swal.fire({
@@ -79,7 +79,7 @@ export default function RecruiterSidebar() {
         ))}
       </ul>
 
-      {/* ✅ STYLE */}
+      {/*  STYLE */}
       <style>
         {`
           .sidebar-item {

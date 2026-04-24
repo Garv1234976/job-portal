@@ -8,7 +8,7 @@ function JobDetailHeader() {
         backgroundPosition: "center",
       }}
     >
-      {/* ✅ DARK OVERLAY (optional but recommended) */}
+      {/*  DARK OVERLAY (optional but recommended) */}
       <div
         style={{
           position: "absolute",
@@ -21,7 +21,7 @@ function JobDetailHeader() {
         }}
       ></div>
 
-      {/* ✅ CONTENT */}
+      {/*  CONTENT */}
       <div className="container my-5 pt-5 pb-4 position-relative" style={{ zIndex: 2 }}>
 
         <h1 className="display-3 text-white mb-3">

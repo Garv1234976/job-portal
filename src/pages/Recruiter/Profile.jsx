@@ -5,6 +5,7 @@ import Footer from "../../components/Footer";
 import RecruiterSidebar from "../../components/RecruiterSidebar";
 import { FaEdit, FaBuilding, FaPhone } from "react-icons/fa";
 import Swal from "sweetalert2";
+import { BASE_URL } from "../../config/constants";
 
 export default function RecruiterProfile() {
   const [profile, setProfile] = useState({});
@@ -28,7 +29,7 @@ export default function RecruiterProfile() {
     }
   };
 
-  // ✅ LOGO UPLOAD
+  //  LOGO UPLOAD
   const handleLogoUpload = async (e) => {
     try {
       const file = e.target.files[0];
@@ -51,7 +52,7 @@ export default function RecruiterProfile() {
     }
   };
 
-  // ✅ SAVE PROFILE
+  //  SAVE PROFILE
   const handleSave = async () => {
     try {
       const formData = new FormData();
@@ -112,7 +113,7 @@ export default function RecruiterProfile() {
                     <img
                       src={
                         profile.logo
-                          ? `https://server.budes.online/public/${profile.logo}`
+                          ? `${BASE_URL}/public/${profile.logo}`
                           : "/assets/img/default.png"
                       }
                       style={{

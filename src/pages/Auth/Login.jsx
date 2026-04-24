@@ -10,7 +10,7 @@ function Login() {
 
   const [form, setForm] = useState({
     login_id: sessionStorage.getItem("login_id") || "",
-    role: "candidate", // ✅ DEFAULT FIXED
+    role: "candidate", //  DEFAULT FIXED
     otp_type: "",
   });
 
@@ -182,7 +182,7 @@ function Login() {
         <div className="card p-4 shadow" style={{ width: "400px" }}>
           <h3 className="text-center mb-3">Login</h3>
 
-          {/* ✅ ROLE (READ ONLY) */}
+          {/*  ROLE (READ ONLY) */}
           <div className="mb-2">
             <label className="form-label">
               Login As <span className="text-danger">*</span>

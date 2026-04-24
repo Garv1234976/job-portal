@@ -2,8 +2,8 @@ import Swal from "sweetalert2";
 import API from "../services/api";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
-// ✅ React Icons
+import { BASE_URL } from "../../config/constants";
+//  React Icons
 import {
   FaBriefcase,
   FaMapMarkerAlt,
@@ -24,7 +24,7 @@ function JobCard({ job }) {
     setSaved(job.saved || false);
   }, [job]);
 
-  // ✅ UPDATED CLOSED LOGIC
+  //  UPDATED CLOSED LOGIC
   const isJobClosed =
     job.status === "closed" ||
     job.application_count >= job.application_limit;
@@ -76,7 +76,7 @@ function JobCard({ job }) {
           <img
             src={
               job.logo
-                ? `https://server.budes.online/public/storage/${job.logo}`
+                ? `${BASE_URL}/public/storage/${job.logo}`
                 : "/assets/img/default.png"
             }
             alt="logo"

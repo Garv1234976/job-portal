@@ -4,7 +4,7 @@ function Carousel() {
 
       <div className="position-relative" style={{ height: "90vh" }}>
 
-        {/* ✅ HERO IMAGE (FAST LOAD) */}
+        {/*  HERO IMAGE (FAST LOAD) */}
         <img
           src="/assets/img/job-bg.jpg"
           alt="Job Background"
@@ -18,7 +18,7 @@ function Carousel() {
           }}
         />
 
-        {/* ✅ GRADIENT OVERLAY */}
+        {/*  GRADIENT OVERLAY */}
         <div
           className="position-absolute w-100 h-100"
           style={{
@@ -27,7 +27,7 @@ function Carousel() {
           }}
         ></div>
 
-        {/* ✅ CONTENT */}
+        {/*  CONTENT */}
         <div
           className="container position-relative text-white d-flex align-items-center"
           style={{ height: "100%", zIndex: 3 }}

@@ -40,12 +40,12 @@ export default function Plans() {
       <div className="container-fluid mt-4 mb-5">
         <div className="row">
 
-          {/* ✅ SIDEBAR FIXED */}
+          {/*  SIDEBAR FIXED */}
           <div className="col-md-3 col-lg-2">
             <RecruiterSidebar />
           </div>
 
-          {/* ✅ MAIN CONTENT */}
+          {/*  MAIN CONTENT */}
           <div className="col-md-9 col-lg-10">
             <div className="container">
 

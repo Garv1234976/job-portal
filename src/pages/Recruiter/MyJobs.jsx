@@ -18,7 +18,7 @@ export default function MyJobs() {
 
   const navigate = useNavigate();
 
-  // ✅ FETCH JOBS
+  //  FETCH JOBS
   const fetchJobs = () => {
     API.get("/my-jobs", {
       params: { page, search, location, salary }
@@ -34,22 +34,22 @@ export default function MyJobs() {
     fetchJobs();
   }, [page, search, location, salary]);
 
-  // ✅ VIEW JOB
+  //  VIEW JOB
   const handleView = (id) => {
     window.open(`https://budes.online/job/${id}`, "_blank");
   };
 
-  // ✅ EDIT JOB
+  //  EDIT JOB
   const handleEdit = (id) => {
     navigate(`/recruiter/edit-job/${id}`);
   };
 
-  // ✅ VIEW APPLICATIONS (NEW 🔥)
+  //  VIEW APPLICATIONS (NEW 🔥)
   const handleApplications = (id) => {
     navigate(`/recruiter/job-applications/${id}`);
   };
 
-  // ✅ CLOSE JOB
+  //  CLOSE JOB
   const closeJob = async (id) => {
     const result = await Swal.fire({
       title: "Are you sure?",
@@ -70,7 +70,7 @@ export default function MyJobs() {
     }
   };
 
-  // ✅ REOPEN JOB
+  //  REOPEN JOB
   const reopenJob = async (id) => {
     try {
       await API.post(`/reopen-job/${id}`);
@@ -81,7 +81,7 @@ export default function MyJobs() {
     }
   };
 
-  // ✅ PAGINATION
+  //  PAGINATION
   const renderPagination = () => {
     let pages = [];
 
@@ -243,7 +243,7 @@ export default function MyJobs() {
                                 Edit
                               </button>
 
-                              {/* ✅ NEW BUTTON */}
+                              {/*  NEW BUTTON */}
                               <button
                                 className="btn btn-dark btn-sm me-2"
                                 onClick={() => handleApplications(job.id)}

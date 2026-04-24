@@ -11,7 +11,7 @@ import Testimonial from "../components/Testimonial";
 import Footer from "../components/Footer";
 
 function Home() {
-  // ✅ ADD FILTER STATE HERE
+  //  ADD FILTER STATE HERE
   const [filters, setFilters] = useState({
     search: "",
     location: "",

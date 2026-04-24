@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import API from "../../services/api";
 import Swal from "sweetalert2";
 
-// ✅ IMPORT THESE
+//  IMPORT THESE
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import RecruiterSidebar from "../../components/RecruiterSidebar";
@@ -42,18 +42,18 @@ export default function Dashboard() {
 
   return (
     <>
-      {/* ✅ NAVBAR */}
+      {/*  NAVBAR */}
       <Navbar />
 
-      {/* ✅ MAIN WRAPPER (UPDATED) */}
+      {/*  MAIN WRAPPER (UPDATED) */}
       <div className="container-fluid mt-4 mb-5">
         <div className="row">
-          {/* ✅ SIDEBAR */}
+          {/*  SIDEBAR */}
           <div className="col-md-3 col-lg-2 mb-3">
             <RecruiterSidebar handlePostJob={handlePostJob} />
           </div>
 
-          {/* ✅ MAIN CONTENT (YOUR ORIGINAL CODE INSIDE) */}
+          {/*  MAIN CONTENT (YOUR ORIGINAL CODE INSIDE) */}
           <div className="col-md-9 col-lg-10">
             <div className="container">
               <h2 className="mb-4">Recruiter Dashboard</h2>
@@ -120,7 +120,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* ✅ FOOTER */}
+      {/*  FOOTER */}
       <Footer />
     </>
   );

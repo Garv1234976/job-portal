@@ -24,7 +24,7 @@ import GuestRoute from "./components/GuestRoute";
 import CandidateDashboard from "./pages/Candidate/Dashboard";
 import CandidateProfile from "./pages/Candidate/Profile";
 
-// ✅ NEW (for sidebar pages)
+//  NEW (for sidebar pages)
 import AppliedJobs from "./pages/Candidate/AppliedJobs";
 import SavedJobs from "./pages/Candidate/SavedJobs";
 import LastViewed from "./pages/Candidate/LastViewed";
@@ -124,7 +124,7 @@ function App() {
           }
         />
 
-        {/* ✅ NEW SIDEBAR ROUTES */}
+        {/*  NEW SIDEBAR ROUTES */}
 
         <Route
           path="/candidate/applied"

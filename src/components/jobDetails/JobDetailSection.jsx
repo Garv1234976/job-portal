@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import api from "../../services/api";
 import Swal from "sweetalert2";
+import { BASE_URL } from "../../config/constants";
 
 import {
   FaMapMarkerAlt,
@@ -121,15 +122,15 @@ function JobDetailSection() {
   if (loading) return <p className="text-center">Loading...</p>;
   if (!job) return <p className="text-center">Job not found</p>;
 
-  // ✅ CLOSED LOGIC
+  //  CLOSED LOGIC
   const isJobClosed =
     job.status === "closed" ||
     job.application_count >= job.application_limit;
 
-  // ✅ RECRUITER FROM BACKEND
+  //  RECRUITER FROM BACKEND
   const isRecruiter = job.is_recruiter;
 
-  // ✅ Vacancy
+  //  Vacancy
  const remainingVacancy = isJobClosed
   ? 0
   : Math.max(0, job.application_limit - job.application_count);
@@ -147,7 +148,7 @@ function JobDetailSection() {
               <img
                 src={
                   job.logo
-                    ? `https://server.budes.online/public/storage/${job.logo}`
+                    ? `${BASE_URL}/public/storage/${job.logo}`
                     : "/assets/img/default.png"
                 }
                 style={{ width: 80, height: 80 }}
@@ -197,7 +198,7 @@ function JobDetailSection() {
 
               ) : alreadyApplied ? (
                 <div className="alert alert-success">
-                  ✅ You have already applied for this job
+                   You have already applied for this job
                 </div>
 
               ) : (

@@ -10,7 +10,7 @@ export default function ClosedJobs() {
   const [lastPage, setLastPage] = useState(1);
   const [search, setSearch] = useState("");
 
-  // ✅ FETCH
+  //  FETCH
   const fetchJobs = () => {
     API.get("/closed-jobs", {
       params: { page, search },
@@ -27,7 +27,7 @@ export default function ClosedJobs() {
     fetchJobs();
   }, [page, search]);
 
-  // ✅ PAGINATION
+  //  PAGINATION
   const renderPagination = () => {
     if (lastPage <= 1) return null;
 
@@ -125,7 +125,7 @@ export default function ClosedJobs() {
                           <td>{job.salary_range || "-"}</td>
                           <td>{job.openings || "-"}</td>
 
-                          {/* ✅ FIXED DATE */}
+                          {/*  FIXED DATE */}
                           <td>
                             {job.closed_at
                               ? new Date(job.closed_at).toLocaleDateString()

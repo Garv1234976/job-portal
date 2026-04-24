@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import api from "../../services/api";
 
-// ✅ ADD NAVBAR + FOOTER
+//  ADD NAVBAR + FOOTER
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 
@@ -134,7 +134,7 @@ export default function RecruiterRegistration() {
 
     } catch (err) {
 
-      // ✅ HANDLE UNIQUE ERRORS (IMPORTANT)
+      //  HANDLE UNIQUE ERRORS (IMPORTANT)
       if (err.response && err.response.status === 422) {
         const backendErrors = err.response.data.errors;
 
@@ -157,7 +157,7 @@ export default function RecruiterRegistration() {
 
   return (
     <>
-      {/* ✅ NAVBAR */}
+      {/*  NAVBAR */}
       <Navbar />
 
       <div className="container mt-5 mb-5">
@@ -335,7 +335,7 @@ export default function RecruiterRegistration() {
         </div>
       </div>
 
-      {/* ✅ FOOTER */}
+      {/*  FOOTER */}
       <Footer />
     </>
   );

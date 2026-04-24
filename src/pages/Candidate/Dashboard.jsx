@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../services/api";
+import { BASE_URL } from "../../config/constants";
 
 import CandidateSidebar from "../../components/candidate/CandidateSidebar";
 import Navbar from "../../components/Navbar";
@@ -15,7 +16,7 @@ export default function CandidateDashboard() {
   const [completion, setCompletion] = useState(0);
   const [missingFields, setMissingFields] = useState([]);
 
-  // ✅ FETCH COUNTS
+  // FETCH COUNTS
   const fetchCounts = async () => {
     try {
       const applied = await api.get("/applied-jobs");
@@ -28,7 +29,7 @@ export default function CandidateDashboard() {
     }
   };
 
-  // ✅ FETCH PROFILE
+  //  FETCH PROFILE
   const fetchProfile = async () => {
     try {
       const res = await api.get("/profile");
@@ -41,7 +42,7 @@ export default function CandidateDashboard() {
     }
   };
 
-  // ✅ PROFILE COMPLETION LOGIC
+  //  PROFILE COMPLETION LOGIC
   const calculateProfileCompletion = (data) => {
     const fields = [
       { key: "full_name", label: "Full Name" },
@@ -108,7 +109,7 @@ export default function CandidateDashboard() {
                     <img
                       src={
                         profile.photo
-                          ? `https://server.budes.online/public/${profile.photo}`
+                          ? `${BASE_URL}/public/${profile.photo}`
                           : "/assets/img/default.png"
                       }
                       className="rounded-circle mb-3"

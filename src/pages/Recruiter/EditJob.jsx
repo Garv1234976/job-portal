@@ -5,6 +5,7 @@ import { useParams } from "react-router-dom";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import RecruiterSidebar from "../../components/RecruiterSidebar";
+import { BASE_URL } from "../../config/constants";
 
 export default function EditJob() {
   const { id } = useParams();
@@ -22,7 +23,7 @@ export default function EditJob() {
 
       if (job.logo) {
         setLogoPreview(
-          `https://server.budes.online/public/storage/${job.logo}`,
+          `${BASE_URL}/public/storage/${job.logo}`,
         );
       }
 

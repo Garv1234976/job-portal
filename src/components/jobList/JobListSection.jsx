@@ -59,7 +59,7 @@ function JobListSection() {
 
   const location = useLocation();
 
-  // ✅ LOGIN CHECK
+  // LOGIN CHECK
   const isLoggedIn = !!localStorage.getItem("token");
 
   const getQueryParams = () => {
@@ -270,7 +270,7 @@ function JobListSection() {
 
            
 
-            {/* ✅ EXISTING SEARCH BAR */}
+            {/*  EXISTING SEARCH BAR */}
             <div className="row mb-3">
 
               <div className="col-md-5">
@@ -305,11 +305,10 @@ function JobListSection() {
 
             {loading && <JobCardSkeleton />}
 
-            {/* ✅ ONLY SHOW IF LOGGED IN */}
+            {/*  ONLY SHOW IF LOGGED IN */}
             {!loading && isLoggedIn && jobs.length === 0 && (
               <p>No jobs found</p>
             )}
-             {/* ❌ NOT LOGGED IN */}
             {!loading && !isLoggedIn && (
               <div className="text-center py-5 text-muted">
                  Jobs will be visible after login
@@ -321,7 +320,7 @@ function JobListSection() {
               <JobCard key={job.id} job={job} />
             ))}
 
-            {/* ✅ PAGINATION ONLY IF LOGGED IN */}
+            {/*  PAGINATION ONLY IF LOGGED IN */}
             {isLoggedIn && lastPage > 1 && (
               <div className="d-flex justify-content-center mt-4 flex-wrap gap-2">
 

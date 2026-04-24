@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import API from "../services/api";
 import Swal from "sweetalert2";
 
-// ✅ React Icons
+//  React Icons
 import {
   FaHome,
   FaInfoCircle,
@@ -67,7 +67,7 @@ function Navbar() {
           data-bs-toggle="collapse"
           data-bs-target="#navbarCollapse"
         >
-          {/* ✅ FIX: Added icon fallback */}
+          {/*  FIX: Added icon fallback */}
           <span className="navbar-toggler-icon"></span>
         </button>
 
@@ -237,7 +237,7 @@ function Navbar() {
         </div>
       </div>
 
-      {/* ✅ STYLE */}
+      {/*  STYLE */}
       <style>
         {`
           /* DEFAULT BLACK TEXT */
@@ -268,7 +268,7 @@ function Navbar() {
             color: #000;
           }
 
-          /* ✅ FIX: Ensure toggler icon visible */
+          /*  FIX: Ensure toggler icon visible */
           .navbar-toggler {
             border: none;
           }

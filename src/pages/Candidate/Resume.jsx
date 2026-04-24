@@ -5,6 +5,7 @@ import Swal from "sweetalert2";
 import CandidateSidebar from "../../components/candidate/CandidateSidebar";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
+import { BASE_URL } from "../../config/constants";
 
 export default function Resume() {
   const [resume, setResume] = useState(null);
@@ -12,7 +13,7 @@ export default function Resume() {
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
 
-  // 🔥 FETCH PROFILE
+  //  FETCH PROFILE
   const fetchProfile = async () => {
     try {
       const res = await api.get("/profile");
@@ -33,13 +34,13 @@ export default function Resume() {
   const resumeUrl = resume?.startsWith("http")
     ? resume
     : resume
-    ? `https://server.budes.online/public/${resume}`
+    ? `${BASE_URL}/public/${resume}`
     : null;
 
   const fileName = resume ? resume.split("/").pop() : "";
   const isPDF = resumeUrl?.toLowerCase().endsWith(".pdf");
 
-  // 🔥 UPLOAD
+  //  UPLOAD
   const handleUpload = async () => {
     if (!file) {
       Swal.fire("Error", "Please select a file", "error");
@@ -64,7 +65,7 @@ export default function Resume() {
     }
   };
 
-  // ❌ REMOVE
+  //  REMOVE
   const handleRemove = async () => {
     const confirm = await Swal.fire({
       title: "Are you sure?",
@@ -115,7 +116,7 @@ export default function Resume() {
 
                     <div className="d-flex gap-2">
 
-                      {/* ✅ SEE RESUME (UPDATED TEXT) */}
+                      {/*  SEE RESUME (UPDATED TEXT) */}
                       <a
                         href={`https://docs.google.com/gview?url=${encodeURIComponent(resumeUrl)}&embedded=true`}
                         target="_blank"
@@ -170,7 +171,7 @@ export default function Resume() {
 
                   <p className="text-muted mb-3">No resume uploaded</p>
 
-                  {/* ✅ FILE TYPE RESTRICTED */}
+                  {/* FILE TYPE RESTRICTED */}
                   <input
                     type="file"
                     className="form-control mb-3"

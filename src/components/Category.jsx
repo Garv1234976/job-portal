@@ -33,12 +33,12 @@ function Category() {
     });
   };
 
-  // ✅ FIXED
+  //  FIXED
   const handleSubCategoryClick = (catId, subId) => {
     navigate(`/jobs?category_id=${catId}&sub_category_id=${subId}`);
   };
 
-  // ✅ ADD CATEGORY CLICK
+  //  ADD CATEGORY CLICK
   const handleCategoryClick = (catId) => {
     navigate(`/jobs?category_id=${catId}`);
   };

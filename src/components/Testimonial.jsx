@@ -101,7 +101,7 @@ function Testimonial() {
             <div className="d-flex flex-column align-items-center">
 
               <img
-                src={current.image} // ✅ FIXED (NO "/")
+                src={current.image} //  FIXED (NO "/")
                 alt=""
                 onError={(e) =>
                   (e.target.src = "/assets/img/default.png")

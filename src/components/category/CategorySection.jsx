@@ -21,7 +21,7 @@ function CategorySection() {
     }));
   };
 
-  // ✅ FIXED FUNCTION
+  //  FIXED FUNCTION
   const handleSubClick = (catId, subId) => {
     navigate(`/jobs?category_id=${catId}&sub_category_id=${subId}`);
   };

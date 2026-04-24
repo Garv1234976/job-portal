@@ -31,7 +31,7 @@ export default function SavedJobs() {
     }
   };
 
-  // ✅ UPDATED REMOVE FUNCTION WITH SWEETALERT
+  //  UPDATED REMOVE FUNCTION WITH SWEETALERT
   const handleRemove = async (id) => {
     const confirm = await Swal.fire({
       title: "Are you sure?",

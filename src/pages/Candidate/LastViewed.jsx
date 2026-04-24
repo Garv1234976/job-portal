@@ -16,7 +16,7 @@ export default function LastViewed() {
   const perPage = 5;
   const navigate = useNavigate();
 
-  // 🔥 FETCH LAST VIEWED
+  //  FETCH LAST VIEWED
   const fetchJobs = async () => {
     try {
       const res = await api.get("/last-viewed-jobs", {
@@ -80,7 +80,7 @@ export default function LastViewed() {
                       <th>Location</th>
                       <th>Salary</th>
                       <th>Viewed At</th>
-                      <th>Action</th> {/* ✅ ADDED */}
+                      <th>Action</th> {/*  ADDED */}
                     </tr>
                   </thead>
 
@@ -106,7 +106,7 @@ export default function LastViewed() {
                             {new Date(job.created_at).toLocaleDateString()}
                           </td>
 
-                          {/* ✅ ACTION BUTTON */}
+                          {/*  ACTION BUTTON */}
                           <td>
                             <button
                               className="btn btn-sm btn-primary"

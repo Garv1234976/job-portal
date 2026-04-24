@@ -6,6 +6,7 @@ import Swal from "sweetalert2";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import RecruiterSidebar from "../../components/RecruiterSidebar";
+import { BASE_URL } from "../../config/constants";
 
 export default function Applications() {
   const { id } = useParams();
@@ -17,7 +18,7 @@ export default function Applications() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
 
-  // ✅ FETCH
+  //  FETCH
   const fetchApplications = () => {
     API.get(`/job-applications/${id}`, {
       params: { page, search, status: filter },
@@ -34,7 +35,7 @@ export default function Applications() {
     fetchApplications();
   }, [id, page, search, filter]);
 
-  // ✅ CONFIRM + UPDATE
+  //  CONFIRM + UPDATE
   const updateStatus = async (appId, status) => {
     const textMap = {
       shortlisted: "Shortlist this candidate?",
@@ -60,7 +61,7 @@ export default function Applications() {
     }
   };
 
-  // ✅ PAGINATION
+  //  PAGINATION
   const renderPagination = () => {
     if (lastPage <= 1) return null;
 
@@ -173,7 +174,7 @@ export default function Applications() {
                       const resumeUrl = app.resume_url?.startsWith("http")
                         ? app.resume_url
                         : app.resume_url
-                          ? `https://server.budes.online/${app.resume_url}`
+                          ? `${BASE_URL}/${app.resume_url}`
                           : null;
 
                       return (

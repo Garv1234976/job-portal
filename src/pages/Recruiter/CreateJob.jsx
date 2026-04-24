@@ -100,18 +100,18 @@ export default function CreateJob() {
     <>
       <Navbar />
 
-      {/* ✅ FIXED LAYOUT */}
+      {/*  FIXED LAYOUT */}
       <div className="container-fluid mt-4 mb-5">
         <div className="row">
-          {/* ✅ SIDEBAR (LEFT SIDE) */}
+          {/*  SIDEBAR (LEFT SIDE) */}
           <div className="col-md-3 col-lg-2 mb-3">
             <RecruiterSidebar />
           </div>
 
-          {/* ✅ MAIN CONTENT */}
+          {/*  MAIN CONTENT */}
           <div className="col-md-9 col-lg-10">
             <div className="container mt-4">
-              {/* ✅ YOUR ORIGINAL CARD (UNCHANGED) */}
+              {/*  YOUR ORIGINAL CARD (UNCHANGED) */}
               <div className="card shadow-lg p-4">
                 <h2 className="mb-4 text-center">Create Job</h2>
 

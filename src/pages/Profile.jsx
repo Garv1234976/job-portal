@@ -7,6 +7,7 @@ import CandidateSidebar from "../components/candidate/CandidateSidebar";
 import { FaEdit, FaMapMarkerAlt, FaPhone } from "react-icons/fa";
 import Swal from "sweetalert2";
 import Select from "react-select";
+import { BASE_URL } from "../../config/constants";
 
 function Profile() {
   const [profile, setProfile] = useState({});
@@ -61,7 +62,7 @@ function Profile() {
     }
   };
 
-  // ✅ PHOTO UPLOAD FIXED
+  //  PHOTO UPLOAD FIXED
   const handlePhotoUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -78,7 +79,7 @@ function Profile() {
     fetchProfile();
   };
 
-  // ✅ SAVE
+  //  SAVE
   const handleSave = async () => {
     const formData = new FormData();
 
@@ -130,7 +131,7 @@ function Profile() {
                     <img
                       src={
                         profile.photo
-                          ? `https://server.budes.online/public/${profile.photo}`
+                          ? `${BASE_URL}/public/${profile.photo}`
                           : "/assets/img/default.png"
                       }
                       className="rounded-circle"
@@ -243,7 +244,7 @@ function Profile() {
         </div>
       </div>
 
-      {/* ✅ FIXED MODAL */}
+      {/*  FIXED MODAL */}
       {editSection && (
         <div className="modal d-block" style={{ background: "#00000080" }}>
           <div className="modal-dialog">
@@ -251,7 +252,7 @@ function Profile() {
 
               <h5>Edit {editSection}</h5>
 
-              {/* ✅ BASIC FIX */}
+              {/*  BASIC FIX */}
               {editSection === "basic" && (
                 <>
                   <label>Name</label>
