@@ -5,15 +5,21 @@ import {
   FaBriefcase,
   FaFileAlt,
   FaSignOutAlt,
-  FaList,        // ✅ Categories
-  FaHome         // ✅ Home
+  FaList,
+  FaHome
 } from "react-icons/fa";
+import "../../components/Category.css"
 
 export default function AdminSidebar() {
   const navigate = useNavigate();
   const location = useLocation();
 
   const menu = [
+    {
+      name: "Visit Website", 
+      icon: <FaHome />,
+      action: () => window.open("/", "_blank"),
+    },
     {
       name: "Dashboard",
       icon: <FaTachometerAlt />,
@@ -35,7 +41,7 @@ export default function AdminSidebar() {
       path: "/admin/applications",
     },
     {
-      name: "Categories",              // ✅ NEW
+      name: "Categories",
       icon: <FaList />,
       path: "/admin/categories",
     },
@@ -46,66 +52,38 @@ export default function AdminSidebar() {
     navigate("/login/admin");
   };
 
-  const goToWebsite = () => {
-    window.open("/", "_blank"); // ✅ open main site
-  };
-
   return (
-    <div
-      className="bg-dark text-white p-3 d-flex flex-column justify-content-between"
-      style={{ width: "220px", height: "100vh" }}
-    >
+    <div className="admin-sidebar">
 
-      {/* TOP SECTION */}
-      <div>
-
-        {/* LOGO */}
-        <h4 className="text-center mb-4 fw-bold">Admin Panel</h4>
-
-        {/* MENU */}
-        <ul className="nav flex-column">
-
-          {menu.map((item, index) => (
-            <li key={index} className="nav-item mb-2">
-              <button
-                className={`btn w-100 text-start d-flex align-items-center gap-2 ${
-                  location.pathname === item.path
-                    ? "btn-primary"
-                    : "btn-dark"
-                }`}
-                onClick={() => navigate(item.path)}
-              >
-                {item.icon}
-                {item.name}
-              </button>
-            </li>
-          ))}
-
-        </ul>
-
+      {/* LOGO */}
+      <div className="sidebar-header">
+        <h4>Admin Panel</h4>
       </div>
 
-      {/* BOTTOM SECTION */}
-      <div>
+      {/* MENU */}
+      <div className="sidebar-menu">
+        {menu.map((item, index) => {
+          const isActive = location.pathname === item.path;
 
-        {/* GO TO WEBSITE */}
-        <button
-          className="btn btn-outline-light w-100 mb-2 d-flex align-items-center gap-2"
-          onClick={goToWebsite}
-        >
-          <FaHome />
-          Visit Website
-        </button>
+          return (
+            <div
+              key={index}
+              className={`sidebar-item ${isActive ? "active" : ""}`}
+              onClick={() => item.path ? navigate(item.path) : item.action()}
+            >
+              <span className="icon">{item.icon}</span>
+              <span>{item.name}</span>
+            </div>
+          );
+        })}
+      </div>
 
-        {/* LOGOUT */}
-        <button
-          className="btn btn-danger w-100 d-flex align-items-center gap-2"
-          onClick={handleLogout}
-        >
+      {/* FOOTER */}
+      <div className="sidebar-footer">
+        <div className="sidebar-item logout" onClick={handleLogout}>
           <FaSignOutAlt />
-          Logout
-        </button>
-
+          <span>Logout</span>
+        </div>
       </div>
 
     </div>
