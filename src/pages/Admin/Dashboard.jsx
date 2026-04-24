@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import API from "../../services/api";
 import { FaUsers, FaBriefcase, FaFileAlt } from "react-icons/fa";
 import AdminLayout from "./Layout";
+import "../../components/Category.css";
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState({
