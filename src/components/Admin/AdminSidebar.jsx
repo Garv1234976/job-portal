@@ -4,7 +4,9 @@ import {
   FaUsers,
   FaBriefcase,
   FaFileAlt,
-  FaSignOutAlt
+  FaSignOutAlt,
+  FaList,        // ✅ Categories
+  FaHome         // ✅ Home
 } from "react-icons/fa";
 
 export default function AdminSidebar() {
@@ -32,6 +34,11 @@ export default function AdminSidebar() {
       icon: <FaFileAlt />,
       path: "/admin/applications",
     },
+    {
+      name: "Categories",              // ✅ NEW
+      icon: <FaList />,
+      path: "/admin/categories",
+    },
   ];
 
   const handleLogout = () => {
@@ -39,45 +46,68 @@ export default function AdminSidebar() {
     navigate("/login/admin");
   };
 
+  const goToWebsite = () => {
+    window.open("/", "_blank"); // ✅ open main site
+  };
+
   return (
     <div
-      className="bg-dark text-white p-3 vh-100"
-      style={{ width: "220px" }}
+      className="bg-dark text-white p-3 d-flex flex-column justify-content-between"
+      style={{ width: "220px", height: "100vh" }}
     >
-      {/* LOGO */}
-      <h4 className="text-center mb-4 fw-bold">Admin Panel</h4>
 
-      {/* MENU */}
-      <ul className="nav flex-column">
+      {/* TOP SECTION */}
+      <div>
 
-        {menu.map((item, index) => (
-          <li key={index} className="nav-item mb-2">
-            <button
-              className={`btn w-100 text-start d-flex align-items-center gap-2 ${
-                location.pathname === item.path
-                  ? "btn-primary"
-                  : "btn-dark"
-              }`}
-              onClick={() => navigate(item.path)}
-            >
-              {item.icon}
-              {item.name}
-            </button>
-          </li>
-        ))}
+        {/* LOGO */}
+        <h4 className="text-center mb-4 fw-bold">Admin Panel</h4>
+
+        {/* MENU */}
+        <ul className="nav flex-column">
+
+          {menu.map((item, index) => (
+            <li key={index} className="nav-item mb-2">
+              <button
+                className={`btn w-100 text-start d-flex align-items-center gap-2 ${
+                  location.pathname === item.path
+                    ? "btn-primary"
+                    : "btn-dark"
+                }`}
+                onClick={() => navigate(item.path)}
+              >
+                {item.icon}
+                {item.name}
+              </button>
+            </li>
+          ))}
+
+        </ul>
+
+      </div>
+
+      {/* BOTTOM SECTION */}
+      <div>
+
+        {/* GO TO WEBSITE */}
+        <button
+          className="btn btn-outline-light w-100 mb-2 d-flex align-items-center gap-2"
+          onClick={goToWebsite}
+        >
+          <FaHome />
+          Visit Website
+        </button>
 
         {/* LOGOUT */}
-        <li className="nav-item mt-4">
-          <button
-            className="btn btn-danger w-100 d-flex align-items-center gap-2"
-            onClick={handleLogout}
-          >
-            <FaSignOutAlt />
-            Logout
-          </button>
-        </li>
+        <button
+          className="btn btn-danger w-100 d-flex align-items-center gap-2"
+          onClick={handleLogout}
+        >
+          <FaSignOutAlt />
+          Logout
+        </button>
 
-      </ul>
+      </div>
+
     </div>
   );
 }
