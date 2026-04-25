@@ -30,12 +30,11 @@ export default function Resume() {
     fetchProfile();
   }, []);
 
-  // 🔗 URL
   const resumeUrl = resume?.startsWith("http")
     ? resume
     : resume
-    ? `${BASE_URL}/public/${resume}`
-    : null;
+      ? `${BASE_URL}/public/${resume}`
+      : null;
 
   const fileName = resume ? resume.split("/").pop() : "";
   const isPDF = resumeUrl?.toLowerCase().endsWith(".pdf");
@@ -59,7 +58,25 @@ export default function Resume() {
       fetchProfile();
       setFile(null);
     } catch (err) {
-      Swal.fire("Error", "Upload failed", "error");
+      if (err.response?.status === 422) {
+        const errors = err.response.data.errors;
+
+        const firstError = Object.values(errors)[0][0];
+
+        Swal.fire({
+          icon: "warning",
+          title: "Validation Error",
+          text: firstError,
+        });
+      } else if (err.response?.status === 401) {
+        Swal.fire({
+          icon: "warning",
+          title: "Login Required",
+          text: "Please login first",
+        });
+      } else {
+        Swal.fire("Error", "Upload failed", "error");
+      }
     } finally {
       setUploading(false);
     }
@@ -106,7 +123,6 @@ export default function Resume() {
                 <p>Loading...</p>
               ) : resume ? (
                 <div className="card p-4 shadow-sm">
-
                   {/* FILE INFO */}
                   <div className="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
                     <div>
@@ -115,16 +131,15 @@ export default function Resume() {
                     </div>
 
                     <div className="d-flex gap-2">
-
                       {/*  SEE RESUME (UPDATED TEXT) */}
-                      <a
+                      {/* <a
                         href={`https://docs.google.com/gview?url=${encodeURIComponent(resumeUrl)}&embedded=true`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="btn btn-outline-primary btn-sm"
                       >
                         See Resume
-                      </a>
+                      </a> */}
 
                       <a
                         href={resumeUrl}
@@ -142,7 +157,6 @@ export default function Resume() {
                       >
                         Remove
                       </button>
-
                     </div>
                   </div>
 
@@ -158,17 +172,13 @@ export default function Resume() {
                     ) : (
                       <div className="text-center p-5 bg-light">
                         <h6>Preview not available</h6>
-                        <p className="text-muted">
-                          Download to view file
-                        </p>
+                        <p className="text-muted">Download to view file</p>
                       </div>
                     )}
                   </div>
-
                 </div>
               ) : (
                 <div className="card p-4 text-center">
-
                   <p className="text-muted mb-3">No resume uploaded</p>
 
                   {/* FILE TYPE RESTRICTED */}
@@ -186,7 +196,6 @@ export default function Resume() {
                   >
                     {uploading ? "Uploading..." : "Upload Resume"}
                   </button>
-
                 </div>
               )}
             </div>
