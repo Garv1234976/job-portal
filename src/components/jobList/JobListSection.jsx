@@ -7,7 +7,6 @@ function JobCardSkeleton() {
   return (
     <div className="p-3 mb-3 border rounded shadow-sm bg-white">
       <div className="d-flex justify-content-between align-items-start">
-
         {/* LEFT */}
         <div className="d-flex">
           <div
@@ -16,27 +15,40 @@ function JobCardSkeleton() {
           ></div>
 
           <div className="ms-3 w-100">
-            <div className="skeleton mb-2" style={{ width: "120px", height: "16px" }}></div>
+            <div
+              className="skeleton mb-2"
+              style={{ width: "120px", height: "16px" }}
+            ></div>
 
-            <div className="skeleton mb-2" style={{ width: "200px", height: "14px" }}></div>
+            <div
+              className="skeleton mb-2"
+              style={{ width: "200px", height: "14px" }}
+            ></div>
 
-            <div className="skeleton mb-2" style={{ width: "250px", height: "12px" }}></div>
+            <div
+              className="skeleton mb-2"
+              style={{ width: "250px", height: "12px" }}
+            ></div>
 
-            <div className="skeleton" style={{ width: "100px", height: "12px" }}></div>
+            <div
+              className="skeleton"
+              style={{ width: "100px", height: "12px" }}
+            ></div>
           </div>
         </div>
 
         {/* RIGHT */}
         <div className="text-end">
-          <div className="skeleton mb-2" style={{ width: 80, height: 30 }}></div>
+          <div
+            className="skeleton mb-2"
+            style={{ width: 80, height: 30 }}
+          ></div>
           <div className="skeleton" style={{ width: 100, height: 30 }}></div>
         </div>
-
       </div>
     </div>
   );
 }
-
 
 function JobListSection() {
   const [jobs, setJobs] = useState([]);
@@ -58,6 +70,8 @@ function JobListSection() {
   const [lastPage, setLastPage] = useState(1);
 
   const location = useLocation();
+  const [workModes, setWorkModes] = useState([]);
+  const [salaries, setSalaries] = useState([]);
 
   // LOGIN CHECK
   const isLoggedIn = !!localStorage.getItem("token");
@@ -72,8 +86,16 @@ function JobListSection() {
 
   useEffect(() => {
     API.get("/filters")
-      .then((res) => setLocations(res.data?.locations || []))
-      .catch(() => setLocations([]));
+      .then((res) => {
+        setLocations(res.data?.locations || []);
+        setWorkModes(res.data?.work_modes || []);
+        setSalaries(res.data?.salaries || []);
+      })
+      .catch(() => {
+        setLocations([]);
+        setWorkModes([]);
+        setSalaries([]);
+      });
   }, []);
 
   useEffect(() => {
@@ -131,15 +153,12 @@ function JobListSection() {
   return (
     <div className="container-xxl py-5">
       <div className="container">
-
         <h2 className="fw-bold mb-4">Find Jobs</h2>
 
         <div className="row">
-
           {/* SIDEBAR */}
           <div className="col-md-3">
             <div className="bg-white p-3 shadow-sm rounded">
-
               <h5>All Filters</h5>
               <hr />
 
@@ -149,7 +168,7 @@ function JobListSection() {
               {[
                 { label: "All Jobs", value: "" },
                 { label: "Saved Jobs", value: "saved" },
-                { label: "Unsaved Jobs", value: "unsaved" }
+                { label: "Unsaved Jobs", value: "unsaved" },
               ].map((item, i) => (
                 <div
                   key={i}
@@ -163,9 +182,7 @@ function JobListSection() {
                     checked={savedFilter === item.value}
                     readOnly
                   />
-                  <label className="form-check-label">
-                    {item.label}
-                  </label>
+                  <label className="form-check-label">{item.label}</label>
                 </div>
               ))}
 
@@ -174,29 +191,44 @@ function JobListSection() {
               {/* WORK MODE */}
               <h6>Work Mode</h6>
 
-              {[
-                { label: "All Work Modes", value: "" },
-                { label: "WFH", value: "WFH" },
-                { label: "Remote", value: "remote" },
-                { label: "Hybrid", value: "hybrid" }
-              ].map((item, i) => (
-                <div
-                  key={i}
-                  className="form-check"
-                  style={{ cursor: "pointer" }}
-                  onClick={() => setJobType(item.value)}
-                >
-                  <input
-                    type="radio"
-                    className="form-check-input"
-                    checked={jobType === item.value}
-                    readOnly
-                  />
-                  <label className="form-check-label">
-                    {item.label}
-                  </label>
-                </div>
-              ))}
+              {/* ALL OPTION */}
+              <div
+                className="form-check"
+                style={{ cursor: "pointer" }}
+                onClick={() => setJobType("")}
+              >
+                <input
+                  type="radio"
+                  className="form-check-input"
+                  checked={jobType === ""}
+                  readOnly
+                />
+                <label className="form-check-label">All Work Modes</label>
+              </div>
+
+              {/* DYNAMIC WORK MODES */}
+              {workModes.length > 0 ? (
+                workModes.map((mode, i) => (
+                  <div
+                    key={i}
+                    className="form-check"
+                    style={{ cursor: "pointer" }}
+                    onClick={() => setJobType(mode)}
+                  >
+                    <input
+                      type="radio"
+                      className="form-check-input"
+                      checked={jobType === mode}
+                      readOnly
+                    />
+                    <label className="form-check-label">
+                      {mode ? mode.charAt(0).toUpperCase() + mode.slice(1) : ""}
+                    </label>
+                  </div>
+                ))
+              ) : (
+                <p className="text-muted small">No work modes available</p>
+              )}
 
               <hr />
 
@@ -216,33 +248,49 @@ function JobListSection() {
               {/* SALARY */}
               <h6>Salary</h6>
 
-              {[
-                { label: "All Salaries", value: "" },
-                { label: "0-3 Lakhs", value: "0-3" },
-                { label: "3-6 Lakhs", value: "3-6" },
-                { label: "6-10 Lakhs", value: "6-10" }
-              ].map((item, i) => (
-                <div
-                  key={i}
-                  className="form-check"
-                  style={{ cursor: "pointer" }}
-                  onClick={() => setSalary(item.value)}
-                >
-                  <input
-                    type="radio"
-                    className="form-check-input"
-                    checked={salary === item.value}
-                    readOnly
-                  />
-                  <label className="form-check-label">
-                    {item.label}
-                  </label>
-                </div>
-              ))}
+              {/* ALL OPTION */}
+              <div
+                className="form-check"
+                style={{ cursor: "pointer" }}
+                onClick={() => setSalary("")}
+              >
+                <input
+                  type="radio"
+                  className="form-check-input"
+                  checked={salary === ""}
+                  readOnly
+                />
+                <label className="form-check-label">All Salaries</label>
+              </div>
+
+              {/* DYNAMIC SALARY LIST */}
+              {salaries.length > 0 ? (
+                salaries.map((sal, i) => (
+                  <div
+                    key={i}
+                    className="form-check"
+                    style={{ cursor: "pointer" }}
+                    onClick={() => setSalary(sal)}
+                  >
+                    <input
+                      type="radio"
+                      className="form-check-input"
+                      checked={salary === sal}
+                      readOnly
+                    />
+                    <label className="form-check-label">{sal}</label>
+                  </div>
+                ))
+              ) : (
+                <p className="text-muted small">No salary data available</p>
+              )}
 
               <hr />
 
-              <button className="btn btn-primary w-100" onClick={()=>fetchJobs(1)}>
+              <button
+                className="btn btn-primary w-100"
+                onClick={() => fetchJobs(1)}
+              >
                 Apply Filters
               </button>
 
@@ -261,24 +309,19 @@ function JobListSection() {
               >
                 Reset
               </button>
-
             </div>
           </div>
 
           {/* JOB LIST */}
           <div className="col-md-9">
-
-           
-
             {/*  EXISTING SEARCH BAR */}
             <div className="row mb-3">
-
               <div className="col-md-5">
                 <input
                   className="form-control"
                   placeholder="Search jobs..."
                   value={search}
-                  onChange={(e)=>setSearch(e.target.value)}
+                  onChange={(e) => setSearch(e.target.value)}
                 />
               </div>
 
@@ -286,21 +329,25 @@ function JobListSection() {
                 <select
                   className="form-select"
                   value={locationInput}
-                  onChange={(e)=>setLocationInput(e.target.value)}
+                  onChange={(e) => setLocationInput(e.target.value)}
                 >
                   <option value="">All Locations</option>
                   {locations.map((loc, i) => (
-                    <option key={i} value={loc}>{loc}</option>
+                    <option key={i} value={loc}>
+                      {loc}
+                    </option>
                   ))}
                 </select>
               </div>
 
               <div className="col-md-2">
-                <button className="btn btn-primary w-100" onClick={()=>fetchJobs(1)}>
+                <button
+                  className="btn btn-primary w-100"
+                  onClick={() => fetchJobs(1)}
+                >
                   Search
                 </button>
               </div>
-
             </div>
 
             {loading && <JobCardSkeleton />}
@@ -309,22 +356,19 @@ function JobListSection() {
             {!loading && isLoggedIn && jobs.length === 0 && (
               <p>No jobs found</p>
             )}
-         
 
-            
-            {!loading && jobs.map((job) => (
-              <JobCard key={job.id} job={job} />
-            ))}
+            {!loading && jobs.map((job) => <JobCard key={job.id} job={job} />)}
 
             {/*  PAGINATION ONLY IF LOGGED IN */}
             {lastPage > 1 && (
               <div className="d-flex justify-content-center mt-4 flex-wrap gap-2">
-
                 <button
                   className="btn btn-light border"
                   disabled={page === 1}
                   onClick={() => setPage(page - 1)}
-                >‹</button>
+                >
+                  ‹
+                </button>
 
                 {getPagination().map((p, i) => (
                   <button
@@ -341,13 +385,12 @@ function JobListSection() {
                   className="btn btn-light border"
                   disabled={page === lastPage}
                   onClick={() => setPage(page + 1)}
-                >›</button>
-
+                >
+                  ›
+                </button>
               </div>
             )}
-
           </div>
-
         </div>
       </div>
     </div>
