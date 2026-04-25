@@ -33,6 +33,7 @@ function JobList({ filters }) {
   }, [page, filters, location.search]);
 
   const fetchJobs = () => {
+    if (!isLoggedIn) return;
     setLoading(true);
 
     const query = getQueryParams();

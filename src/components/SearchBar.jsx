@@ -4,7 +4,7 @@ import { FaTimes } from "react-icons/fa";
 
 function SearchBar({ onSearch }) {
   const [keyword, setKeyword] = useState("");
-  const [categoryId, setCategoryId] = useState(""); // subcategory id
+  const [categoryId, setCategoryId] = useState("");
   const [location, setLocation] = useState("");
 
   const [categories, setCategories] = useState([]);
