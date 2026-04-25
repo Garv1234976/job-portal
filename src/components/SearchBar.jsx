@@ -11,6 +11,9 @@ function SearchBar({ onSearch }) {
   const [locations, setLocations] = useState([]);
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
+
+  if (!token) return; 
     fetchFilters();
   }, []);
 
