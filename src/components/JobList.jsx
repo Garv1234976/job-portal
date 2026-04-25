@@ -6,7 +6,6 @@ import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 
 function JobList({ filters }) {
   const [jobs, setJobs] = useState([]);
-  const [loading, setLoading] = useState(true);
 
   const [page, setPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
