@@ -309,11 +309,7 @@ function JobListSection() {
             {!loading && isLoggedIn && jobs.length === 0 && (
               <p>No jobs found</p>
             )}
-            {!loading && !isLoggedIn && (
-              <div className="text-center py-5 text-muted">
-                 Jobs will be visible after login
-              </div>
-            )}
+         
 
             
             {!loading && isLoggedIn && jobs.map((job) => (
@@ -321,7 +317,7 @@ function JobListSection() {
             ))}
 
             {/*  PAGINATION ONLY IF LOGGED IN */}
-            {isLoggedIn && lastPage > 1 && (
+            {lastPage > 1 && (
               <div className="d-flex justify-content-center mt-4 flex-wrap gap-2">
 
                 <button

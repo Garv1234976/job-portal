@@ -31,7 +31,7 @@ function SearchBar({ onSearch }) {
 
     onSearch({
       search: keyword,
-      sub_category_id: categoryId, //  FIXED HERE
+      sub_category_id: categoryId, 
       location,
     });
   };
