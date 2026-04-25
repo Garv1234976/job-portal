@@ -1,7 +1,7 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import Swal from "sweetalert2";
 import { useEffect, useState } from "react";
-import API from "../services/api"; // adjust path if needed
+import API from "../services/api";
 
 export default function RecruiterSidebar() {
   const navigate = useNavigate();
@@ -9,7 +9,6 @@ export default function RecruiterSidebar() {
 
   const [activePlan, setActivePlan] = useState(null);
 
-  //  FETCH PLAN
   useEffect(() => {
     API.get("/dashboard")
       .then((res) => {
@@ -18,7 +17,6 @@ export default function RecruiterSidebar() {
       .catch(() => {});
   }, []);
 
-  //  DEFINE HERE (NOT PROP)
   const handlePostJob = () => {
     if (!activePlan || activePlan.jobs_remaining <= 0) {
       Swal.fire({
@@ -44,20 +42,14 @@ export default function RecruiterSidebar() {
   const isActive = (path) => location.pathname.startsWith(path);
 
   return (
-    <div
-      className="bg-white shadow-sm rounded p-3 h-100 position-sticky"
-      style={{ top: "80px" }}
-    >
-      <h5 className="mb-3 fw-bold">Recruiter Panel</h5>
+    <div className="sidebar-container">
+      <h5 className="sidebar-title">Recruiter Panel</h5>
 
-      <ul className="list-unstyled">
+      <ul className="sidebar-menu">
         {menu.map((item, i) => (
-          <li key={i} className="mb-2">
+          <li key={i}>
             <div
-              className={`d-flex align-items-center justify-content-between p-2 rounded sidebar-item ${
-                item.path && isActive(item.path) ? "active" : ""
-              }`}
-              style={{ cursor: "pointer" }}
+              className={`sidebar-item ${item.path && isActive(item.path) ? "active" : ""}`}
               onClick={() => {
                 if (item.action) {
                   item.action();
@@ -66,44 +58,74 @@ export default function RecruiterSidebar() {
                 }
               }}
             >
-              <div className="d-flex align-items-center">
-                <i className={`fa ${item.icon} me-2`}></i>
-                <span>{item.name}</span>
-              </div>
-
-              {item.path && isActive(item.path) && (
-                <i className="fa fa-chevron-right small"></i>
-              )}
+              <i className={`fa ${item.icon}`}></i>
+              <span>{item.name}</span>
             </div>
           </li>
         ))}
       </ul>
 
-      {/*  STYLE */}
-      <style>
-        {`
-          .sidebar-item {
-            transition: all 0.2s ease;
-            border: 1px solid transparent;
-          }
+      <style>{`
+        .sidebar-container {
+          background: #ffffff;
+          border-radius: 12px;
+          padding: 20px;
+          box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+          position: sticky;
+          top: 80px;
+        }
 
-          .sidebar-item:hover {
-            background: #f5f7fa;
-            transform: translateX(3px);
-          }
+        .sidebar-title {
+          font-weight: 600;
+          margin-bottom: 20px;
+          color: #333;
+        }
 
-          .sidebar-item.active {
-            background: #0d6efd;
-            color: #fff;
-            font-weight: 500;
-            border-color: #0d6efd;
-          }
+        .sidebar-menu {
+          list-style: none;
+          padding: 0;
+          margin: 0;
+        }
 
-          .sidebar-item.active i {
-            color: #fff;
-          }
-        `}
-      </style>
+        .sidebar-item {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+          padding: 12px 14px;
+          border-radius: 8px;
+          color: #555;
+          font-size: 15px;
+          cursor: pointer;
+          transition: all 0.25s ease;
+          margin-bottom: 6px;
+        }
+
+        .sidebar-item i {
+          font-size: 16px;
+          color: #888;
+          transition: 0.2s;
+        }
+
+        .sidebar-item:hover {
+          background: #f4f6f9;
+          transform: translateX(4px);
+        }
+
+        .sidebar-item:hover i {
+          color: #0d6efd;
+        }
+
+        .sidebar-item.active {
+          background: rgba(13,110,253,0.1);
+          color: #0d6efd;
+          font-weight: 500;
+          border-left: 4px solid #0d6efd;
+        }
+
+        .sidebar-item.active i {
+          color: #0d6efd;
+        }
+      `}</style>
     </div>
   );
 }
