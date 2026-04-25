@@ -13,7 +13,7 @@ export default function Resume() {
   const [file, setFile] = useState(null);
   const [uploading, setUploading] = useState(false);
 
-  //  FETCH PROFILE
+  // FETCH PROFILE
   const fetchProfile = async () => {
     try {
       const res = await api.get("/profile");
@@ -33,13 +33,34 @@ export default function Resume() {
   const resumeUrl = resume?.startsWith("http")
     ? resume
     : resume
-      ? `${BASE_URL}/public/${resume}`
-      : null;
+    ? `${BASE_URL}/public/${resume}`
+    : null;
 
   const fileName = resume ? resume.split("/").pop() : "";
   const isPDF = resumeUrl?.toLowerCase().endsWith(".pdf");
 
-  //  UPLOAD
+  // ✅ FORCE DOWNLOAD (FIX)
+  const handleDownload = async () => {
+    try {
+      const response = await fetch(resumeUrl);
+      const blob = await response.blob();
+
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+
+      a.href = url;
+      a.download = fileName || "resume";
+      document.body.appendChild(a);
+      a.click();
+
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      Swal.fire("Error", "Download failed", "error");
+    }
+  };
+
+  // UPLOAD
   const handleUpload = async () => {
     if (!file) {
       Swal.fire("Error", "Please select a file", "error");
@@ -59,21 +80,14 @@ export default function Resume() {
       setFile(null);
     } catch (err) {
       if (err.response?.status === 422) {
-        const errors = err.response.data.errors;
+        const errors = err.response.data?.errors;
+        const message = errors
+          ? Object.values(errors).flat()[0]
+          : err.response.data?.message;
 
-        const firstError = Object.values(errors)[0][0];
-
-        Swal.fire({
-          icon: "warning",
-          title: "Validation Error",
-          text: firstError,
-        });
+        Swal.fire("Validation Error", message, "warning");
       } else if (err.response?.status === 401) {
-        Swal.fire({
-          icon: "warning",
-          title: "Login Required",
-          text: "Please login first",
-        });
+        Swal.fire("Login Required", "Please login first", "warning");
       } else {
         Swal.fire("Error", "Upload failed", "error");
       }
@@ -82,7 +96,7 @@ export default function Resume() {
     }
   };
 
-  //  REMOVE
+  // REMOVE
   const handleRemove = async () => {
     const confirm = await Swal.fire({
       title: "Are you sure?",
@@ -131,25 +145,13 @@ export default function Resume() {
                     </div>
 
                     <div className="d-flex gap-2">
-                      {/*  SEE RESUME (UPDATED TEXT) */}
-                      {/* <a
-                        href={`https://docs.google.com/gview?url=${encodeURIComponent(resumeUrl)}&embedded=true`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="btn btn-outline-primary btn-sm"
-                      >
-                        See Resume
-                      </a> */}
-
-                      <a
-                        href={resumeUrl}
-                        download
-                        target="_blank"
-                        rel="noopener noreferrer"
+                      {/* ✅ DOWNLOAD BUTTON (FIXED) */}
+                      <button
+                        onClick={handleDownload}
                         className="btn btn-success btn-sm"
                       >
                         Download
-                      </a>
+                      </button>
 
                       <button
                         className="btn btn-danger btn-sm"
@@ -172,7 +174,9 @@ export default function Resume() {
                     ) : (
                       <div className="text-center p-5 bg-light">
                         <h6>Preview not available</h6>
-                        <p className="text-muted">Download to view file</p>
+                        <p className="text-muted">
+                          Download to view file
+                        </p>
                       </div>
                     )}
                   </div>
@@ -181,7 +185,6 @@ export default function Resume() {
                 <div className="card p-4 text-center">
                   <p className="text-muted mb-3">No resume uploaded</p>
 
-                  {/* FILE TYPE RESTRICTED */}
                   <input
                     type="file"
                     className="form-control mb-3"
