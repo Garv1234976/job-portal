@@ -27,21 +27,21 @@ function Navbar() {
   const token = localStorage.getItem("token");
   const role = localStorage.getItem("role");
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
+  // useEffect(() => {
+  //   const token = localStorage.getItem("token");
 
-    if (!token) {
-      setLoading(false);
-      return;
-    }
+  //   if (!token) {
+  //     setLoading(false);
+  //     return;
+  //   }
 
-    API.get("/dashboard")
-      .then((res) => {
-        setActivePlan(res.data.active_plan);
-      })
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, []);
+  //   API.get("/dashboard")
+  //     .then((res) => {
+  //       setActivePlan(res.data.active_plan);
+  //     })
+  //     .catch(() => {})
+  //     .finally(() => setLoading(false));
+  // }, []);
 
   const handlePostJob = () => {
     if (!activePlan || activePlan.jobs_remaining <= 0) {
