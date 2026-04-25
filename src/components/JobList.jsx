@@ -49,8 +49,7 @@ function JobList({ filters }) {
         setJobs(res?.data?.data?.data || []);
         setLastPage(res?.data?.data?.last_page || 1);
       })
-      .catch(() => setJobs([]))
-      .finally(() => setLoading(false));
+      .catch(() => setJobs([]));
   };
 
   const getPagination = () => {
