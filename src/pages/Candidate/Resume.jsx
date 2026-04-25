@@ -39,27 +39,6 @@ export default function Resume() {
   const fileName = resume ? resume.split("/").pop() : "";
   const isPDF = resumeUrl?.toLowerCase().endsWith(".pdf");
 
-  // ✅ FORCE DOWNLOAD (FIX)
-  const handleDownload = async () => {
-    try {
-      const response = await fetch(resumeUrl);
-      const blob = await response.blob();
-
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-
-      a.href = url;
-      a.download = fileName || "resume";
-      document.body.appendChild(a);
-      a.click();
-
-      a.remove();
-      window.URL.revokeObjectURL(url);
-    } catch (err) {
-      Swal.fire("Error", "Download failed", "error");
-    }
-  };
-
   // UPLOAD
   const handleUpload = async () => {
     if (!file) {
@@ -137,6 +116,7 @@ export default function Resume() {
                 <p>Loading...</p>
               ) : resume ? (
                 <div className="card p-4 shadow-sm">
+
                   {/* FILE INFO */}
                   <div className="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
                     <div>
@@ -145,13 +125,15 @@ export default function Resume() {
                     </div>
 
                     <div className="d-flex gap-2">
-                      {/* ✅ DOWNLOAD BUTTON (FIXED) */}
-                      <button
-                        onClick={handleDownload}
+
+                      {/* ✅ DOWNLOAD (NO CORS ISSUE) */}
+                      <a
+                        href={resumeUrl}
+                        download
                         className="btn btn-success btn-sm"
                       >
                         Download
-                      </button>
+                      </a>
 
                       <button
                         className="btn btn-danger btn-sm"
@@ -159,6 +141,7 @@ export default function Resume() {
                       >
                         Remove
                       </button>
+
                     </div>
                   </div>
 
@@ -180,6 +163,7 @@ export default function Resume() {
                       </div>
                     )}
                   </div>
+
                 </div>
               ) : (
                 <div className="card p-4 text-center">
