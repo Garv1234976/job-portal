@@ -28,12 +28,19 @@ function Navbar() {
   const role = localStorage.getItem("role");
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      setLoading(false);
+      return;
+    }
+
     API.get("/dashboard")
       .then((res) => {
         setActivePlan(res.data.active_plan);
-        setLoading(false);
       })
-      .catch(() => setLoading(false));
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, []);
 
   const handlePostJob = () => {
