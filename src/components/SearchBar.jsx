@@ -13,7 +13,6 @@ function SearchBar({ onSearch }) {
   useEffect(() => {
     const token = localStorage.getItem("token");
 
-  if (!token) return; 
     fetchFilters();
   }, []);
 
