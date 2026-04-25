@@ -8,7 +8,7 @@ import {
   FaMapMarkerAlt,
   FaClock,
   FaBookmark,
-  FaRegBookmark
+  FaRegBookmark,
 } from "react-icons/fa";
 import { BASE_URL } from "../config/constants";
 
@@ -16,6 +16,7 @@ function JobCard({ job }) {
   const [applied, setApplied] = useState(false);
   const [saved, setSaved] = useState(false);
   const [saving, setSaving] = useState(false);
+  const role = localStorage.getItem("role");
 
   const navigate = useNavigate();
 
@@ -26,8 +27,7 @@ function JobCard({ job }) {
 
   //  UPDATED CLOSED LOGIC
   const isJobClosed =
-    job.status === "closed" ||
-    job.application_count >= job.application_limit;
+    job.status === "closed" || job.application_count >= job.application_limit;
 
   const isRecruiter = job.is_recruiter || false;
 
@@ -46,8 +46,19 @@ function JobCard({ job }) {
         await API.post("/save-job", { job_id: job.id });
         setSaved(true);
       }
-    } catch {
-      Swal.fire("Error", "Action failed", "error");
+    } catch (err) {
+      if (err.response?.status === 401) {
+        Swal.fire({
+          icon: "warning",
+          title: "Login Required",
+          text: "You are not logged in. Please login first.",
+          confirmButtonText: "Login",
+        }).then(() => {
+          navigate("/login");
+        });
+      } else {
+        Swal.fire("Error", "Action failed", "error");
+      }
     } finally {
       setSaving(false);
     }
@@ -55,7 +66,7 @@ function JobCard({ job }) {
 
   const getDaysAgo = (date) => {
     const diff = Math.floor(
-      (new Date() - new Date(date)) / (1000 * 60 * 60 * 24)
+      (new Date() - new Date(date)) / (1000 * 60 * 60 * 24),
     );
 
     if (diff === 0) return "Today";
@@ -70,7 +81,6 @@ function JobCard({ job }) {
       style={{ cursor: "pointer" }}
     >
       <div className="d-flex justify-content-between align-items-start">
-
         {/* LEFT */}
         <div className="d-flex">
           <img
@@ -86,7 +96,6 @@ function JobCard({ job }) {
           />
 
           <div className="ms-3">
-
             {/* CLOSED BADGE */}
             {isJobClosed && (
               <span className="badge bg-danger mb-1">Closed</span>
@@ -114,26 +123,28 @@ function JobCard({ job }) {
               <FaClock className="me-1" />
               {getDaysAgo(job.created_at)}
             </div>
-
           </div>
         </div>
 
         {/* RIGHT */}
         <div className="text-end">
+          {role !== "recruiter" && role !== "admin" && (
+            <>
+              <button
+                className="btn btn-sm btn-light border mb-2"
+                onClick={toggleSaveJob}
+              >
+                {saved ? (
+                  <FaBookmark className="me-1 text-primary" />
+                ) : (
+                  <FaRegBookmark className="me-1" />
+                )}
+                {saving ? "Saving..." : saved ? "Saved" : "Save"}
+              </button>
 
-          <button
-            className="btn btn-sm btn-light border mb-2"
-            onClick={toggleSaveJob}
-          >
-            {saved ? (
-              <FaBookmark className="me-1 text-primary" />
-            ) : (
-              <FaRegBookmark className="me-1" />
-            )}
-            {saving ? "Saving..." : saved ? "Saved" : "Save"}
-          </button>
-
-          <br />
+              <br />
+            </>
+          )}
 
           {isRecruiter ? (
             <button className="btn btn-sm btn-secondary" disabled>
@@ -156,7 +167,6 @@ function JobCard({ job }) {
               {applied ? "View Applied" : "View Details"}
             </button>
           )}
-
         </div>
       </div>
     </div>
