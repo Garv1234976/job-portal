@@ -24,7 +24,7 @@ function JobDetailSection() {
     name: "",
     email: "",
     portfolio: "",
-    cover_letter: ""
+    cover_letter: "",
   });
 
   const [errors, setErrors] = useState({});
@@ -63,6 +63,42 @@ function JobDetailSection() {
   const handleApply = async (e) => {
     e.preventDefault();
 
+    // ✅ 1. CHECK LOGIN
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      Swal.fire({
+        icon: "warning",
+        title: "Login Required",
+        text: "Please login first to apply",
+        confirmButtonText: "Login",
+      }).then(() => {
+        window.location.href = "/login";
+      });
+      return;
+    }
+
+    // ✅ 2. CHECK CV (resume)
+    try {
+      const profileRes = await api.get("/profile");
+      const user = profileRes.data?.data;
+
+      if (!user?.cv) {
+        Swal.fire({
+          icon: "warning",
+          title: "Resume Required",
+          text: "Please upload your resume before applying",
+          confirmButtonText: "Upload Resume",
+        }).then(() => {
+          window.location.href = "/candidate/resume";
+        });
+        return;
+      }
+    } catch (err) {
+      console.log(err);
+    }
+
+    // ✅ 3. FORM VALIDATION
     let newErrors = {};
 
     if (!form.name) newErrors.name = "Name is required";
@@ -95,10 +131,17 @@ function JobDetailSection() {
         portfolio: "",
         cover_letter: "",
       });
-
     } catch (err) {
-
-      if (err.response?.data?.limit_reached) {
+      // ✅ HANDLE 401 (extra safety)
+      if (err.response?.status === 401) {
+        Swal.fire({
+          icon: "warning",
+          title: "Login Required",
+          text: "Please login first",
+        }).then(() => {
+          window.location.href = "/login";
+        });
+      } else if (err.response?.data?.limit_reached) {
         Swal.fire({
           icon: "warning",
           title: "Job Closed",
@@ -113,7 +156,6 @@ function JobDetailSection() {
           text: err.response?.data?.message || "Something went wrong",
         });
       }
-
     } finally {
       setSubmitting(false);
     }
@@ -124,25 +166,22 @@ function JobDetailSection() {
 
   //  CLOSED LOGIC
   const isJobClosed =
-    job.status === "closed" ||
-    job.application_count >= job.application_limit;
+    job.status === "closed" || job.application_count >= job.application_limit;
 
   //  RECRUITER FROM BACKEND
   const isRecruiter = job.is_recruiter;
 
   //  Vacancy
- const remainingVacancy = isJobClosed
-  ? 0
-  : Math.max(0, job.application_limit - job.application_count);
+  const remainingVacancy = isJobClosed
+    ? 0
+    : Math.max(0, job.application_limit - job.application_count);
 
   return (
     <div className="container-xxl py-5">
       <div className="container">
         <div className="row gy-5 gx-4">
-
           {/* LEFT */}
           <div className="col-lg-8">
-
             {/* HEADER */}
             <div className="d-flex align-items-center mb-5">
               <img
@@ -171,8 +210,8 @@ function JobDetailSection() {
                 </span>
 
                 <span>
-                  <FaMoneyBillAlt className="me-2 text-primary" />
-                  ₹ {job.salary_range}
+                  <FaMoneyBillAlt className="me-2 text-primary" />₹{" "}
+                  {job.salary_range}
                 </span>
               </div>
             </div>
@@ -185,29 +224,24 @@ function JobDetailSection() {
 
             {/* APPLY SECTION */}
             <div>
-
               {isJobClosed ? (
                 <div className="alert alert-danger text-center">
                   🚫 Job Closed
                 </div>
-
               ) : isRecruiter ? (
                 <div className="alert alert-info text-center">
-                   You can view this job but cannot apply
+                  You can view this job but cannot apply
                 </div>
-
               ) : alreadyApplied ? (
                 <div className="alert alert-success">
-                   You have already applied for this job
+                  You have already applied for this job
                 </div>
-
               ) : (
                 <>
                   <h4 className="mb-4">Apply For The Job</h4>
 
                   <form onSubmit={handleApply}>
                     <div className="row g-3">
-
                       <div className="col-6">
                         <label className="form-label fw-semibold">
                           Name <span className="text-danger">*</span>
@@ -235,7 +269,9 @@ function JobDetailSection() {
                           onChange={handleChange}
                         />
                         {errors.email && (
-                          <div className="text-danger small">{errors.email}</div>
+                          <div className="text-danger small">
+                            {errors.email}
+                          </div>
                         )}
                       </div>
 
@@ -273,25 +309,22 @@ function JobDetailSection() {
                           {submitting ? "Applying..." : "Apply Now"}
                         </button>
                       </div>
-
                     </div>
                   </form>
                 </>
               )}
-
             </div>
-
           </div>
 
           {/* RIGHT */}
           <div className="col-lg-4">
-
             <div className="bg-light rounded p-4 mb-4">
               <h4 className="mb-4">Job Summary</h4>
 
               <p>
                 <FaCalendarAlt className="text-primary me-2" />
-                Posted: {new Date(job.created_at).toLocaleDateString("en-IN", {
+                Posted:{" "}
+                {new Date(job.created_at).toLocaleDateString("en-IN", {
                   day: "numeric",
                   month: "short",
                   year: "numeric",
@@ -327,9 +360,7 @@ function JobDetailSection() {
 
               <p>{job.company_name || "No company info available"}</p>
             </div>
-
           </div>
-
         </div>
       </div>
     </div>
