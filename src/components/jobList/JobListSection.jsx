@@ -312,7 +312,7 @@ function JobListSection() {
          
 
             
-            {!loading && isLoggedIn && jobs.map((job) => (
+            {!loading && jobs.map((job) => (
               <JobCard key={job.id} job={job} />
             ))}
 
