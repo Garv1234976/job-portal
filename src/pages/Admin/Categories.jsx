@@ -3,7 +3,7 @@ import API from "../../services/api";
 import AdminLayout from "./Layout";
 import Swal from "sweetalert2";
 
-// ✅ ICON FIX FUNCTION (IMPORTANT)
+// ICON FIX FUNCTION
 const getIconClass = (icon) => {
   if (!icon) return "fa fa-briefcase";
 
@@ -26,7 +26,7 @@ const getIconClass = (icon) => {
   return "fa fa-briefcase";
 };
 
-// ICONS LIST
+// ICONS
 const ICONS = [
   "fa fa-laptop","fa fa-code","fa fa-briefcase","fa fa-user",
   "fa fa-cogs","fa fa-chart-line","fa fa-bell","fa fa-heart",
@@ -37,7 +37,6 @@ const ICONS = [
   "fa fa-server","fa fa-wifi","fa fa-music","fa fa-video",
   "fa fa-image","fa fa-edit","fa fa-trash","fa fa-download",
   "fa fa-upload","fa fa-calendar","fa fa-clock","fa fa-search",
-  // NEW MODERN ICONS
   "fa-brain","fa-robot","fa-microchip","fa-network-wired"
 ];
 
@@ -92,18 +91,23 @@ export default function Categories() {
     setShowModal(true);
   };
 
-  // SUBMIT
+  // ✅ FIXED SUBMIT
   const handleSubmit = async () => {
     if (!form.name.trim()) {
       return Swal.fire("Error", "Name required", "error");
     }
 
     try {
+      const payload = {
+        ...form,
+        parent_id: form.parent_id || null, // 🔥 FIX
+      };
+
       if (editId) {
-        await API.put(`/admin/categories/${editId}`, form);
+        await API.put(`/admin/categories/${editId}`, payload);
         Swal.fire("Updated!", "", "success");
       } else {
-        await API.post("/admin/categories", form);
+        await API.post("/admin/categories", payload);
         Swal.fire("Added!", "", "success");
       }
 
@@ -148,7 +152,6 @@ export default function Categories() {
       </div>
     ));
 
-  // FILTER ICONS
   const filteredIcons = ICONS.filter((ic) =>
     ic.toLowerCase().includes(iconSearch.toLowerCase())
   );
@@ -163,7 +166,6 @@ export default function Categories() {
           </button>
         </div>
 
-        {/* SEARCH */}
         <input
           className="form-control mb-3"
           placeholder="Search..."
@@ -174,7 +176,6 @@ export default function Categories() {
           }}
         />
 
-        {/* TABLE */}
         <div className="card shadow-sm mb-4">
           <table className="table table-hover mb-0">
             <thead className="table-dark">
@@ -219,50 +220,11 @@ export default function Categories() {
           </table>
         </div>
 
-        {/* TREE */}
-        <div className="card p-3 mb-4">
-          <h5>Category Hierarchy</h5>
-          {renderTree(tree)}
-        </div>
-
-        {/* PAGINATION */}
-        <div className="d-flex justify-content-center gap-1">
-          <button
-            className="btn btn-sm btn-outline-secondary"
-            disabled={page === 1}
-            onClick={() => setPage(page - 1)}
-          >
-            Prev
-          </button>
-
-          {[...Array(lastPage)].map((_, i) => (
-            <button
-              key={i}
-              className={`btn btn-sm ${
-                page === i + 1 ? "btn-primary" : "btn-light"
-              }`}
-              onClick={() => setPage(i + 1)}
-            >
-              {i + 1}
-            </button>
-          ))}
-
-          <button
-            className="btn btn-sm btn-outline-secondary"
-            disabled={page === lastPage}
-            onClick={() => setPage(page + 1)}
-          >
-            Next
-          </button>
-        </div>
-
         {/* MODAL */}
         {showModal && (
           <div className="modal-overlay">
             <div className="modal-box">
-              <h5 className="mb-3">
-                {editId ? "Edit Category" : "Add Category"}
-              </h5>
+              <h5>{editId ? "Edit Category" : "Add Category"}</h5>
 
               <input
                 className="form-control mb-2"
@@ -273,14 +235,15 @@ export default function Categories() {
                 }
               />
 
+              {/* ✅ FIXED SELECT */}
               <select
                 className="form-control mb-2"
-                value={form.parent_id}
+                value={form.parent_id || ""}
                 onChange={(e) =>
                   setForm({ ...form, parent_id: e.target.value })
                 }
               >
-                <option value="">Main Category</option>
+                <option value="">No Parent (Main Category)</option>
                 {flatCategories.map((cat) => (
                   <option key={cat.id} value={cat.id}>
                     {cat.name}
@@ -288,7 +251,6 @@ export default function Categories() {
                 ))}
               </select>
 
-              {/* ICON SEARCH */}
               <input
                 className="form-control mb-2"
                 placeholder="Search icon..."
@@ -296,18 +258,7 @@ export default function Categories() {
                 onChange={(e) => setIconSearch(e.target.value)}
               />
 
-              {/* ICON LIST */}
-              <div
-                className="d-flex gap-2 flex-wrap mb-3"
-                style={{ maxHeight: "150px", overflowY: "auto" }}
-              >
-                {/* OLD ICON */}
-                {form.icon && !filteredIcons.includes(form.icon) && (
-                  <div className="icon-box active">
-                    <i className={getIconClass(form.icon)}></i>
-                  </div>
-                )}
-
+              <div className="d-flex gap-2 flex-wrap mb-3">
                 {filteredIcons.map((ic) => (
                   <div
                     key={ic}
@@ -322,42 +273,14 @@ export default function Categories() {
               </div>
 
               <div className="d-flex justify-content-end gap-2">
-                <button
-                  className="btn btn-secondary"
-                  onClick={() => setShowModal(false)}
-                >
+                <button onClick={() => setShowModal(false)}>
                   Cancel
                 </button>
-
-                <button className="btn btn-primary" onClick={handleSubmit}>
-                  Save
-                </button>
+                <button onClick={handleSubmit}>Save</button>
               </div>
             </div>
           </div>
         )}
-
-        {/* STYLE */}
-        <style>
-          {`
-          .icon-box {
-            width: 40px;
-            height: 40px;
-            border: 1px solid #ddd;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            border-radius: 6px;
-          }
-
-          .icon-box.active {
-            background: #0d6efd;
-            color: #fff;
-            border-color: #0d6efd;
-          }
-        `}
-        </style>
       </div>
     </AdminLayout>
   );
