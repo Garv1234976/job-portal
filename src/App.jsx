@@ -307,6 +307,15 @@ function App() {
           }
         />
 
+        <Route
+          path="/admin/settings"
+          element={
+            <AdminRoute>
+              <AdminSettings />
+            </AdminRoute>
+          }
+        />
+
       </Routes>
     </BrowserRouter>
   );
