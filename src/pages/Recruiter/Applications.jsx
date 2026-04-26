@@ -18,7 +18,7 @@ export default function Applications() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
 
-  //  FETCH
+  // FETCH
   const fetchApplications = () => {
     API.get(`/job-applications/${id}`, {
       params: { page, search, status: filter },
@@ -35,7 +35,7 @@ export default function Applications() {
     fetchApplications();
   }, [id, page, search, filter]);
 
-  //  CONFIRM + UPDATE
+  // UPDATE STATUS
   const updateStatus = async (appId, status) => {
     const textMap = {
       shortlisted: "Shortlist this candidate?",
@@ -61,7 +61,7 @@ export default function Applications() {
     }
   };
 
-  //  PAGINATION
+  // PAGINATION
   const renderPagination = () => {
     if (lastPage <= 1) return null;
 
@@ -75,7 +75,7 @@ export default function Applications() {
         onClick={() => setPage(page - 1)}
       >
         Prev
-      </button>,
+      </button>
     );
 
     for (let i = 1; i <= lastPage; i++) {
@@ -86,7 +86,7 @@ export default function Applications() {
           onClick={() => setPage(i)}
         >
           {i}
-        </button>,
+        </button>
       );
     }
 
@@ -98,7 +98,7 @@ export default function Applications() {
         onClick={() => setPage(page + 1)}
       >
         Next
-      </button>,
+      </button>
     );
 
     return pages;
@@ -174,8 +174,8 @@ export default function Applications() {
                       const resumeUrl = app.resume_url?.startsWith("http")
                         ? app.resume_url
                         : app.resume_url
-                          ? `${BASE_URL}/${app.resume_url}`
-                          : null;
+                        ? `${BASE_URL}/${app.resume_url}`
+                        : null;
 
                       return (
                         <tr key={app.id}>
@@ -204,23 +204,13 @@ export default function Applications() {
                           {/* RESUME */}
                           <td>
                             {resumeUrl ? (
-                              <>
-                                <a
-                                  href={`https://docs.google.com/gview?url=${encodeURIComponent(resumeUrl)}&embedded=true`}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="btn btn-outline-primary btn-sm"
-                                >
-                                  View
-                                </a>
-                                <a
-                                  href={resumeUrl}
-                                  download
-                                  className="btn btn-success btn-sm"
-                                >
-                                  Download
-                                </a>
-                              </>
+                              <a
+                                href={resumeUrl}
+                                download
+                                className="btn btn-success btn-sm"
+                              >
+                                Download
+                              </a>
                             ) : (
                               "No Resume"
                             )}
@@ -233,10 +223,10 @@ export default function Applications() {
                                 app.status === "shortlisted"
                                   ? "bg-info"
                                   : app.status === "selected"
-                                    ? "bg-success"
-                                    : app.status === "rejected"
-                                      ? "bg-danger"
-                                      : "bg-warning"
+                                  ? "bg-success"
+                                  : app.status === "rejected"
+                                  ? "bg-danger"
+                                  : "bg-warning"
                               }`}
                             >
                               {app.status}
@@ -245,33 +235,63 @@ export default function Applications() {
 
                           {/* ACTIONS */}
                           <td>
-                            {app.status !== "shortlisted" && (
-                              <button
-                                className="btn btn-info btn-sm me-2"
-                                onClick={() =>
-                                  updateStatus(app.id, "shortlisted")
-                                }
-                              >
-                                Shortlist
-                              </button>
-                            )}
+                            {app.status === "rejected" ? (
+                              <span className="text-muted">
+                                No actions
+                              </span>
+                            ) : (
+                              <div className="dropdown">
+                                <button
+                                  className="btn btn-sm btn-dark dropdown-toggle"
+                                  data-bs-toggle="dropdown"
+                                >
+                                  Actions
+                                </button>
 
-                            {app.status !== "selected" && (
-                              <button
-                                className="btn btn-success btn-sm me-2"
-                                onClick={() => updateStatus(app.id, "selected")}
-                              >
-                                Select
-                              </button>
-                            )}
+                                <ul className="dropdown-menu">
 
-                            {app.status !== "rejected" && (
-                              <button
-                                className="btn btn-danger btn-sm"
-                                onClick={() => updateStatus(app.id, "rejected")}
-                              >
-                                Reject
-                              </button>
+                                  {/* SHORTLIST */}
+                                  {app.status === "pending" && (
+                                    <li>
+                                      <button
+                                        className="dropdown-item text-info"
+                                        onClick={() =>
+                                          updateStatus(app.id, "shortlisted")
+                                        }
+                                      >
+                                        Shortlist
+                                      </button>
+                                    </li>
+                                  )}
+
+                                  {/* SELECT */}
+                                  {(app.status === "pending" ||
+                                    app.status === "shortlisted") && (
+                                    <li>
+                                      <button
+                                        className="dropdown-item text-success"
+                                        onClick={() =>
+                                          updateStatus(app.id, "selected")
+                                        }
+                                      >
+                                        Select
+                                      </button>
+                                    </li>
+                                  )}
+
+                                  {/* REJECT */}
+                                  <li>
+                                    <button
+                                      className="dropdown-item text-danger"
+                                      onClick={() =>
+                                        updateStatus(app.id, "rejected")
+                                      }
+                                    >
+                                      Reject
+                                    </button>
+                                  </li>
+                                </ul>
+                              </div>
                             )}
                           </td>
                         </tr>
