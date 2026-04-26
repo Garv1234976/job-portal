@@ -6,7 +6,8 @@ import {
   FaFileAlt,
   FaSignOutAlt,
   FaList,
-  FaHome
+  FaHome,
+  FaCog
 } from "react-icons/fa";
 
 import "../../components/Category.css";
@@ -46,6 +47,12 @@ export default function AdminSidebar() {
       icon: <FaList />,
       path: "/admin/categories",
     },
+
+    {
+      name: "Settings",
+      icon: <FaCog />,
+      path: "/admin/settings",
+    },
   ];
 
   const handleLogout = () => {
@@ -64,7 +71,8 @@ export default function AdminSidebar() {
       {/* MENU */}
       <div className="sidebar-menu flex-grow-1">
         {menu.map((item, index) => {
-          const isActive = location.pathname === item.path;
+          const isActive =
+            item.path && location.pathname.startsWith(item.path);
 
           return (
             <div
@@ -87,7 +95,9 @@ export default function AdminSidebar() {
           className="sidebar-item logout"
           onClick={handleLogout}
         >
-          <FaSignOutAlt />
+          <span className="icon">
+            <FaSignOutAlt />
+          </span>
           <span className="label">Logout</span>
         </div>
       </div>
