@@ -1,9 +1,10 @@
 import AdminSidebar from "../../components/Admin/AdminSidebar";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function AdminLayout({ children }) {
   return (
     <div className="d-flex">
-
       {/* SIDEBAR */}
       <AdminSidebar />
 
@@ -12,6 +13,7 @@ export default function AdminLayout({ children }) {
         {children}
       </div>
 
+      <ToastContainer position="top-right" autoClose={2000} theme="colored" />
     </div>
   );
 }

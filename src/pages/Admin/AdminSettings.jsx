@@ -26,10 +26,8 @@ export default function AdminSettings() {
 
   const [loading, setLoading] = useState(false);
 
-  // FETCH SETTINGS
+  // FETCH
   useEffect(() => {
-    setLoading(true);
-
     API.get("/admin/settings")
       .then((res) => {
         if (res.data.data) {
@@ -42,11 +40,10 @@ export default function AdminSettings() {
       })
       .catch(() => {
         toast.error("Failed to load settings ❌");
-      })
-      .finally(() => setLoading(false));
+      });
   }, []);
 
-  // HANDLE INPUT CHANGE
+  // HANDLE CHANGE
   const handleChange = (section, key, value) => {
     setForm((prev) => ({
       ...prev,
@@ -58,11 +55,10 @@ export default function AdminSettings() {
   };
 
   // OFFICE CHANGE
-  const handleOfficeChange = (index, key, value) => {
+  const handleOfficeChange = (i, key, value) => {
     setForm((prev) => {
       const updated = [...prev.offices];
-      updated[index] = { ...updated[index], [key]: value };
-
+      updated[i] = { ...updated[i], [key]: value };
       return { ...prev, offices: updated };
     });
   };
@@ -71,36 +67,23 @@ export default function AdminSettings() {
   const addOffice = () => {
     setForm((prev) => ({
       ...prev,
-      offices: [
-        ...(prev.offices || []),
-        { name: "", address: "", map: "" },
-      ],
+      offices: [...prev.offices, { name: "", address: "", map: "" }],
     }));
   };
 
   // REMOVE OFFICE
-  const removeOffice = (index) => {
+  const removeOffice = (i) => {
     setForm((prev) => ({
       ...prev,
-      offices: prev.offices.filter((_, i) => i !== index),
+      offices: prev.offices.filter((_, index) => index !== i),
     }));
-  };
-
-  // VALIDATION
-  const validate = () => {
-    if (!form.contact.email_1 && !form.contact.phone_1) {
-      toast.error("At least one contact (email/phone) required ❌");
-      return false;
-    }
-    return true;
   };
 
   // SAVE
   const saveSection = async (section) => {
-    if (!validate()) return;
-
     try {
       setLoading(true);
+
       await API.post("/admin/settings", form);
 
       toast.success("Saved successfully ✅");
@@ -110,7 +93,7 @@ export default function AdminSettings() {
         [section]: false,
       }));
     } catch {
-      toast.error("Something went wrong ❌");
+      toast.error("Save failed ❌");
     } finally {
       setLoading(false);
     }
@@ -122,17 +105,10 @@ export default function AdminSettings() {
 
         <h3 className="fw-bold mb-4">⚙️ Settings</h3>
 
-        {loading && (
-          <div className="text-center py-3 text-muted">
-            Loading...
-          </div>
-        )}
-
         {/* CONTACT */}
-        <div className="card shadow-sm p-3 mb-4">
+        <div className="card p-3 mb-4 shadow-sm">
           <div className="d-flex justify-content-between">
             <h5>Contact Info</h5>
-
             <button
               className="btn btn-sm btn-outline-primary"
               onClick={() =>
@@ -174,8 +150,8 @@ export default function AdminSettings() {
 
               <button
                 className="btn btn-success btn-sm mt-3"
-                disabled={loading}
                 onClick={() => saveSection("contact")}
+                disabled={loading}
               >
                 {loading ? "Saving..." : "Save"}
               </button>
@@ -190,10 +166,9 @@ export default function AdminSettings() {
         </div>
 
         {/* SOCIAL */}
-        <div className="card shadow-sm p-3 mb-4">
+        <div className="card p-3 mb-4 shadow-sm">
           <div className="d-flex justify-content-between">
             <h5>Social Links</h5>
-
             <button
               className="btn btn-sm btn-outline-primary"
               onClick={() =>
@@ -223,8 +198,8 @@ export default function AdminSettings() {
 
               <button
                 className="btn btn-success btn-sm mt-3"
-                disabled={loading}
                 onClick={() => saveSection("social")}
+                disabled={loading}
               >
                 {loading ? "Saving..." : "Save"}
               </button>
@@ -239,10 +214,9 @@ export default function AdminSettings() {
         </div>
 
         {/* OFFICES */}
-        <div className="card shadow-sm p-3 mb-4">
+        <div className="card p-3 mb-4 shadow-sm">
           <div className="d-flex justify-content-between">
             <h5>Offices</h5>
-
             <button
               className="btn btn-sm btn-outline-primary"
               onClick={() =>
@@ -258,29 +232,27 @@ export default function AdminSettings() {
 
           {edit.offices ? (
             <>
-              {form.offices.map((office, i) => (
-                <div key={i} className="border rounded p-2 mt-3">
-
+              {form.offices.map((o, i) => (
+                <div key={i} className="border p-2 mt-3 rounded">
                   <input className="form-control mb-1"
-                    value={office.name}
+                    value={o.name}
                     onChange={(e)=>handleOfficeChange(i,"name",e.target.value)}
                     placeholder="Office Name"
                   />
 
                   <input className="form-control mb-1"
-                    value={office.address}
+                    value={o.address}
                     onChange={(e)=>handleOfficeChange(i,"address",e.target.value)}
                     placeholder="Address"
                   />
 
                   <input className="form-control mb-1"
-                    value={office.map}
+                    value={o.map}
                     onChange={(e)=>handleOfficeChange(i,"map",e.target.value)}
                     placeholder="Map Link"
                   />
 
-                  <button
-                    className="btn btn-danger btn-sm"
+                  <button className="btn btn-danger btn-sm"
                     onClick={() => removeOffice(i)}
                   >
                     Remove
@@ -294,23 +266,21 @@ export default function AdminSettings() {
 
               <button
                 className="btn btn-success btn-sm mt-3 ms-2"
-                disabled={loading}
                 onClick={() => saveSection("offices")}
+                disabled={loading}
               >
                 {loading ? "Saving..." : "Save Offices"}
               </button>
             </>
           ) : (
-            form.offices.length === 0 ? (
-              <div className="text-muted mt-2">No offices added</div>
-            ) : (
-              form.offices.map((o, i) => (
-                <div key={i} className="mt-2 text-muted">
-                  <strong>{o.name}</strong>
-                  <div>{o.address}</div>
-                </div>
-              ))
-            )
+            form.offices.length === 0
+              ? <div className="text-muted mt-2">No offices added</div>
+              : form.offices.map((o, i) => (
+                  <div key={i} className="mt-2 text-muted">
+                    <strong>{o.name}</strong>
+                    <div>{o.address}</div>
+                  </div>
+                ))
           )}
         </div>
 
