@@ -199,9 +199,7 @@ export default function RecruiterRegistration() {
                   name="contact"
                   maxLength="10"
                   className={`form-control ${errors.contact && "is-invalid"}`}
-                  onChange={(e) =>
-                    /^[0-9]*$/.test(e.target.value) && handleChange(e)
-                  }
+                  onChange={handleChange}
                 />
                 <div className="invalid-feedback">{errors.contact}</div>
               </div>
