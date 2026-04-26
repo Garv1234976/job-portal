@@ -48,6 +48,7 @@ import Applications from "./pages/Admin/Applications";
 //Admin
 import AdminDashboard from "./pages/Admin/Dashboard";
 import Categories from "./pages/Admin/Categories";
+import AdminSettings from "./pages/Admin/AdminSettings";
 
 function App() {
   return (
