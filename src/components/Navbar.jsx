@@ -208,7 +208,7 @@ function Navbar() {
             )}
           </div>
 
-          {/* POST JOB */}
+        {/* ✅ POST JOB BUTTON */}
           {token && role === "recruiter" ? (
             <button
               onClick={handlePostJob}
@@ -219,13 +219,33 @@ function Navbar() {
               <FaPlus /> Post Job
             </button>
           ) : (
-            <div className="ms-lg-3">
-              <button
-                className="btn border-0 fw-semibold"
-                onClick={() => navigate("/recruiter/login")}
-              >
-                For Recruiter
-              </button>
+            // ✅ RESTORED ORIGINAL DROPDOWN (FIXED)
+            <div className="d-flex align-items-center gap-3 ms-lg-3">
+              <div className="dropdown">
+                <button
+                  className="btn border-0 fw-semibold dropdown-toggle"
+                  data-bs-toggle="dropdown"
+                  style={{ borderBottom: "2px solid #ff5a3c" }}
+                >
+                  For Recruiter
+                </button>
+
+                <div className="dropdown-menu dropdown-menu-end shadow border-0 p-2">
+                  <button
+                    className="dropdown-item"
+                    onClick={() => navigate("/recruiter/login")}
+                  >
+                    Recruiter Login
+                  </button>
+
+                  <button
+                    className="dropdown-item"
+                    onClick={() => navigate("/register/recruiter")}
+                  >
+                    Recruiter Register
+                  </button>
+                </div>
+              </div>
             </div>
           )}
         </div>
