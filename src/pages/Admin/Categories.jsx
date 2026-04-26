@@ -3,7 +3,30 @@ import API from "../../services/api";
 import AdminLayout from "./Layout";
 import Swal from "sweetalert2";
 
-// ✅ MORE ICONS
+// ✅ ICON FIX FUNCTION (IMPORTANT)
+const getIconClass = (icon) => {
+  if (!icon) return "fa fa-briefcase";
+
+  if (
+    icon.includes("fa-solid") ||
+    icon.includes("fa-regular") ||
+    icon.includes("fa-brands")
+  ) {
+    return icon;
+  }
+
+  if (icon.startsWith("fa-")) {
+    return `fa-solid ${icon}`;
+  }
+
+  if (icon.startsWith("fa ")) {
+    return icon;
+  }
+
+  return "fa fa-briefcase";
+};
+
+// ICONS LIST
 const ICONS = [
   "fa fa-laptop","fa fa-code","fa fa-briefcase","fa fa-user",
   "fa fa-cogs","fa fa-chart-line","fa fa-bell","fa fa-heart",
@@ -13,7 +36,9 @@ const ICONS = [
   "fa fa-graduation-cap","fa fa-building","fa fa-database",
   "fa fa-server","fa fa-wifi","fa fa-music","fa fa-video",
   "fa fa-image","fa fa-edit","fa fa-trash","fa fa-download",
-  "fa fa-upload","fa fa-calendar","fa fa-clock","fa fa-search"
+  "fa fa-upload","fa fa-calendar","fa fa-clock","fa fa-search",
+  // NEW MODERN ICONS
+  "fa-brain","fa-robot","fa-microchip","fa-network-wired"
 ];
 
 export default function Categories() {
@@ -33,7 +58,6 @@ export default function Categories() {
   const [lastPage, setLastPage] = useState(1);
   const [search, setSearch] = useState("");
 
-  // ✅ NEW: icon search
   const [iconSearch, setIconSearch] = useState("");
 
   // FETCH
@@ -124,7 +148,7 @@ export default function Categories() {
       </div>
     ));
 
-  // ✅ FILTER ICONS
+  // FILTER ICONS
   const filteredIcons = ICONS.filter((ic) =>
     ic.toLowerCase().includes(iconSearch.toLowerCase())
   );
@@ -168,7 +192,11 @@ export default function Categories() {
                 <tr key={cat.id}>
                   <td>{(page - 1) * 10 + i + 1}</td>
                   <td>{cat.name}</td>
-                  <td>{cat.icon ? <i className={cat.icon}></i> : "-"}</td>
+                  <td>
+                    {cat.icon ? (
+                      <i className={getIconClass(cat.icon)}></i>
+                    ) : "-"}
+                  </td>
                   <td>{cat.parent?.name || "Main"}</td>
                   <td>
                     <button
@@ -260,7 +288,7 @@ export default function Categories() {
                 ))}
               </select>
 
-              {/* 🔍 ICON SEARCH */}
+              {/* ICON SEARCH */}
               <input
                 className="form-control mb-2"
                 placeholder="Search icon..."
@@ -276,7 +304,7 @@ export default function Categories() {
                 {/* OLD ICON */}
                 {form.icon && !filteredIcons.includes(form.icon) && (
                   <div className="icon-box active">
-                    <i className={form.icon}></i>
+                    <i className={getIconClass(form.icon)}></i>
                   </div>
                 )}
 
@@ -288,7 +316,7 @@ export default function Categories() {
                     }`}
                     onClick={() => setForm({ ...form, icon: ic })}
                   >
-                    <i className={ic}></i>
+                    <i className={getIconClass(ic)}></i>
                   </div>
                 ))}
               </div>
