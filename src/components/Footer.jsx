@@ -1,11 +1,20 @@
-import { useState } from "react";
-import Swal from "sweetalert2";
+import { useState, useEffect } from "react";
 import api from "../services/api";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function Footer() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [settings, setSettings] = useState(null);
+
+  // FETCH SETTINGS
+  useEffect(() => {
+    api.get("/settings")
+      .then((res) => setSettings(res.data.data))
+      .catch(() => toast.error("Failed to load footer data ❌"));
+  }, []);
 
   const validateEmail = (email) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -28,8 +37,7 @@ function Footer() {
 
     try {
       const res = await api.post("/subscribe", { email });
-
-      Swal.fire("Success", res.data.message, "success");
+      toast.success(res.data.message || "Subscribed successfully ✅");
       setEmail("");
     } catch (err) {
       setError(err.response?.data?.message || "Something went wrong");
@@ -38,125 +46,152 @@ function Footer() {
     setLoading(false);
   };
 
+  const contact = settings?.contact || {};
+  const office = settings?.offices?.[0] || {};
+  const social = settings?.social || {};
+
+  // ✅ COMPANY NAME FROM ADMIN
+  const companyName = office?.name || "CareerConnect";
+
   return (
-    <div className="container-fluid bg-dark text-white-50 footer pt-5 mt-5">
-      <div className="container py-5">
-        <div className="row g-5">
-          {/* Company Info */}
-          <div className="col-lg-4 col-md-6">
-            <h5 className="text-white mb-4">Job Portal</h5>
+    <>
+      <ToastContainer position="top-right" autoClose={2000} />
 
-            <p className="mb-2">
-              <i className="fa fa-map-marker-alt me-3"></i>
-              Oxford Street, Zirakpur, Punjab, India
-            </p>
+      <div className="container-fluid bg-dark text-white-50 footer pt-5 mt-5">
+        <div className="container py-5">
+          <div className="row g-5">
 
-            <p className="mb-2">
-              <i className="fa fa-envelope me-3"></i>
-              info@businessbuddies.com
-            </p>
+            {/* COMPANY */}
+            <div className="col-lg-4 col-md-6">
 
-            <p className="mb-2">
-              <i className="fa fa-phone-alt me-3"></i>
-              +91 9478391355
-            </p>
+              {/* ✅ DYNAMIC COMPANY NAME */}
+              <h5 className="text-white fw-bold mb-1">
+                {companyName}
+              </h5>
 
-            {/* Social */}
-            <div className="d-flex pt-2">
-              <a
-                className="btn btn-outline-light btn-social"
-                href="https://www.facebook.com"
-                target="_blank"
-                rel="noreferrer"
-              >
-                <i className="fab fa-facebook-f"></i>
-              </a>
+              <small className="text-muted d-block mb-3">
+                Connecting Talent with Opportunity
+              </small>
 
-              <a
-                className="btn btn-outline-light btn-social"
-                href="https://www.linkedin.com"
-                target="_blank"
-                rel="noreferrer"
-              >
-                <i className="fab fa-linkedin-in"></i>
-              </a>
+              {/* ADDRESS */}
+              <p className="mb-2">
+                <i className="fa fa-map-marker-alt me-3"></i>
+                {office.address || "No address"}
+              </p>
 
-              <a
-                className="btn btn-outline-light btn-social"
-                href="https://www.instagram.com"
-                target="_blank"
-                rel="noreferrer"
-              >
-                <i className="fab fa-instagram"></i>
-              </a>
+              {/* EMAILS */}
+              {contact.email_1 && (
+                <p className="mb-2">
+                  <i className="fa fa-envelope me-3"></i>
+                  {contact.email_1}
+                </p>
+              )}
+
+              {contact.email_2 && (
+                <p className="mb-2">
+                  <i className="fa fa-envelope me-3"></i>
+                  {contact.email_2}
+                </p>
+              )}
+
+              {/* PHONES */}
+              {contact.phone_1 && (
+                <p className="mb-2">
+                  <i className="fa fa-phone-alt me-3"></i>
+                  +91 {contact.phone_1}
+                </p>
+              )}
+
+              {contact.phone_2 && (
+                <p className="mb-2">
+                  <i className="fa fa-phone-alt me-3"></i>
+                  +91 {contact.phone_2}
+                </p>
+              )}
+
+              {/* SOCIAL */}
+              <div className="d-flex pt-2">
+
+                {social.facebook && (
+                  <a className="btn btn-outline-light btn-social" href={social.facebook} target="_blank" rel="noreferrer">
+                    <i className="fab fa-facebook-f"></i>
+                  </a>
+                )}
+
+                {social.linkedin && (
+                  <a className="btn btn-outline-light btn-social" href={social.linkedin} target="_blank" rel="noreferrer">
+                    <i className="fab fa-linkedin-in"></i>
+                  </a>
+                )}
+
+                {social.instagram && (
+                  <a className="btn btn-outline-light btn-social" href={social.instagram} target="_blank" rel="noreferrer">
+                    <i className="fab fa-instagram"></i>
+                  </a>
+                )}
+
+              </div>
             </div>
-          </div>
 
-          {/* Links */}
-          <div className="col-lg-4 col-md-6">
-            <h5 className="text-white mb-4">Useful Links</h5>
-            <a className="btn btn-link text-white-50" href="/">
-              Home
-            </a>
-            <a className="btn btn-link text-white-50" href="/about">
-              About Us
-            </a>
-            <a className="btn btn-link text-white-50" href="/contact">
-              Contact Us
-            </a>
-          </div>
-
-          {/* Newsletter */}
-          <div className="col-lg-4 col-md-6">
-            <h5 className="text-white mb-4">Newsletter</h5>
-
-            <p>
-              We help businesses grow with smart digital solutions, job portals,
-              and modern web services.
-            </p>
-
-            <div
-              className="position-relative mx-auto"
-              style={{ maxWidth: "400px" }}
-            >
-              <input
-                className={`form-control bg-transparent w-100 py-3 ps-4 pe-5 ${error ? "is-invalid" : ""}`}
-                type="email"
-                placeholder="Your email"
-                value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                  setError("");
-                }}
-              />
-
-              <button
-                type="button"
-                onClick={handleSubscribe}
-                className="btn btn-primary py-2 position-absolute top-0 end-0 mt-2 me-2"
-                disabled={loading}
-              >
-                {loading ? "..." : "Subscribe"}
-              </button>
+            {/* LINKS */}
+            <div className="col-lg-4 col-md-6">
+              <h5 className="text-white mb-4">Useful Links</h5>
+              <a className="btn btn-link text-white-50" href="/">Home</a>
+              <a className="btn btn-link text-white-50" href="/about">About</a>
+              <a className="btn btn-link text-white-50" href="/contact">Contact</a>
             </div>
-            {error && (
-              <small className="text-danger mt-2 d-block">{error}</small>
-            )}
+
+            {/* NEWSLETTER */}
+            <div className="col-lg-4 col-md-6">
+              <h5 className="text-white mb-4">Newsletter</h5>
+
+              <p>Subscribe to get latest jobs and updates.</p>
+
+              <div className="position-relative mx-auto" style={{ maxWidth: "400px" }}>
+                <input
+                  className={`form-control bg-transparent w-100 py-3 ps-4 pe-5 ${error ? "is-invalid" : ""}`}
+                  type="email"
+                  placeholder="Your email"
+                  value={email}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    setError("");
+                  }}
+                />
+
+                <button
+                  type="button"
+                  onClick={handleSubscribe}
+                  className="btn btn-primary py-2 position-absolute top-0 end-0 mt-2 me-2"
+                  disabled={loading}
+                >
+                  {loading ? "..." : "Subscribe"}
+                </button>
+              </div>
+
+              {error && (
+                <small className="text-danger mt-2 d-block">
+                  {error}
+                </small>
+              )}
+            </div>
+
+          </div>
+        </div>
+
+        {/* COPYRIGHT */}
+        <div className="container pt-3">
+          <div className="row">
+            <div className="col-12 text-center mb-3">
+              © {new Date().getFullYear()}{" "}
+              <span className="text-white fw-bold">
+                {companyName}
+              </span>, All Rights Reserved.
+            </div>
           </div>
         </div>
       </div>
-
-      {/* Bottom */}
-      <div className="container pt-3">
-        <div className="row">
-          <div className="col-12 text-center mb-3">
-            © {new Date().getFullYear()}{" "}
-            <span className="text-white">Job Portal</span>, All Rights
-            Reserved.
-          </div>
-        </div>
-      </div>
-    </div>
+    </>
   );
 }
 
