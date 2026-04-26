@@ -18,6 +18,9 @@ export default function Applications() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
 
+  // ✅ loading state
+  const [loadingId, setLoadingId] = useState(null);
+
   // FETCH
   const fetchApplications = () => {
     API.get(`/job-applications/${id}`, {
@@ -54,10 +57,15 @@ export default function Applications() {
     if (!result.isConfirmed) return;
 
     try {
+      setLoadingId(appId);
+
       await API.post(`/application-status/${appId}`, { status });
+
       fetchApplications();
     } catch {
       Swal.fire("Error", "Something went wrong", "error");
+    } finally {
+      setLoadingId(null);
     }
   };
 
@@ -177,6 +185,12 @@ export default function Applications() {
                         ? `${BASE_URL}/${app.resume_url}`
                         : null;
 
+                      // ✅ FIX: handle multiple possible default statuses
+                      const isPending =
+                        app.status === "pending" ||
+                        app.status === "applied" ||
+                        !app.status;
+
                       return (
                         <tr key={app.id}>
                           <td>{(page - 1) * 5 + i + 1}</td>
@@ -229,52 +243,59 @@ export default function Applications() {
                                   : "bg-warning"
                               }`}
                             >
-                              {app.status}
+                              {app.status || "pending"}
                             </span>
                           </td>
 
                           {/* ACTIONS */}
-                          <td>
+                          <td className="text-center">
                             {app.status === "rejected" ? (
-                              <span className="text-muted">
+                              <span className="text-muted small">
                                 No actions
                               </span>
                             ) : (
                               <div className="dropdown">
                                 <button
-                                  className="btn btn-sm btn-dark dropdown-toggle"
+                                  className="btn btn-sm btn-light border rounded-circle"
                                   data-bs-toggle="dropdown"
+                                  disabled={loadingId === app.id}
+                                  style={{ width: "36px", height: "36px" }}
                                 >
-                                  Actions
+                                  {loadingId === app.id ? "..." : "⋮"}
                                 </button>
 
-                                <ul className="dropdown-menu">
+                                <ul className="dropdown-menu shadow-sm">
 
                                   {/* SHORTLIST */}
-                                  {app.status === "pending" && (
+                                  {isPending && (
                                     <li>
                                       <button
-                                        className="dropdown-item text-info"
+                                        disabled={loadingId === app.id}
+                                        className="dropdown-item d-flex align-items-center gap-2"
                                         onClick={() =>
-                                          updateStatus(app.id, "shortlisted")
+                                          updateStatus(
+                                            app.id,
+                                            "shortlisted"
+                                          )
                                         }
                                       >
-                                        Shortlist
+                                        ⭐ <span>Shortlist</span>
                                       </button>
                                     </li>
                                   )}
 
                                   {/* SELECT */}
-                                  {(app.status === "pending" ||
+                                  {(isPending ||
                                     app.status === "shortlisted") && (
                                     <li>
                                       <button
-                                        className="dropdown-item text-success"
+                                        disabled={loadingId === app.id}
+                                        className="dropdown-item d-flex align-items-center gap-2 text-success"
                                         onClick={() =>
                                           updateStatus(app.id, "selected")
                                         }
                                       >
-                                        Select
+                                        ✔ <span>Select</span>
                                       </button>
                                     </li>
                                   )}
@@ -282,12 +303,13 @@ export default function Applications() {
                                   {/* REJECT */}
                                   <li>
                                     <button
-                                      className="dropdown-item text-danger"
+                                      disabled={loadingId === app.id}
+                                      className="dropdown-item d-flex align-items-center gap-2 text-danger"
                                       onClick={() =>
                                         updateStatus(app.id, "rejected")
                                       }
                                     >
-                                      Reject
+                                      ✖ <span>Reject</span>
                                     </button>
                                   </li>
                                 </ul>
