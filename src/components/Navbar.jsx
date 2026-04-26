@@ -5,11 +5,6 @@ import Swal from "sweetalert2";
 
 //  React Icons
 import {
-  FaHome,
-  FaInfoCircle,
-  FaList,
-  FaThLarge,
-  FaEnvelope,
   FaUserCircle,
   FaSignOutAlt,
   FaTachometerAlt,
@@ -27,6 +22,7 @@ function Navbar() {
   const token = localStorage.getItem("token");
   const role = localStorage.getItem("role");
 
+  // ✅ FIXED API CALL (safe handling)
   useEffect(() => {
     const token = localStorage.getItem("token");
 
@@ -37,24 +33,61 @@ function Navbar() {
 
     API.get("/dashboard")
       .then((res) => {
-        setActivePlan(res.data.active_plan);
+        console.log("PLAN DATA:", res.data); // 🔍 debug
+
+        // ✅ handle multiple possible API structures
+        const plan =
+          res.data.active_plan ||
+          res.data.plan ||
+          res.data.data?.active_plan ||
+          null;
+
+        setActivePlan(plan);
       })
-      .catch(() => {})
+      .catch((err) => {
+        console.log("PLAN ERROR:", err);
+        setActivePlan(null);
+      })
       .finally(() => setLoading(false));
   }, []);
 
+  // ✅ FIXED LOGIC (main issue solved)
   const handlePostJob = () => {
-    if (!activePlan || activePlan.jobs_remaining <= 0) {
+    if (loading) return; // wait for API
+
+    console.log("ACTIVE PLAN:", activePlan); // debug
+
+    // ❌ no plan
+    if (!activePlan) {
       Swal.fire({
         icon: "warning",
-        title: "Plan Required",
-        text: "Please buy or upgrade your plan",
-      }).then(() => {
-        navigate("/recruiter/plans");
-      });
-    } else {
-      navigate("/recruiter/create-job");
+        title: "No Plan Found",
+        text: "Please buy a plan first",
+      }).then(() => navigate("/recruiter/plans"));
+      return;
     }
+
+    // ✅ handle different key names
+    const jobsRemaining =
+      activePlan.jobs_remaining ??
+      activePlan.job_remaining ??
+      activePlan.remaining_jobs ??
+      0;
+
+    console.log("JOBS REMAINING:", jobsRemaining);
+
+    // ❌ no jobs left
+    if (jobsRemaining <= 0) {
+      Swal.fire({
+        icon: "warning",
+        title: "Limit Reached",
+        text: "You have no jobs remaining. Upgrade your plan.",
+      }).then(() => navigate("/recruiter/plans"));
+      return;
+    }
+
+    // ✅ success
+    navigate("/recruiter/create-job");
   };
 
   const isActive = (path) => location.pathname === path;
@@ -74,126 +107,99 @@ function Navbar() {
           data-bs-toggle="collapse"
           data-bs-target="#navbarCollapse"
         >
-          {/*  FIX: Added icon fallback */}
           <span className="navbar-toggler-icon"></span>
         </button>
 
         <div className="collapse navbar-collapse" id="navbarCollapse">
           <div className="navbar-nav ms-auto align-items-lg-center gap-lg-2">
-            {/* HOME */}
             <Link
               to="/"
-              className={`nav-link d-flex align-items-center gap-2 ${
+              className={`nav-link ${
                 isActive("/") ? "active-green fw-semibold" : ""
               }`}
             >
               Home
             </Link>
 
-            {/* ABOUT */}
             <Link
               to="/about"
-              className={`nav-link d-flex align-items-center gap-2 ${
+              className={`nav-link ${
                 isActive("/about") ? "active-green fw-semibold" : ""
               }`}
             >
               About
             </Link>
 
-            {/* JOBS */}
             <Link
               to="/jobs"
-              className={`nav-link d-flex align-items-center gap-2 ${
+              className={`nav-link ${
                 isActive("/jobs") ? "active-green fw-semibold" : ""
               }`}
             >
               Jobs
             </Link>
 
-            {/* CATEGORY */}
             <Link
               to="/category"
-              className={`nav-link d-flex align-items-center gap-2 ${
+              className={`nav-link ${
                 isActive("/category") ? "active-green fw-semibold" : ""
               }`}
             >
               Categories
             </Link>
 
-            {/* CONTACT */}
             <Link
               to="/contact"
-              className={`nav-link d-flex align-items-center gap-2 ${
+              className={`nav-link ${
                 isActive("/contact") ? "active-green fw-semibold" : ""
               }`}
             >
               Contact
             </Link>
 
-            {/* NOT LOGGED IN */}
             {!token && (
               <>
-                <Link
-                  to="/login"
-                  className="nav-link d-flex align-items-center gap-2"
-                >
+                <Link to="/login" className="nav-link">
                   Login
                 </Link>
-
-                <Link
-                  to="/register/candidate"
-                  className="nav-link d-flex align-items-center gap-2"
-                >
+                <Link to="/register/candidate" className="nav-link">
                   Register
                 </Link>
               </>
             )}
 
-            {/* USER DROPDOWN */}
             {token && (
               <div className="nav-item dropdown ms-lg-3">
                 <a
                   href="#"
-                  className="nav-link dropdown-toggle d-flex align-items-center gap-2"
+                  className="nav-link dropdown-toggle"
                   data-bs-toggle="dropdown"
                 >
                   <FaUserCircle /> My Account
                 </a>
 
                 <div className="dropdown-menu dropdown-menu-end shadow border-0">
-                  {/* DASHBOARD */}
                   {role === "candidate" && (
-                    <Link
-                      to="/candidate/dashboard"
-                      className="dropdown-item d-flex align-items-center gap-2"
-                    >
+                    <Link to="/candidate/dashboard" className="dropdown-item">
                       <FaTachometerAlt /> Dashboard
                     </Link>
                   )}
 
                   {role === "recruiter" && (
-                    <Link
-                      to="/recruiter/dashboard"
-                      className="dropdown-item d-flex align-items-center gap-2"
-                    >
+                    <Link to="/recruiter/dashboard" className="dropdown-item">
                       <FaTachometerAlt /> Dashboard
                     </Link>
                   )}
 
-                  {/* PROFILE */}
-                  <Link
-                    to="/recruiter/profile"
-                    className="dropdown-item d-flex align-items-center gap-2"
-                  >
+                  <Link to="/recruiter/profile" className="dropdown-item">
                     <FaUser /> Profile
                   </Link>
 
                   <div className="dropdown-divider"></div>
 
-                  {/* LOGOUT */}
                   <button
                     onClick={() => navigate("/logout")}
-                    className="dropdown-item text-danger d-flex align-items-center gap-2"
+                    className="dropdown-item text-danger"
                   >
                     <FaSignOutAlt /> Logout
                   </button>
@@ -202,103 +208,28 @@ function Navbar() {
             )}
           </div>
 
-          {/* POST JOB BUTTON */}
+          {/* POST JOB */}
           {token && role === "recruiter" ? (
             <button
               onClick={handlePostJob}
+              disabled={loading}
               className="btn btn-primary ms-lg-3 px-4 fw-semibold d-flex align-items-center gap-2"
               style={{ borderRadius: "30px" }}
             >
               <FaPlus /> Post Job
             </button>
           ) : (
-            <div className="d-flex align-items-center gap-3 ms-lg-3">
-              {/* FOR EMPLOYERS DROPDOWN */}
-              <div className="dropdown">
-                <button
-                  className="btn border-0 fw-semibold dropdown-toggle"
-                  data-bs-toggle="dropdown"
-                  style={{ borderBottom: "2px solid #ff5a3c" }}
-                >
-                  For Recruiter
-                </button>
-
-                <div className="dropdown-menu dropdown-menu-end shadow border-0 p-2">
-                  <button
-                    className="dropdown-item"
-                    onClick={() => navigate("/recruiter/login")}
-                  >
-                    Recruiter Login
-                  </button>
-
-                  <button
-                    className="dropdown-item"
-                    onClick={() => navigate("/register/recruiter")}
-                  >
-                    Recruiter Register
-                  </button>
-                </div>
-              </div>
+            <div className="ms-lg-3">
+              <button
+                className="btn border-0 fw-semibold"
+                onClick={() => navigate("/recruiter/login")}
+              >
+                For Recruiter
+              </button>
             </div>
           )}
         </div>
       </div>
-
-      {/*  STYLE */}
-      <style>
-        {`
-          /* DEFAULT BLACK TEXT */
-          .nav-link {
-            color: #000 !important;
-            transition: 0.2s;
-          }
-
-          /* ACTIVE GREEN ONLY */
-          .active-green {
-            color: #28a745 !important;
-            font-weight: 600;
-          }
-
-          /* HOVER (SUBTLE ONLY) */
-          .nav-link:hover {
-            color: #000 !important;
-            opacity: 0.7;
-          }
-
-          /* DROPDOWN */
-          .dropdown-item {
-            color: #000;
-          }
-
-          .dropdown-item:hover {
-            background: #f5f7fa;
-            color: #000;
-          }
-
-          /*  FIX: Ensure toggler icon visible */
-          .navbar-toggler {
-            border: none;
-          }
-
-          .navbar-toggler:focus {
-            box-shadow: none;
-          }
-
-          .dropdown-menu {
-            min-width: 200px;
-            border-radius: 10px;
-          }
-
-          .dropdown-item {
-            padding: 10px 15px;
-            font-size: 14px;
-          }
-
-          .dropdown-item:hover {
-            background: #f5f7fa;
-          }
-        `}
-      </style>
     </nav>
   );
 }
