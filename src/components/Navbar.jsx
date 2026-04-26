@@ -22,7 +22,7 @@ function Navbar() {
   const token = localStorage.getItem("token");
   const role = localStorage.getItem("role");
 
-  // ✅ FIXED API CALL (safe handling)
+  // FIXED API CALL (safe handling)
   useEffect(() => {
     const token = localStorage.getItem("token");
 
@@ -33,9 +33,7 @@ function Navbar() {
 
     API.get("/dashboard")
       .then((res) => {
-        console.log("PLAN DATA:", res.data); // 🔍 debug
 
-        // ✅ handle multiple possible API structures
         const plan =
           res.data.active_plan ||
           res.data.plan ||
@@ -51,13 +49,13 @@ function Navbar() {
       .finally(() => setLoading(false));
   }, []);
 
-  // ✅ FIXED LOGIC (main issue solved)
+  //  FIXED LOGIC (main issue solved)
   const handlePostJob = () => {
     if (loading) return; // wait for API
 
     console.log("ACTIVE PLAN:", activePlan); // debug
 
-    // ❌ no plan
+    //  no plan
     if (!activePlan) {
       Swal.fire({
         icon: "warning",
@@ -67,7 +65,7 @@ function Navbar() {
       return;
     }
 
-    // ✅ handle different key names
+    // handle different key names
     const jobsRemaining =
       activePlan.jobs_remaining ??
       activePlan.job_remaining ??
@@ -76,7 +74,7 @@ function Navbar() {
 
     console.log("JOBS REMAINING:", jobsRemaining);
 
-    // ❌ no jobs left
+    //  no jobs left
     if (jobsRemaining <= 0) {
       Swal.fire({
         icon: "warning",
@@ -86,7 +84,7 @@ function Navbar() {
       return;
     }
 
-    // ✅ success
+    // success
     navigate("/recruiter/create-job");
   };
 
@@ -208,7 +206,7 @@ function Navbar() {
             )}
           </div>
 
-        {/* ✅ POST JOB BUTTON */}
+        {/*  POST JOB BUTTON */}
           {token && role === "recruiter" ? (
             <button
               onClick={handlePostJob}
@@ -219,7 +217,7 @@ function Navbar() {
               <FaPlus /> Post Job
             </button>
           ) : (
-            // ✅ RESTORED ORIGINAL DROPDOWN (FIXED)
+            //  RESTORED ORIGINAL DROPDOWN (FIXED)
             <div className="d-flex align-items-center gap-3 ms-lg-3">
               <div className="dropdown">
                 <button
