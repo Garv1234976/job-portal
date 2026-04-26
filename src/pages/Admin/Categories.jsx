@@ -11,17 +11,10 @@ const getIconClass = (icon) => {
     icon.includes("fa-solid") ||
     icon.includes("fa-regular") ||
     icon.includes("fa-brands")
-  ) {
-    return icon;
-  }
+  ) return icon;
 
-  if (icon.startsWith("fa-")) {
-    return `fa-solid ${icon}`;
-  }
-
-  if (icon.startsWith("fa ")) {
-    return icon;
-  }
+  if (icon.startsWith("fa-")) return `fa-solid ${icon}`;
+  if (icon.startsWith("fa ")) return icon;
 
   return "fa fa-briefcase";
 };
@@ -75,7 +68,7 @@ export default function Categories() {
     fetchCategories();
   }, [page, search]);
 
-  // MODAL OPEN
+  // OPEN MODAL
   const openModal = (cat = null) => {
     if (cat) {
       setForm({
@@ -91,18 +84,18 @@ export default function Categories() {
     setShowModal(true);
   };
 
-  // ✅ FIXED SUBMIT
+  // SUBMIT
   const handleSubmit = async () => {
     if (!form.name.trim()) {
       return Swal.fire("Error", "Name required", "error");
     }
 
-    try {
-      const payload = {
-        ...form,
-        parent_id: form.parent_id || null, // 🔥 FIX
-      };
+    const payload = {
+      ...form,
+      parent_id: form.parent_id || null,
+    };
 
+    try {
       if (editId) {
         await API.put(`/admin/categories/${editId}`, payload);
         Swal.fire("Updated!", "", "success");
@@ -132,26 +125,6 @@ export default function Categories() {
     });
   };
 
-  // TREE
-  const buildTree = (data, parent = null) => {
-    return data
-      .filter((item) => item.parent_id === parent)
-      .map((item) => ({
-        ...item,
-        children: buildTree(data, item.id),
-      }));
-  };
-
-  const tree = buildTree(categories);
-
-  const renderTree = (nodes, level = 0) =>
-    nodes.map((node) => (
-      <div key={node.id} style={{ paddingLeft: level * 20 }}>
-        <strong>{node.name}</strong>
-        {node.children.length > 0 && renderTree(node.children, level + 1)}
-      </div>
-    ));
-
   const filteredIcons = ICONS.filter((ic) =>
     ic.toLowerCase().includes(iconSearch.toLowerCase())
   );
@@ -159,6 +132,7 @@ export default function Categories() {
   return (
     <AdminLayout>
       <div className="container-fluid">
+
         <div className="d-flex justify-content-between mb-3">
           <h4 className="fw-bold">Manage Categories</h4>
           <button className="btn btn-primary" onClick={() => openModal()}>
@@ -176,6 +150,7 @@ export default function Categories() {
           }}
         />
 
+        {/* TABLE */}
         <div className="card shadow-sm mb-4">
           <table className="table table-hover mb-0">
             <thead className="table-dark">
@@ -224,7 +199,10 @@ export default function Categories() {
         {showModal && (
           <div className="modal-overlay">
             <div className="modal-box">
-              <h5>{editId ? "Edit Category" : "Add Category"}</h5>
+
+              <h5 className="mb-3">
+                {editId ? "Edit Category" : "Add Category"}
+              </h5>
 
               <input
                 className="form-control mb-2"
@@ -235,7 +213,6 @@ export default function Categories() {
                 }
               />
 
-              {/* ✅ FIXED SELECT */}
               <select
                 className="form-control mb-2"
                 value={form.parent_id || ""}
@@ -251,6 +228,7 @@ export default function Categories() {
                 ))}
               </select>
 
+              {/* ICON SEARCH */}
               <input
                 className="form-control mb-2"
                 placeholder="Search icon..."
@@ -258,7 +236,18 @@ export default function Categories() {
                 onChange={(e) => setIconSearch(e.target.value)}
               />
 
-              <div className="d-flex gap-2 flex-wrap mb-3">
+              {/* SELECTED PREVIEW */}
+              {form.icon && (
+                <div className="mb-2 d-flex align-items-center gap-2">
+                  <strong>Selected:</strong>
+                  <div className="icon-box active">
+                    <i className={getIconClass(form.icon)}></i>
+                  </div>
+                </div>
+              )}
+
+              {/* ICON GRID */}
+              <div className="icon-grid">
                 {filteredIcons.map((ic) => (
                   <div
                     key={ic}
@@ -272,15 +261,82 @@ export default function Categories() {
                 ))}
               </div>
 
-              <div className="d-flex justify-content-end gap-2">
-                <button onClick={() => setShowModal(false)}>
+              <div className="d-flex justify-content-end gap-2 mt-3">
+                <button
+                  className="btn btn-secondary"
+                  onClick={() => setShowModal(false)}
+                >
                   Cancel
                 </button>
-                <button onClick={handleSubmit}>Save</button>
+
+                <button className="btn btn-primary" onClick={handleSubmit}>
+                  Save
+                </button>
               </div>
+
             </div>
           </div>
         )}
+
+        {/* STYLE */}
+        <style>{`
+          .modal-box {
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            width: 420px;
+            max-width: 95%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+          }
+
+          .icon-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+            gap: 10px;
+            max-height: 220px;
+            overflow-y: auto;
+            padding: 10px;
+            border: 1px solid #eee;
+            border-radius: 10px;
+            background: #fafafa;
+          }
+
+          .icon-box {
+            width: 50px;
+            height: 50px;
+            border: 1px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border-radius: 10px;
+            background: #fff;
+            transition: 0.2s;
+          }
+
+          .icon-box i {
+            font-size: 18px;
+            color: #333;
+          }
+
+          .icon-box:hover {
+            border-color: #0d6efd;
+            background: #f0f7ff;
+            transform: scale(1.05);
+          }
+
+          .icon-box.active {
+            background: #0d6efd;
+            color: #fff;
+            border-color: #0d6efd;
+            box-shadow: 0 0 10px rgba(13,110,253,0.3);
+          }
+
+          .icon-box.active i {
+            color: #fff;
+          }
+        `}</style>
+
       </div>
     </AdminLayout>
   );
