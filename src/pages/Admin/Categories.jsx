@@ -29,7 +29,7 @@ export default function Categories() {
   const [lastPage, setLastPage] = useState(1);
   const [search, setSearch] = useState("");
 
-  // 🔥 FETCH
+  //  FETCH
   const fetchCategories = () => {
     API.get("/admin/categories", {
       params: { page, search },
@@ -45,7 +45,7 @@ export default function Categories() {
     fetchCategories();
   }, [page, search]);
 
-  // 🔥 MODAL OPEN
+  //  MODAL OPEN
   const openModal = (cat = null) => {
     if (cat) {
       setForm({
@@ -61,7 +61,7 @@ export default function Categories() {
     setShowModal(true);
   };
 
-  // 🔥 SUBMIT
+  //  SUBMIT
   const handleSubmit = async () => {
     if (!form.name.trim()) {
       return Swal.fire("Error", "Name required", "error");
@@ -83,7 +83,7 @@ export default function Categories() {
     }
   };
 
-  // 🔥 DELETE
+  //  DELETE
   const deleteCategory = (id) => {
     Swal.fire({
       title: "Delete?",
@@ -97,7 +97,7 @@ export default function Categories() {
     });
   };
 
-  // 🔥 TREE BUILD
+  //  TREE BUILD
   const buildTree = (data, parent = null) => {
     return data
       .filter((item) => item.parent_id === parent)
@@ -109,7 +109,7 @@ export default function Categories() {
 
   const tree = buildTree(categories);
 
-  // 🔥 TREE UI
+  //  TREE UI
   const renderTree = (nodes, level = 0) =>
     nodes.map((node) => (
       <div key={node.id} style={{ paddingLeft: level * 20 }}>
