@@ -25,6 +25,7 @@ export default function AdminSettings() {
   });
 
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
 
   // FETCH
   useEffect(() => {
@@ -79,8 +80,39 @@ export default function AdminSettings() {
     }));
   };
 
+  // VALIDATION
+  const validate = () => {
+    let newErrors = {};
+    const phoneRegex = /^[0-9]{10}$/;
+    const emailRegex = /\S+@\S+\.\S+/;
+
+    if (form.contact.phone_1 && !phoneRegex.test(form.contact.phone_1)) {
+      newErrors.phone_1 = "Phone must be exactly 10 digits";
+    }
+
+    if (form.contact.phone_2 && !phoneRegex.test(form.contact.phone_2)) {
+      newErrors.phone_2 = "Phone must be exactly 10 digits";
+    }
+
+    if (form.contact.email_1 && !emailRegex.test(form.contact.email_1)) {
+      newErrors.email_1 = "Invalid email format";
+    }
+
+    if (form.contact.email_2 && !emailRegex.test(form.contact.email_2)) {
+      newErrors.email_2 = "Invalid email format";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   // SAVE
   const saveSection = async (section) => {
+    if (!validate()) {
+      toast.error("Please fix errors ❌");
+      return;
+    }
+
     try {
       setLoading(true);
 
@@ -109,6 +141,7 @@ export default function AdminSettings() {
         <div className="card p-3 mb-4 shadow-sm">
           <div className="d-flex justify-content-between">
             <h5>Contact Info</h5>
+
             <button
               className="btn btn-sm btn-outline-primary"
               onClick={() =>
@@ -124,29 +157,67 @@ export default function AdminSettings() {
 
           {edit.contact ? (
             <>
-              <input className="form-control mt-3"
+              {/* EMAIL 1 */}
+              <input
+                className="form-control mt-3"
                 value={form.contact.email_1 || ""}
-                onChange={(e)=>handleChange("contact","email_1",e.target.value)}
+                onChange={(e) =>
+                  handleChange("contact", "email_1", e.target.value)
+                }
                 placeholder="Email 1"
               />
+              {errors.email_1 && (
+                <small className="text-danger">{errors.email_1}</small>
+              )}
 
-              <input className="form-control mt-2"
+              {/* EMAIL 2 */}
+              <input
+                className="form-control mt-2"
                 value={form.contact.email_2 || ""}
-                onChange={(e)=>handleChange("contact","email_2",e.target.value)}
+                onChange={(e) =>
+                  handleChange("contact", "email_2", e.target.value)
+                }
                 placeholder="Email 2"
               />
+              {errors.email_2 && (
+                <small className="text-danger">{errors.email_2}</small>
+              )}
 
-              <input className="form-control mt-2"
+              {/* PHONE 1 */}
+              <input
+                className="form-control mt-2"
                 value={form.contact.phone_1 || ""}
-                onChange={(e)=>handleChange("contact","phone_1",e.target.value)}
+                onChange={(e) =>
+                  handleChange(
+                    "contact",
+                    "phone_1",
+                    e.target.value.replace(/\D/g, "")
+                  )
+                }
+                maxLength={10}
                 placeholder="Phone 1"
               />
+              {errors.phone_1 && (
+                <small className="text-danger">{errors.phone_1}</small>
+              )}
 
-              <input className="form-control mt-2"
+              {/* PHONE 2 */}
+              <input
+                className="form-control mt-2"
                 value={form.contact.phone_2 || ""}
-                onChange={(e)=>handleChange("contact","phone_2",e.target.value)}
+                onChange={(e) =>
+                  handleChange(
+                    "contact",
+                    "phone_2",
+                    e.target.value.replace(/\D/g, "")
+                  )
+                }
+                maxLength={10}
                 placeholder="Phone 2"
               />
+              {errors.phone_2 && (
+                <small className="text-danger">{errors.phone_2}</small>
+              )}
 
               <button
                 className="btn btn-success btn-sm mt-3"
@@ -169,6 +240,7 @@ export default function AdminSettings() {
         <div className="card p-3 mb-4 shadow-sm">
           <div className="d-flex justify-content-between">
             <h5>Social Links</h5>
+
             <button
               className="btn btn-sm btn-outline-primary"
               onClick={() =>
@@ -184,15 +256,21 @@ export default function AdminSettings() {
 
           {edit.social ? (
             <>
-              <input className="form-control mt-3"
+              <input
+                className="form-control mt-3"
                 value={form.social.facebook || ""}
-                onChange={(e)=>handleChange("social","facebook",e.target.value)}
+                onChange={(e) =>
+                  handleChange("social", "facebook", e.target.value)
+                }
                 placeholder="Facebook URL"
               />
 
-              <input className="form-control mt-2"
+              <input
+                className="form-control mt-2"
                 value={form.social.linkedin || ""}
-                onChange={(e)=>handleChange("social","linkedin",e.target.value)}
+                onChange={(e) =>
+                  handleChange("social", "linkedin", e.target.value)
+                }
                 placeholder="LinkedIn URL"
               />
 
@@ -217,6 +295,7 @@ export default function AdminSettings() {
         <div className="card p-3 mb-4 shadow-sm">
           <div className="d-flex justify-content-between">
             <h5>Offices</h5>
+
             <button
               className="btn btn-sm btn-outline-primary"
               onClick={() =>
@@ -234,25 +313,35 @@ export default function AdminSettings() {
             <>
               {form.offices.map((o, i) => (
                 <div key={i} className="border p-2 mt-3 rounded">
-                  <input className="form-control mb-1"
+                  <input
+                    className="form-control mb-1"
                     value={o.name}
-                    onChange={(e)=>handleOfficeChange(i,"name",e.target.value)}
+                    onChange={(e) =>
+                      handleOfficeChange(i, "name", e.target.value)
+                    }
                     placeholder="Office Name"
                   />
 
-                  <input className="form-control mb-1"
+                  <input
+                    className="form-control mb-1"
                     value={o.address}
-                    onChange={(e)=>handleOfficeChange(i,"address",e.target.value)}
+                    onChange={(e) =>
+                      handleOfficeChange(i, "address", e.target.value)
+                    }
                     placeholder="Address"
                   />
 
-                  <input className="form-control mb-1"
+                  <input
+                    className="form-control mb-1"
                     value={o.map}
-                    onChange={(e)=>handleOfficeChange(i,"map",e.target.value)}
+                    onChange={(e) =>
+                      handleOfficeChange(i, "map", e.target.value)
+                    }
                     placeholder="Map Link"
                   />
 
-                  <button className="btn btn-danger btn-sm"
+                  <button
+                    className="btn btn-danger btn-sm"
                     onClick={() => removeOffice(i)}
                   >
                     Remove
@@ -273,14 +362,16 @@ export default function AdminSettings() {
               </button>
             </>
           ) : (
-            form.offices.length === 0
-              ? <div className="text-muted mt-2">No offices added</div>
-              : form.offices.map((o, i) => (
-                  <div key={i} className="mt-2 text-muted">
-                    <strong>{o.name}</strong>
-                    <div>{o.address}</div>
-                  </div>
-                ))
+            form.offices.length === 0 ? (
+              <div className="text-muted mt-2">No offices added</div>
+            ) : (
+              form.offices.map((o, i) => (
+                <div key={i} className="mt-2 text-muted">
+                  <strong>{o.name}</strong>
+                  <div>{o.address}</div>
+                </div>
+              ))
+            )
           )}
         </div>
 
