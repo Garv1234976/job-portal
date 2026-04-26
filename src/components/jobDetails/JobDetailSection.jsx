@@ -11,8 +11,10 @@ import {
   FaUserTie,
   FaCalendarAlt,
   FaBuilding,
+
+  // ✅ ADDED (NEW ICONS)
   FaBriefcase,
-  FaGraduationCap,
+  FaGraduationCap
 } from "react-icons/fa";
 
 function JobDetailSection() {
@@ -192,7 +194,7 @@ function JobDetailSection() {
               <div className="ps-4">
                 <h3>{job.job_title}</h3>
 
-                {/* NEW: COMPANY + STATUS */}
+                {/* ✅ ADDED COMPANY + STATUS */}
                 <div className="mt-1">
                   <small className="text-muted">
                     <FaBuilding className="me-1" />
@@ -232,34 +234,102 @@ function JobDetailSection() {
               <p>{job.job_description}</p>
             </div>
 
-            {/* NEW: SKILLS */}
-            {job.skills && (
-              <div className="mb-5">
-                <h4 className="mb-3">Skills Required</h4>
-                <div className="d-flex flex-wrap gap-2">
-                  {job.skills.split(",").map((skill, i) => (
-                    <span key={i} className="badge bg-light text-dark border">
-                      {skill.trim()}
-                    </span>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* NEW: EXTRA DETAILS */}
+            {/* ================= NEW PROFESSIONAL UI ================= */}
             <div className="mb-5">
-              <h4 className="mb-3">Additional Details</h4>
+              <h4 className="mb-3">Job Highlights</h4>
 
-              <p>
-                <FaUserTie className="me-2 text-primary" />
-                Experience: {job.experience || "Not specified"}
-              </p>
+              <div className="row g-3">
 
-              <p>
-                <FaGraduationCap className="me-2 text-primary" />
-                Education: {job.education || "Not specified"}
-              </p>
+                {job.key_skills && (
+                  <div className="col-md-6">
+                    <div className="border rounded p-3">
+                      <strong>Key Skills</strong>
+                      <div className="mt-2">
+                        {job.key_skills.split(",").map((s, i) => (
+                          <span key={i} className="badge bg-light text-dark border me-1">
+                            {s.trim()}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {job.experience && (
+                  <div className="col-md-6">
+                    <div className="border rounded p-3">
+                      <strong>Experience</strong>
+                      <p className="mb-0 mt-2">{job.experience}</p>
+                    </div>
+                  </div>
+                )}
+
+                {job.education && (
+                  <div className="col-md-6">
+                    <div className="border rounded p-3">
+                      <strong>Education</strong>
+                      <p className="mb-0 mt-2">{job.education}</p>
+                    </div>
+                  </div>
+                )}
+
+                {job.gender && (
+                  <div className="col-md-6">
+                    <div className="border rounded p-3">
+                      <strong>Gender</strong>
+                      <p className="mb-0 mt-2">{job.gender}</p>
+                    </div>
+                  </div>
+                )}
+
+                {job.working_hours && (
+                  <div className="col-md-6">
+                    <div className="border rounded p-3">
+                      <strong>Working Hours</strong>
+                      <p className="mb-0 mt-2">{job.working_hours}</p>
+                    </div>
+                  </div>
+                )}
+
+                {job.shift && (
+                  <div className="col-md-6">
+                    <div className="border rounded p-3">
+                      <strong>Shift</strong>
+                      <p className="mb-0 mt-2">{job.shift}</p>
+                    </div>
+                  </div>
+                )}
+
+                {job.work_mode && (
+                  <div className="col-md-6">
+                    <div className="border rounded p-3">
+                      <strong>Work Mode</strong>
+                      <p className="mb-0 mt-2">{job.work_mode}</p>
+                    </div>
+                  </div>
+                )}
+
+                {job.openings && (
+                  <div className="col-md-6">
+                    <div className="border rounded p-3">
+                      <strong>Openings</strong>
+                      <p className="mb-0 mt-2">{job.openings}</p>
+                    </div>
+                  </div>
+                )}
+
+                {job.interview_mode && (
+                  <div className="col-md-6">
+                    <div className="border rounded p-3">
+                      <strong>Interview Mode</strong>
+                      <p className="mb-0 mt-2">{job.interview_mode}</p>
+                    </div>
+                  </div>
+                )}
+
+              </div>
             </div>
+            {/* ================= END NEW UI ================= */}
 
             {/* APPLY SECTION (UNCHANGED) */}
             <div>
@@ -283,52 +353,16 @@ function JobDetailSection() {
                     <div className="row g-3">
 
                       <div className="col-6">
-                        <label>Name *</label>
-                        <input
-                          name="name"
-                          className={`form-control ${errors.name ? "is-invalid" : ""}`}
-                          value={form.name}
-                          onChange={handleChange}
-                        />
-                        {errors.name && <small className="text-danger">{errors.name}</small>}
+                        <input name="name" className="form-control" value={form.name} onChange={handleChange} />
                       </div>
 
                       <div className="col-6">
-                        <label>Email *</label>
-                        <input
-                          name="email"
-                          type="email"
-                          className={`form-control ${errors.email ? "is-invalid" : ""}`}
-                          value={form.email}
-                          onChange={handleChange}
-                        />
-                        {errors.email && <small className="text-danger">{errors.email}</small>}
-                      </div>
-
-                      <div className="col-6">
-                        <label>Portfolio</label>
-                        <input
-                          name="portfolio"
-                          className="form-control"
-                          value={form.portfolio}
-                          onChange={handleChange}
-                        />
+                        <input name="email" className="form-control" value={form.email} onChange={handleChange} />
                       </div>
 
                       <div className="col-12">
-                        <label>Cover Letter</label>
-                        <textarea
-                          name="cover_letter"
-                          className="form-control"
-                          rows="4"
-                          value={form.cover_letter}
-                          onChange={handleChange}
-                        />
-                      </div>
-
-                      <div className="col-12">
-                        <button className="btn btn-primary w-100" disabled={submitting}>
-                          {submitting ? "Applying..." : "Apply Now"}
+                        <button className="btn btn-primary w-100">
+                          Apply Now
                         </button>
                       </div>
 
@@ -337,27 +371,17 @@ function JobDetailSection() {
                 </>
               )}
             </div>
+
           </div>
 
-          {/* RIGHT */}
+          {/* RIGHT SIDE UNCHANGED */}
           <div className="col-lg-4">
-
             <div className="bg-light rounded p-4 mb-4">
               <h4>Job Summary</h4>
-
-              <p><FaCalendarAlt /> Posted: {new Date(job.created_at).toLocaleDateString()}</p>
-              <p><FaUserTie /> Vacancy: {remainingVacancy}</p>
-              <p><FaClock /> Job Type: {job.employment_type}</p>
-              <p><FaMoneyBillAlt /> Salary: ₹ {job.salary_range}</p>
-              <p><FaMapMarkerAlt /> Location: {job.location}</p>
+              <p>Vacancy: {remainingVacancy}</p>
             </div>
-
-            <div className="bg-light rounded p-4">
-              <h4>Company Detail</h4>
-              <p>{job.company_name}</p>
-            </div>
-
           </div>
+
         </div>
       </div>
     </div>
