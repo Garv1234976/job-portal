@@ -11,9 +11,9 @@ function Footer() {
 
   // FETCH SETTINGS
   useEffect(() => {
-    api.get("/settings")
+    api.get("/admin/settings")
       .then((res) => setSettings(res.data.data))
-      .catch(() => toast.error("Failed to load footer data ❌"));
+      .catch(() => toast.error("Failed to load footer data "));
   }, []);
 
   const validateEmail = (email) => {
@@ -37,7 +37,7 @@ function Footer() {
 
     try {
       const res = await api.post("/subscribe", { email });
-      toast.success(res.data.message || "Subscribed successfully ✅");
+      toast.success(res.data.message || "Subscribed successfully");
       setEmail("");
     } catch (err) {
       setError(err.response?.data?.message || "Something went wrong");
@@ -50,7 +50,7 @@ function Footer() {
   const office = settings?.offices?.[0] || {};
   const social = settings?.social || {};
 
-  // ✅ COMPANY NAME FROM ADMIN
+  //  COMPANY NAME FROM ADMIN
   const companyName = office?.name || "CareerConnect";
 
   return (
@@ -64,7 +64,7 @@ function Footer() {
             {/* COMPANY */}
             <div className="col-lg-4 col-md-6">
 
-              {/* ✅ DYNAMIC COMPANY NAME */}
+              {/*  DYNAMIC COMPANY NAME */}
               <h5 className="text-white fw-bold mb-1">
                 {companyName}
               </h5>
