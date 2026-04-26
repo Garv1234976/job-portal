@@ -15,7 +15,7 @@ function ContactSection() {
 
   // FETCH SETTINGS
   useEffect(() => {
-    API.get("/settings")
+    API.get("/admin/settings")
       .then((res) => {
         setSettings(res.data.data);
       })
@@ -56,12 +56,11 @@ function ContactSection() {
   const contact = settings?.contact || {};
   const office = settings?.offices?.[0] || {};
 
-  // ✅ MAP FIX FUNCTION
+  //  MAP FIX FUNCTION
   const getMapUrl = () => {
     if (office?.map) {
       if (office.map.includes("embed")) return office.map;
 
-      // fallback: convert address to embed map
       return `https://www.google.com/maps?q=${encodeURIComponent(
         office.address || ""
       )}&output=embed`;
