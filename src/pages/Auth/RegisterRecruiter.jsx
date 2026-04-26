@@ -70,7 +70,6 @@ export default function RecruiterRegistration() {
     }
   };
 
-  // 🔹 Validation (UNCHANGED)
   const validate = () => {
     let newErrors = {};
 
@@ -78,12 +77,23 @@ export default function RecruiterRegistration() {
     else if (!/\S+@\S+\.\S+/.test(form.email))
       newErrors.email = "Invalid email";
 
-    if (!form.contact) newErrors.contact = "Contact required";
-    else if (!/^[0-9]{10}$/.test(form.contact))
-      newErrors.contact = "Must be 10 digits";
+    //  CONTACT FIX
+    if (!form.contact) {
+      newErrors.contact = "Contact is required";
+    } else if (!/^\d+$/.test(form.contact)) {
+      newErrors.contact = "Contact must be a number";
+    } else if (form.contact.length !== 10) {
+      newErrors.contact = "Contact must be 10 digits";
+    }
 
-    if (form.altContact && !/^[0-9]{10}$/.test(form.altContact))
-      newErrors.altContact = "Must be 10 digits";
+    //  ALT CONTACT FIX
+    if (form.altContact) {
+      if (!/^\d+$/.test(form.altContact)) {
+        newErrors.altContact = "Alt contact must be a number";
+      } else if (form.altContact.length !== 10) {
+        newErrors.altContact = "Alt contact must be 10 digits";
+      }
+    }
 
     if (!form.company_name) newErrors.company_name = "Company name required";
     if (!form.address) newErrors.address = "Address required";
@@ -131,9 +141,7 @@ export default function RecruiterRegistration() {
       setTimeout(() => {
         navigate("/recruiter/login");
       }, 1500);
-
     } catch (err) {
-
       //  HANDLE UNIQUE ERRORS (IMPORTANT)
       if (err.response && err.response.status === 422) {
         const backendErrors = err.response.data.errors;
@@ -145,11 +153,9 @@ export default function RecruiterRegistration() {
         });
 
         setErrors(newErrors);
-
       } else {
         Swal.fire("Error", "Something went wrong", "error");
       }
-
     } finally {
       setLoading(false);
     }
@@ -162,17 +168,17 @@ export default function RecruiterRegistration() {
 
       <div className="container mt-5 mb-5">
         <div className="card shadow p-4">
-
           <h2 className="text-center text-success mb-4">
             <b>Recruiter Registration</b>
           </h2>
 
           <form onSubmit={handleSubmit}>
             <div className="row">
-
               {/* Email */}
               <div className="col-md-6 mb-3">
-                <label>Email <span className="text-danger">*</span></label>
+                <label>
+                  Email <span className="text-danger">*</span>
+                </label>
                 <input
                   type="email"
                   name="email"
@@ -184,7 +190,9 @@ export default function RecruiterRegistration() {
 
               {/* Contact */}
               <div className="col-md-6 mb-3">
-                <label>Contact <span className="text-danger">*</span></label>
+                <label>
+                  Contact <span className="text-danger">*</span>
+                </label>
                 <input
                   type="tel"
                   inputMode="numeric"
@@ -216,7 +224,9 @@ export default function RecruiterRegistration() {
 
               {/* Company Name */}
               <div className="col-md-6 mb-3">
-                <label>Company Name <span className="text-danger">*</span></label>
+                <label>
+                  Company Name <span className="text-danger">*</span>
+                </label>
                 <input
                   type="text"
                   name="company_name"
@@ -228,7 +238,9 @@ export default function RecruiterRegistration() {
 
               {/* Address */}
               <div className="col-md-6 mb-3">
-                <label>Address <span className="text-danger">*</span></label>
+                <label>
+                  Address <span className="text-danger">*</span>
+                </label>
                 <input
                   type="text"
                   name="address"
@@ -284,7 +296,9 @@ export default function RecruiterRegistration() {
 
               {/* Logo */}
               <div className="col-md-6 mb-3">
-                <label>Company Logo <span className="text-danger">*</span></label>
+                <label>
+                  Company Logo <span className="text-danger">*</span>
+                </label>
                 <input
                   type="file"
                   name="logo"
@@ -295,7 +309,12 @@ export default function RecruiterRegistration() {
                 <div className="invalid-feedback">{errors.logo}</div>
 
                 {preview && (
-                  <img src={preview} alt="preview" className="mt-2" height="60" />
+                  <img
+                    src={preview}
+                    alt="preview"
+                    className="mt-2"
+                    height="60"
+                  />
                 )}
               </div>
 
@@ -310,7 +329,6 @@ export default function RecruiterRegistration() {
                   onChange={handleFileChange}
                 />
               </div>
-
             </div>
 
             <div className="text-center mt-3">
@@ -318,7 +336,6 @@ export default function RecruiterRegistration() {
                 {loading ? "Submitting..." : "Register"}
               </button>
             </div>
-
           </form>
 
           <div className="text-center mt-3">
@@ -331,7 +348,6 @@ export default function RecruiterRegistration() {
               Login Here
             </span>
           </div>
-
         </div>
       </div>
 
