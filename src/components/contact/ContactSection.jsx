@@ -16,7 +16,7 @@ function ContactSection() {
 
   // FETCH SETTINGS
   useEffect(() => {
-    API.get("/settings")
+    API.get("/admin/settings")
       .then((res) => {
         setSettings(res.data.data);
       })
