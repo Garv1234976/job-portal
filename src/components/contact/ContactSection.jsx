@@ -13,9 +13,9 @@ function ContactSection() {
   const [settings, setSettings] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  //  FETCH SETTINGS
+  // FETCH SETTINGS
   useEffect(() => {
-    API.get("/admin/settings")
+    API.get("/settings")
       .then((res) => {
         setSettings(res.data.data);
       })
@@ -56,6 +56,20 @@ function ContactSection() {
   const contact = settings?.contact || {};
   const office = settings?.offices?.[0] || {};
 
+  // ✅ MAP FIX FUNCTION
+  const getMapUrl = () => {
+    if (office?.map) {
+      if (office.map.includes("embed")) return office.map;
+
+      // fallback: convert address to embed map
+      return `https://www.google.com/maps?q=${encodeURIComponent(
+        office.address || ""
+      )}&output=embed`;
+    }
+
+    return "https://www.google.com/maps?q=Zirakpur&output=embed";
+  };
+
   return (
     <div className="container-xxl py-5">
       <div className="container">
@@ -80,9 +94,7 @@ function ContactSection() {
                   <div className="icon-box">
                     <i className="fa fa-map-marker-alt text-primary"></i>
                   </div>
-                  <span>
-                    {office.address || "No address added"}
-                  </span>
+                  <span>{office.address || "No address added"}</span>
                 </div>
               </div>
 
@@ -92,13 +104,11 @@ function ContactSection() {
                   <div className="icon-box">
                     <i className="fa fa-envelope-open text-primary"></i>
                   </div>
-                  <span>
-                    {contact.email_1 || "No email"}
-                  </span>
+                  <span>{contact.email_1 || "No email"}</span>
                 </div>
               </div>
 
-              {/* PHONE / WHATSAPP */}
+              {/* PHONE */}
               <div className="col-md-4">
                 <div className="d-flex align-items-center bg-light rounded p-4">
                   <div className="icon-box">
@@ -127,7 +137,7 @@ function ContactSection() {
           <div className="col-md-6">
             <iframe
               className="rounded w-100"
-              src={office.map || ""}
+              src={getMapUrl()}
               style={{ minHeight: "400px", border: 0 }}
               loading="lazy"
               title="Map"
