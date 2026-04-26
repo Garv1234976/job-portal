@@ -11,10 +11,6 @@ import {
   FaUserTie,
   FaCalendarAlt,
   FaBuilding,
-
-  // ✅ ADDED (NEW ICONS)
-  FaBriefcase,
-  FaGraduationCap
 } from "react-icons/fa";
 
 function JobDetailSection() {
@@ -194,37 +190,27 @@ function JobDetailSection() {
               <div className="ps-4">
                 <h3>{job.job_title}</h3>
 
-                {/* ✅ ADDED COMPANY + STATUS */}
-                <div className="mt-1">
-                  <small className="text-muted">
-                    <FaBuilding className="me-1" />
-                    {job.company_name || "Company"}
-                  </small>
-                </div>
+                <small className="text-muted">
+                  <FaBuilding className="me-1" />
+                  {job.company_name || "Company"}
+                </small>
 
                 <div className="mt-2">
-                  <span className="badge bg-primary me-2">Featured</span>
-                  {isJobClosed ? (
-                    <span className="badge bg-danger">Closed</span>
-                  ) : (
-                    <span className="badge bg-success">Active</span>
-                  )}
+                  <span className="me-3">
+                    <FaMapMarkerAlt className="me-2 text-primary" />
+                    {job.location}
+                  </span>
+
+                  <span className="me-3">
+                    <FaClock className="me-2 text-primary" />
+                    {job.employment_type || "N/A"}
+                  </span>
+
+                  <span>
+                    <FaMoneyBillAlt className="me-2 text-primary" />
+                    ₹ {job.salary_range}
+                  </span>
                 </div>
-
-                <span className="me-3">
-                  <FaMapMarkerAlt className="me-2 text-primary" />
-                  {job.location}
-                </span>
-
-                <span className="me-3">
-                  <FaClock className="me-2 text-primary" />
-                  {job.employment_type || "N/A"}
-                </span>
-
-                <span>
-                  <FaMoneyBillAlt className="me-2 text-primary" />
-                  ₹ {job.salary_range}
-                </span>
               </div>
             </div>
 
@@ -234,19 +220,19 @@ function JobDetailSection() {
               <p>{job.job_description}</p>
             </div>
 
-            {/* ================= NEW PROFESSIONAL UI ================= */}
+            {/* 🔥 NEW CLEAN JOB HIGHLIGHTS UI */}
             <div className="mb-5">
-              <h4 className="mb-3">Job Highlights</h4>
+              <h4 className="mb-3 fw-bold">Job Highlights</h4>
 
               <div className="row g-3">
 
                 {job.key_skills && (
                   <div className="col-md-6">
-                    <div className="border rounded p-3">
-                      <strong>Key Skills</strong>
+                    <div className="p-3 border rounded bg-light">
+                      <small className="text-muted">Key Skills</small>
                       <div className="mt-2">
                         {job.key_skills.split(",").map((s, i) => (
-                          <span key={i} className="badge bg-light text-dark border me-1">
+                          <span key={i} className="badge bg-primary-subtle text-dark me-1">
                             {s.trim()}
                           </span>
                         ))}
@@ -257,86 +243,65 @@ function JobDetailSection() {
 
                 {job.experience && (
                   <div className="col-md-6">
-                    <div className="border rounded p-3">
-                      <strong>Experience</strong>
-                      <p className="mb-0 mt-2">{job.experience}</p>
+                    <div className="p-3 border rounded bg-light">
+                      <small className="text-muted">Experience</small>
+                      <div className="fw-semibold">{job.experience}</div>
                     </div>
                   </div>
                 )}
 
                 {job.education && (
                   <div className="col-md-6">
-                    <div className="border rounded p-3">
-                      <strong>Education</strong>
-                      <p className="mb-0 mt-2">{job.education}</p>
+                    <div className="p-3 border rounded bg-light">
+                      <small className="text-muted">Education</small>
+                      <div className="fw-semibold">{job.education}</div>
                     </div>
                   </div>
                 )}
 
                 {job.gender && (
                   <div className="col-md-6">
-                    <div className="border rounded p-3">
-                      <strong>Gender</strong>
-                      <p className="mb-0 mt-2">{job.gender}</p>
+                    <div className="p-3 border rounded bg-light">
+                      <small className="text-muted">Gender</small>
+                      <div className="fw-semibold">{job.gender}</div>
                     </div>
                   </div>
                 )}
 
                 {job.working_hours && (
                   <div className="col-md-6">
-                    <div className="border rounded p-3">
-                      <strong>Working Hours</strong>
-                      <p className="mb-0 mt-2">{job.working_hours}</p>
-                    </div>
-                  </div>
-                )}
-
-                {job.shift && (
-                  <div className="col-md-6">
-                    <div className="border rounded p-3">
-                      <strong>Shift</strong>
-                      <p className="mb-0 mt-2">{job.shift}</p>
-                    </div>
-                  </div>
-                )}
-
-                {job.work_mode && (
-                  <div className="col-md-6">
-                    <div className="border rounded p-3">
-                      <strong>Work Mode</strong>
-                      <p className="mb-0 mt-2">{job.work_mode}</p>
+                    <div className="p-3 border rounded bg-light">
+                      <small className="text-muted">Working Hours</small>
+                      <div className="fw-semibold">{job.working_hours}</div>
                     </div>
                   </div>
                 )}
 
                 {job.openings && (
                   <div className="col-md-6">
-                    <div className="border rounded p-3">
-                      <strong>Openings</strong>
-                      <p className="mb-0 mt-2">{job.openings}</p>
+                    <div className="p-3 border rounded bg-light">
+                      <small className="text-muted">Openings</small>
+                      <div className="fw-semibold">{job.openings}</div>
                     </div>
                   </div>
                 )}
 
                 {job.interview_mode && (
                   <div className="col-md-6">
-                    <div className="border rounded p-3">
-                      <strong>Interview Mode</strong>
-                      <p className="mb-0 mt-2">{job.interview_mode}</p>
+                    <div className="p-3 border rounded bg-light">
+                      <small className="text-muted">Interview Mode</small>
+                      <div className="fw-semibold">{job.interview_mode}</div>
                     </div>
                   </div>
                 )}
 
               </div>
             </div>
-            {/* ================= END NEW UI ================= */}
 
             {/* APPLY SECTION (UNCHANGED) */}
             <div>
               {isJobClosed ? (
-                <div className="alert alert-danger text-center">
-                  🚫 Job Closed
-                </div>
+                <div className="alert alert-danger text-center">🚫 Job Closed</div>
               ) : isRecruiter ? (
                 <div className="alert alert-info text-center">
                   You can view this job but cannot apply
@@ -348,24 +313,19 @@ function JobDetailSection() {
               ) : (
                 <>
                   <h4 className="mb-4">Apply For The Job</h4>
-
                   <form onSubmit={handleApply}>
                     <div className="row g-3">
-
                       <div className="col-6">
                         <input name="name" className="form-control" value={form.name} onChange={handleChange} />
                       </div>
-
                       <div className="col-6">
                         <input name="email" className="form-control" value={form.email} onChange={handleChange} />
                       </div>
-
                       <div className="col-12">
                         <button className="btn btn-primary w-100">
                           Apply Now
                         </button>
                       </div>
-
                     </div>
                   </form>
                 </>
