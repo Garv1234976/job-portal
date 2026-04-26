@@ -257,13 +257,13 @@ function JobDetailSection() {
 
               {job.education && (
                 <p>
-                  <strong>UG:</strong> {job.education}
+                  <strong>Undergraduate:</strong> {job.education}
                 </p>
               )}
 
               {job.pg && (
                 <p>
-                  <strong>PG:</strong> {job.pg}
+                  <strong>Postgraduate:</strong> {job.pg}
                 </p>
               )}
 
