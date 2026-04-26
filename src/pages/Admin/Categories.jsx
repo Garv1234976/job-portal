@@ -3,7 +3,7 @@ import API from "../../services/api";
 import AdminLayout from "./Layout";
 import Swal from "sweetalert2";
 
-// ICON FIX FUNCTION
+// ICON FIX
 const getIconClass = (icon) => {
   if (!icon) return "fa fa-briefcase";
 
@@ -133,6 +133,7 @@ export default function Categories() {
     <AdminLayout>
       <div className="container-fluid">
 
+        {/* HEADER */}
         <div className="d-flex justify-content-between mb-3">
           <h4 className="fw-bold">Manage Categories</h4>
           <button className="btn btn-primary" onClick={() => openModal()}>
@@ -140,6 +141,7 @@ export default function Categories() {
           </button>
         </div>
 
+        {/* SEARCH */}
         <input
           className="form-control mb-3"
           placeholder="Search..."
@@ -195,6 +197,39 @@ export default function Categories() {
           </table>
         </div>
 
+        {/* ✅ PAGINATION RESTORED */}
+        <div className="d-flex justify-content-center gap-2 mt-3 mb-4">
+
+          <button
+            className="btn btn-sm btn-outline-secondary"
+            disabled={page === 1}
+            onClick={() => setPage(page - 1)}
+          >
+            ← Prev
+          </button>
+
+          {[...Array(lastPage)].map((_, i) => (
+            <button
+              key={i}
+              className={`btn btn-sm ${
+                page === i + 1 ? "btn-primary" : "btn-light"
+              }`}
+              onClick={() => setPage(i + 1)}
+            >
+              {i + 1}
+            </button>
+          ))}
+
+          <button
+            className="btn btn-sm btn-outline-secondary"
+            disabled={page === lastPage}
+            onClick={() => setPage(page + 1)}
+          >
+            Next →
+          </button>
+
+        </div>
+
         {/* MODAL */}
         {showModal && (
           <div className="modal-overlay">
@@ -236,7 +271,7 @@ export default function Categories() {
                 onChange={(e) => setIconSearch(e.target.value)}
               />
 
-              {/* SELECTED PREVIEW */}
+              {/* SELECTED */}
               {form.icon && (
                 <div className="mb-2 d-flex align-items-center gap-2">
                   <strong>Selected:</strong>
@@ -329,7 +364,6 @@ export default function Categories() {
             background: #0d6efd;
             color: #fff;
             border-color: #0d6efd;
-            box-shadow: 0 0 10px rgba(13,110,253,0.3);
           }
 
           .icon-box.active i {
