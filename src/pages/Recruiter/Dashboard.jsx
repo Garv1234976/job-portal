@@ -59,7 +59,7 @@ export default function Dashboard() {
               <h2 className="mb-4">Recruiter Dashboard</h2>
 
               <div className="row g-4">
-                <div className="col-md-3">
+                <div className="col-md-4">
                   <div className="card shadow p-3 text-center h-100 dashboard-card">
                     <i className="fa fa-plus-circle fa-2x text-primary mb-2"></i>
                     <h5>Post Job</h5>
@@ -73,7 +73,7 @@ export default function Dashboard() {
                   </div>
                 </div>
 
-                <div className="col-md-3">
+                <div className="col-md-4">
                   <div className="card shadow p-3 text-center h-100 dashboard-card">
                     <i className="fa fa-briefcase fa-2x text-success mb-2"></i>
                     <h5>My Jobs</h5>
@@ -87,7 +87,7 @@ export default function Dashboard() {
                   </div>
                 </div>
 
-                <div className="col-md-3">
+                {/* <div className="col-md-3">
                   <div className="card shadow p-3 text-center h-100 dashboard-card">
                     <i className="fa fa-credit-card fa-2x text-warning mb-2"></i>
                     <h5>Plans</h5>
@@ -99,9 +99,9 @@ export default function Dashboard() {
                       View Plans
                     </button>
                   </div>
-                </div>
+                </div> */}
 
-                <div className="col-md-3">
+                <div className="col-md-4">
                   <div className="card shadow p-3 text-center h-100 dashboard-card">
                     <i className="fa fa-times-circle fa-2x text-dark mb-2"></i>
                     <h5>Closed Jobs</h5>
