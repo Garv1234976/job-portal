@@ -26,7 +26,7 @@ export default function AdminSettings() {
 
   // FETCH SETTINGS
   useEffect(() => {
-    API.get("/settings").then((res) => {
+    API.get("/admin/settings").then((res) => {
       if (res.data.data) {
         setForm({
           contact: res.data.data.contact || {},
