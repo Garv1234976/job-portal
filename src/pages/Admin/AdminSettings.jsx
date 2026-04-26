@@ -294,7 +294,7 @@ export default function AdminSettings() {
         {/* OFFICES */}
         <div className="card p-3 mb-4 shadow-sm">
           <div className="d-flex justify-content-between">
-            <h5>Offices</h5>
+            <h5>Companies</h5>
 
             <button
               className="btn btn-sm btn-outline-primary"
@@ -350,7 +350,7 @@ export default function AdminSettings() {
               ))}
 
               <button className="btn btn-primary btn-sm mt-3" onClick={addOffice}>
-                + Add Office
+                + Add Company
               </button>
 
               <button
