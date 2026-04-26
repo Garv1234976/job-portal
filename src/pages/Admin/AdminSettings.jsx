@@ -319,7 +319,7 @@ export default function AdminSettings() {
                     onChange={(e) =>
                       handleOfficeChange(i, "name", e.target.value)
                     }
-                    placeholder="Office Name"
+                    placeholder="Company Name"
                   />
 
                   <input
