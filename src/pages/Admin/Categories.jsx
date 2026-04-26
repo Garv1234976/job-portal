@@ -3,13 +3,17 @@ import API from "../../services/api";
 import AdminLayout from "./Layout";
 import Swal from "sweetalert2";
 
+// ✅ MORE ICONS
 const ICONS = [
-  "fa fa-laptop",
-  "fa fa-code",
-  "fa fa-briefcase",
-  "fa fa-user",
-  "fa fa-cogs",
-  "fa fa-chart-line",
+  "fa fa-laptop","fa fa-code","fa fa-briefcase","fa fa-user",
+  "fa fa-cogs","fa fa-chart-line","fa fa-bell","fa fa-heart",
+  "fa fa-star","fa fa-envelope","fa fa-globe","fa fa-camera",
+  "fa fa-cloud","fa fa-lock","fa fa-unlock","fa fa-phone",
+  "fa fa-map","fa fa-car","fa fa-shopping-cart","fa fa-book",
+  "fa fa-graduation-cap","fa fa-building","fa fa-database",
+  "fa fa-server","fa fa-wifi","fa fa-music","fa fa-video",
+  "fa fa-image","fa fa-edit","fa fa-trash","fa fa-download",
+  "fa fa-upload","fa fa-calendar","fa fa-clock","fa fa-search"
 ];
 
 export default function Categories() {
@@ -29,7 +33,10 @@ export default function Categories() {
   const [lastPage, setLastPage] = useState(1);
   const [search, setSearch] = useState("");
 
-  //  FETCH
+  // ✅ NEW: icon search
+  const [iconSearch, setIconSearch] = useState("");
+
+  // FETCH
   const fetchCategories = () => {
     API.get("/admin/categories", {
       params: { page, search },
@@ -45,7 +52,7 @@ export default function Categories() {
     fetchCategories();
   }, [page, search]);
 
-  //  MODAL OPEN
+  // MODAL OPEN
   const openModal = (cat = null) => {
     if (cat) {
       setForm({
@@ -61,7 +68,7 @@ export default function Categories() {
     setShowModal(true);
   };
 
-  //  SUBMIT
+  // SUBMIT
   const handleSubmit = async () => {
     if (!form.name.trim()) {
       return Swal.fire("Error", "Name required", "error");
@@ -83,7 +90,7 @@ export default function Categories() {
     }
   };
 
-  //  DELETE
+  // DELETE
   const deleteCategory = (id) => {
     Swal.fire({
       title: "Delete?",
@@ -97,7 +104,7 @@ export default function Categories() {
     });
   };
 
-  //  TREE BUILD
+  // TREE
   const buildTree = (data, parent = null) => {
     return data
       .filter((item) => item.parent_id === parent)
@@ -109,7 +116,6 @@ export default function Categories() {
 
   const tree = buildTree(categories);
 
-  //  TREE UI
   const renderTree = (nodes, level = 0) =>
     nodes.map((node) => (
       <div key={node.id} style={{ paddingLeft: level * 20 }}>
@@ -117,6 +123,11 @@ export default function Categories() {
         {node.children.length > 0 && renderTree(node.children, level + 1)}
       </div>
     ));
+
+  // ✅ FILTER ICONS
+  const filteredIcons = ICONS.filter((ic) =>
+    ic.toLowerCase().includes(iconSearch.toLowerCase())
+  );
 
   return (
     <AdminLayout>
@@ -180,7 +191,7 @@ export default function Categories() {
           </table>
         </div>
 
-        {/* TREE VIEW */}
+        {/* TREE */}
         <div className="card p-3 mb-4">
           <h5>Category Hierarchy</h5>
           {renderTree(tree)}
@@ -216,6 +227,8 @@ export default function Categories() {
             Next
           </button>
         </div>
+
+        {/* MODAL */}
         {showModal && (
           <div className="modal-overlay">
             <div className="modal-box">
@@ -227,7 +240,9 @@ export default function Categories() {
                 className="form-control mb-2"
                 placeholder="Category Name"
                 value={form.name}
-                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                onChange={(e) =>
+                  setForm({ ...form, name: e.target.value })
+                }
               />
 
               <select
@@ -245,11 +260,32 @@ export default function Categories() {
                 ))}
               </select>
 
-              <div className="d-flex gap-2 flex-wrap mb-3">
-                {ICONS.map((ic) => (
+              {/* 🔍 ICON SEARCH */}
+              <input
+                className="form-control mb-2"
+                placeholder="Search icon..."
+                value={iconSearch}
+                onChange={(e) => setIconSearch(e.target.value)}
+              />
+
+              {/* ICON LIST */}
+              <div
+                className="d-flex gap-2 flex-wrap mb-3"
+                style={{ maxHeight: "150px", overflowY: "auto" }}
+              >
+                {/* OLD ICON */}
+                {form.icon && !filteredIcons.includes(form.icon) && (
+                  <div className="icon-box active">
+                    <i className={form.icon}></i>
+                  </div>
+                )}
+
+                {filteredIcons.map((ic) => (
                   <div
                     key={ic}
-                    className={`icon-box ${form.icon === ic ? "active" : ""}`}
+                    className={`icon-box ${
+                      form.icon === ic ? "active" : ""
+                    }`}
                     onClick={() => setForm({ ...form, icon: ic })}
                   >
                     <i className={ic}></i>
@@ -272,6 +308,28 @@ export default function Categories() {
             </div>
           </div>
         )}
+
+        {/* STYLE */}
+        <style>
+          {`
+          .icon-box {
+            width: 40px;
+            height: 40px;
+            border: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border-radius: 6px;
+          }
+
+          .icon-box.active {
+            background: #0d6efd;
+            color: #fff;
+            border-color: #0d6efd;
+          }
+        `}
+        </style>
       </div>
     </AdminLayout>
   );
