@@ -33,7 +33,6 @@ function Navbar() {
 
     API.get("/dashboard")
       .then((res) => {
-
         const plan =
           res.data.active_plan ||
           res.data.plan ||
@@ -53,8 +52,6 @@ function Navbar() {
   const handlePostJob = () => {
     if (loading) return; // wait for API
 
-    console.log("ACTIVE PLAN:", activePlan); // debug
-
     //  no plan
     if (!activePlan) {
       Swal.fire({
@@ -71,8 +68,6 @@ function Navbar() {
       activePlan.job_remaining ??
       activePlan.remaining_jobs ??
       0;
-
-    console.log("JOBS REMAINING:", jobsRemaining);
 
     //  no jobs left
     if (jobsRemaining <= 0) {
@@ -188,10 +183,11 @@ function Navbar() {
                       <FaTachometerAlt /> Dashboard
                     </Link>
                   )}
-
-                  <Link to="/recruiter/profile" className="dropdown-item">
-                    <FaUser /> Profile
-                  </Link>
+                  {role !== "admin" && (
+                    <Link to="/recruiter/profile" className="dropdown-item">
+                      <FaUser /> Profile
+                    </Link>
+                  )}
 
                   <div className="dropdown-divider"></div>
 
@@ -206,7 +202,7 @@ function Navbar() {
             )}
           </div>
 
-        {/*  POST JOB BUTTON */}
+          {/*  POST JOB BUTTON */}
           {token && role === "recruiter" ? (
             <button
               onClick={handlePostJob}
