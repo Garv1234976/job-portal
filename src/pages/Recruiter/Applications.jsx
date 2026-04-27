@@ -279,7 +279,7 @@ export default function Applications() {
                                           )
                                         }
                                       >
-                                        ⭐ <span>Shortlist</span>
+                                         <span>Shortlist</span>
                                       </button>
                                     </li>
                                   )}
@@ -295,7 +295,7 @@ export default function Applications() {
                                           updateStatus(app.id, "selected")
                                         }
                                       >
-                                        ✔ <span>Select</span>
+                                         <span>Select</span>
                                       </button>
                                     </li>
                                   )}
@@ -309,7 +309,7 @@ export default function Applications() {
                                         updateStatus(app.id, "rejected")
                                       }
                                     >
-                                      ✖ <span>Reject</span>
+                                       <span>Reject</span>
                                     </button>
                                   </li>
                                 </ul>
