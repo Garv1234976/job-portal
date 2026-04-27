@@ -21,7 +21,7 @@ export default function MasterData() {
   const fetchData = () => {
     API.get("/admin/master-data")
       .then((res) => {
-        setList(res.data);
+        setList(res.data.data || []);
       })
       .catch(() => {
         Swal.fire("Error", "Failed to load data", "error");
