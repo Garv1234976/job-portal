@@ -8,7 +8,7 @@ import {
   FaList,
   FaHome,
   FaCog,
-  FaDatabase;
+  FaDatabase,
 } from "react-icons/fa";
 
 import "../../components/Category.css";
