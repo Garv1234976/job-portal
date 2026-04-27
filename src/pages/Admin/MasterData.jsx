@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import API from "../../services/api";
 import Swal from "sweetalert2";
-import AdminSidebar from "../../components/AdminSidebar";
+import AdminSidebar from "../../components/Admin/AdminSidebar";
 
 export default function MasterData() {
   const [list, setList] = useState([]);
@@ -17,7 +17,7 @@ export default function MasterData() {
     "job_title",
   ];
 
-  // ✅ FETCH DATA
+  //  FETCH DATA
   const fetchData = () => {
     API.get("/admin/master-data")
       .then((res) => {
@@ -32,12 +32,12 @@ export default function MasterData() {
     fetchData();
   }, []);
 
-  // ✅ HANDLE CHANGE
+  //  HANDLE CHANGE
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  // ✅ ADD / UPDATE
+  //  ADD / UPDATE
   const submit = async () => {
     if (!form.type || !form.name) {
       return Swal.fire("Error", "All fields required", "error");
@@ -60,7 +60,7 @@ export default function MasterData() {
     }
   };
 
-  // ✅ DELETE
+  //  DELETE
   const remove = async (id) => {
     const confirm = await Swal.fire({
       title: "Delete?",
@@ -76,7 +76,7 @@ export default function MasterData() {
     fetchData();
   };
 
-  // ✅ EDIT
+  //  EDIT
   const edit = (item) => {
     setForm({
       type: item.type,
@@ -85,7 +85,7 @@ export default function MasterData() {
     setEditId(item.id);
   };
 
-  // ✅ FILTERED LIST
+  //  FILTERED LIST
   const filteredList = filter
     ? list.filter((item) => item.type === filter)
     : list;
