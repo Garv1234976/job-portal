@@ -77,17 +77,8 @@ export default function CreateJob() {
   };
 
   useEffect(() => {
-    API.get("/admin/master-data").then((res) => {
-      const data = res.data;
-
-      // GROUP BY TYPE
-      const grouped = data.reduce((acc, item) => {
-        if (!acc[item.type]) acc[item.type] = [];
-        acc[item.type].push(item);
-        return acc;
-      }, {});
-
-      setMaster(grouped);
+    API.get("/get-master-data").then((res) => {
+      setMaster(res.data.data || {});
     });
   }, []);
 
