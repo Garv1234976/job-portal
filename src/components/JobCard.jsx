@@ -105,7 +105,7 @@ function JobCard({ job }) {
 
             <div className="text-muted small mb-1 d-flex flex-wrap align-items-center gap-2">
               <span>
-                <FaBriefcase className="me-1" /> {job.experience} Years
+                <FaBriefcase className="me-1" /> {job.experience} 
               </span>
               <span>|</span>
               <span>₹ {job.salary_range}</span>
