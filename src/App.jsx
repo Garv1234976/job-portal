@@ -49,6 +49,7 @@ import Applications from "./pages/Admin/Applications";
 import AdminDashboard from "./pages/Admin/Dashboard";
 import Categories from "./pages/Admin/Categories";
 import AdminSettings from "./pages/Admin/AdminSettings";
+import AdminMasterData from "./pages/Admin/MasterData";
 
 function App() {
   return (
@@ -312,6 +313,15 @@ function App() {
           element={
             <AdminRoute>
               <AdminSettings />
+            </AdminRoute>
+          }
+        />
+
+        <Route
+          path="/admin/master-data"
+          element={
+            <AdminRoute>
+              <AdminMasterData />
             </AdminRoute>
           }
         />

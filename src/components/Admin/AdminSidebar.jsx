@@ -7,7 +7,8 @@ import {
   FaSignOutAlt,
   FaList,
   FaHome,
-  FaCog
+  FaCog,
+  FaDatabase;
 } from "react-icons/fa";
 
 import "../../components/Category.css";
@@ -47,6 +48,12 @@ export default function AdminSidebar() {
       icon: <FaList />,
       path: "/admin/categories",
     },
+
+      {
+    name: "Dropdown Management",
+    icon: <FaDatabase />,
+    path: "/admin/master-data",
+  },
 
     {
       name: "Settings",
