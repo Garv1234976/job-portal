@@ -5,30 +5,39 @@ import AdminSidebar from "../../components/Admin/AdminSidebar";
 
 export default function MasterData() {
   const [list, setList] = useState([]);
-  const [form, setForm] = useState({ type: "", name: "" });
+  const [parents, setParents] = useState([]);
+  const [form, setForm] = useState({
+    type: "",
+    name: "",
+    parent_id: ""
+  });
   const [editId, setEditId] = useState(null);
   const [filter, setFilter] = useState("");
 
   const types = ["education", "skill", "language", "location", "job_title"];
 
+  // 🔥 FETCH DATA
   const fetchData = () => {
-    API.get("/admin/master-data")
-      .then((res) => {
-        setList(res.data.data || []);
-      })
-      .catch(() => {
-        Swal.fire("Error", "Failed to load data", "error");
-      });
+    API.get("/admin/master-data").then((res) => {
+      const data = res.data.data || [];
+      setList(data);
+
+      // 👇 get only parent items
+      const parentItems = data.filter((item) => !item.parent_id);
+      setParents(parentItems);
+    });
   };
 
   useEffect(() => {
     fetchData();
   }, []);
 
+  // HANDLE CHANGE
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  // SUBMIT
   const submit = async () => {
     if (!form.type || !form.name) {
       return Swal.fire("Error", "All fields required", "error");
@@ -37,13 +46,13 @@ export default function MasterData() {
     try {
       if (editId) {
         await API.put(`/admin/master-data/${editId}`, form);
-        Swal.fire("Updated", "Option updated", "success");
+        Swal.fire("Updated", "", "success");
       } else {
         await API.post("/admin/master-data", form);
-        Swal.fire("Added", "Option added", "success");
+        Swal.fire("Added", "", "success");
       }
 
-      setForm({ type: "", name: "" });
+      setForm({ type: "", name: "", parent_id: "" });
       setEditId(null);
       fetchData();
     } catch {
@@ -51,25 +60,30 @@ export default function MasterData() {
     }
   };
 
+  // DELETE
   const remove = async (id) => {
     const confirm = await Swal.fire({
       title: "Delete?",
-      icon: "warning",
       showCancelButton: true,
     });
 
     if (!confirm.isConfirmed) return;
 
     await API.delete(`/admin/master-data/${id}`);
-    Swal.fire("Deleted", "", "success");
     fetchData();
   };
 
+  // EDIT
   const edit = (item) => {
-    setForm({ type: item.type, name: item.name });
+    setForm({
+      type: item.type,
+      name: item.name,
+      parent_id: item.parent_id || ""
+    });
     setEditId(item.id);
   };
 
+  // FILTER
   const filteredList = filter
     ? list.filter((item) => item.type === filter)
     : list;
@@ -77,131 +91,121 @@ export default function MasterData() {
   return (
     <div className="d-flex" style={{ minHeight: "100vh", background: "#f4f6f9" }}>
       
-      {/* SIDEBAR */}
       <AdminSidebar />
 
-      {/* MAIN CONTENT */}
       <div className="flex-grow-1 p-4">
 
         {/* HEADER */}
         <div className="mb-4">
           <h3 className="fw-bold">Dropdown Management</h3>
-          <p className="text-muted">Manage all dropdown options from here</p>
+          <p className="text-muted">Manage hierarchy like Graduate → BCA</p>
         </div>
 
-        {/* FORM CARD */}
-        <div className="card border-0 shadow-sm rounded-4 p-4 mb-4">
-          <div className="row g-3 align-items-end">
+        {/* FORM */}
+        <div className="card p-4 shadow-sm rounded-4 mb-4">
+          <div className="row g-3">
 
-            <div className="col-md-4">
-              <label className="form-label fw-semibold">Category Type</label>
+            {/* TYPE */}
+            <div className="col-md-3">
+              <label>Type</label>
               <select
-                className="form-control rounded-3"
+                className="form-control"
                 name="type"
                 value={form.type}
                 onChange={handleChange}
               >
-                <option value="">Select Type</option>
+                <option value="">Select</option>
                 {types.map((t) => (
                   <option key={t}>{t}</option>
                 ))}
               </select>
             </div>
 
-            <div className="col-md-4">
-              <label className="form-label fw-semibold">Option Name</label>
+            {/* PARENT */}
+            <div className="col-md-3">
+              <label>Parent (Optional)</label>
+              <select
+                className="form-control"
+                name="parent_id"
+                value={form.parent_id}
+                onChange={handleChange}
+              >
+                <option value="">Main Category</option>
+                {parents.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* NAME */}
+            <div className="col-md-3">
+              <label>Name</label>
               <input
-                className="form-control rounded-3"
+                className="form-control"
                 name="name"
-                placeholder="Enter option"
                 value={form.name}
                 onChange={handleChange}
               />
             </div>
 
-            <div className="col-md-4">
+            {/* BUTTON */}
+            <div className="col-md-3 d-flex align-items-end">
               <button
-                className={`btn w-100 rounded-3 fw-semibold ${
+                className={`btn w-100 ${
                   editId ? "btn-warning" : "btn-success"
                 }`}
                 onClick={submit}
               >
-                {editId ? "Update Option" : "Add Option"}
+                {editId ? "Update" : "Add"}
               </button>
             </div>
 
           </div>
         </div>
 
-        {/* FILTER + TITLE */}
-        <div className="d-flex justify-content-between align-items-center mb-3">
-          <h5 className="fw-semibold mb-0">All Options</h5>
-
-          <select
-            className="form-control w-auto rounded-3"
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-          >
-            <option value="">All Types</option>
-            {types.map((t) => (
-              <option key={t}>{t}</option>
-            ))}
-          </select>
-        </div>
-
         {/* TABLE */}
-        <div className="card border-0 shadow-sm rounded-4">
-          <div className="table-responsive">
+        <div className="card shadow-sm p-3 rounded-4">
+          <table className="table">
+            <thead>
+              <tr>
+                <th>Type</th>
+                <th>Parent</th>
+                <th>Name</th>
+                <th>Action</th>
+              </tr>
+            </thead>
 
-            <table className="table align-middle mb-0">
-              <thead style={{ background: "#f1f3f5" }}>
-                <tr>
-                  <th className="ps-4">Type</th>
-                  <th>Name</th>
-                  <th className="text-center">Actions</th>
-                </tr>
-              </thead>
+            <tbody>
+              {filteredList.map((item) => {
+                const parent = list.find((p) => p.id === item.parent_id);
 
-              <tbody>
-                {filteredList.length === 0 && (
-                  <tr>
-                    <td colSpan="3" className="text-center py-4 text-muted">
-                      No data found
-                    </td>
-                  </tr>
-                )}
-
-                {filteredList.map((item) => (
+                return (
                   <tr key={item.id}>
-                    <td className="ps-4 text-capitalize fw-semibold">
-                      <span className="badge bg-light text-dark px-3 py-2">
-                        {item.type}
-                      </span>
-                    </td>
-
+                    <td>{item.type}</td>
+                    <td>{parent ? parent.name : "-"}</td>
                     <td>{item.name}</td>
-
-                    <td className="text-center">
+                    <td>
                       <button
-                        className="btn btn-sm btn-outline-warning me-2"
+                        className="btn btn-sm btn-warning me-2"
                         onClick={() => edit(item)}
                       >
-                        ✏ Edit
+                        Edit
                       </button>
-
                       <button
-                        className="btn btn-sm btn-outline-danger"
+                        className="btn btn-sm btn-danger"
                         onClick={() => remove(item.id)}
                       >
-                        🗑 Delete
+                        Delete
                       </button>
                     </td>
                   </tr>
-                ))}
-              </tbody>
+                );
+              })}
+            </tbody>
 
-            </table>
-          </div>
+          </table>
         </div>
 
       </div>
