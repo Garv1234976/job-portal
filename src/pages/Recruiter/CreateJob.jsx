@@ -44,11 +44,22 @@ export default function CreateJob() {
     if (!form.experience) newErrors.experience = "Required";
     if (!form.gender) newErrors.gender = "Required";
     if (!form.location) newErrors.location = "Required";
-    if (!form.salary_range) newErrors.salary_range = "Required";
     if (!form.openings) newErrors.openings = "Required";
     if (!form.category_id) newErrors.category_id = "Required";
     if (!form.company_name) newErrors.company_name = "Required";
     if (!form.application_limit) newErrors.application_limit = "Required";
+    if (!form.salary_min) newErrors.salary_min = "Required";
+    if (!form.salary_max) newErrors.salary_max = "Required";
+    if (!form.salary_unit) newErrors.salary_unit = "Required";
+    if (!form.salary_type) newErrors.salary_type = "Required";
+
+    if (
+      form.salary_min &&
+      form.salary_max &&
+      Number(form.salary_min) > Number(form.salary_max)
+    ) {
+      newErrors.salary_max = "Max must be greater than Min";
+    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -297,14 +308,23 @@ export default function CreateJob() {
                   {/* Experience */}
                   <div className="col-md-4">
                     <label>
-                      Experience <span className="text-danger">*</span>
+                      Experience (Years) <span className="text-danger">*</span>
                     </label>
-                    <input
+
+                    <select
                       className="form-control"
                       name="experience"
-                      placeholder="0-2"
                       onChange={handleChange}
-                    />
+                    >
+                      <option value="">Select Experience</option>
+                      {[...Array(11)].map((_, i) => (
+                        <option key={i} value={i}>
+                          {i === 0 ? "Fresher" : `${i} Year`}
+                        </option>
+                      ))}
+                      <option value="11">10+ Years</option>
+                    </select>
+
                     <small className="text-danger">{errors.experience}</small>
                   </div>
 
@@ -398,21 +418,69 @@ export default function CreateJob() {
                     <small className="text-danger">{errors.location}</small>
                   </div>
 
-                  {/* Salary (UPDATED FORMAT) */}
-                  <div className="col-md-4">
+                  {/* Salary Section */}
+                  <div className="col-md-12">
                     <label>
-                      Salary Range <span className="text-danger">*</span>
+                      Salary <span className="text-danger">*</span>
                     </label>
-                    <input
-                      className="form-control"
-                      name="salary_range"
-                      placeholder="0-3"
-                      onChange={handleChange}
-                    />
+
+                    <div className="row">
+                      {/* Min Salary */}
+                      <div className="col-md-3">
+                        <input
+                          type="number"
+                          className="form-control"
+                          name="salary_min"
+                          placeholder="Min"
+                          onChange={handleChange}
+                        />
+                      </div>
+
+                      {/* Max Salary */}
+                      <div className="col-md-3">
+                        <input
+                          type="number"
+                          className="form-control"
+                          name="salary_max"
+                          placeholder="Max"
+                          onChange={handleChange}
+                        />
+                      </div>
+
+                      {/* Unit */}
+                      <div className="col-md-3">
+                        <select
+                          className="form-control"
+                          name="salary_unit"
+                          onChange={handleChange}
+                        >
+                          <option value="">Select Unit</option>
+                          <option value="thousand">Thousand</option>
+                          <option value="lakh">Lakh</option>
+                        </select>
+                      </div>
+
+                      {/* Type */}
+                      <div className="col-md-3">
+                        <select
+                          className="form-control"
+                          name="salary_type"
+                          onChange={handleChange}
+                        >
+                          <option value="">Select Type</option>
+                          <option value="monthly">Per Month</option>
+                          <option value="yearly">Per Year</option>
+                        </select>
+                      </div>
+                    </div>
+
                     <small className="text-muted">
-                      Example: 0-3, 3-6, 6-10
+                      Example: 20 - 40 Lakh Per Year OR 15 - 25 Thousand Per
+                      Month
                     </small>
-                    <div className="text-danger">{errors.salary_range}</div>
+
+                    <div className="text-danger">{errors.salary_min}</div>
+                    <div className="text-danger">{errors.salary_max}</div>
                   </div>
 
                   {/* Benefits */}
