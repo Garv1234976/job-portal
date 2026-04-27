@@ -9,13 +9,7 @@ export default function MasterData() {
   const [editId, setEditId] = useState(null);
   const [filter, setFilter] = useState("");
 
-  const types = [
-    "education",
-    "skill",
-    "language",
-    "location",
-    "job_title",
-  ];
+  const types = ["education", "skill", "language", "location", "job_title"];
 
   //  FETCH DATA
   const fetchData = () => {
@@ -91,27 +85,30 @@ export default function MasterData() {
     : list;
 
   return (
-    <div className="container-fluid">
+    <div className="container-fluid bg-light min-vh-100">
       <div className="row">
-
         {/* SIDEBAR */}
-        <div className="col-md-3 col-lg-2">
+        <div className="col-md-3 col-lg-2 p-0">
           <AdminSidebar />
         </div>
 
         {/* MAIN */}
         <div className="col-md-9 col-lg-10 p-4">
-          <h3 className="mb-4">Dropdown Management</h3>
+          {/* HEADER */}
+          <div className="d-flex justify-content-between align-items-center mb-4">
+            <h4 className="fw-bold">Dropdown Management</h4>
+            <span className="text-muted small">
+              Manage all dropdown options
+            </span>
+          </div>
 
-          {/* FORM */}
-          <div className="card p-3 mb-4 shadow-sm">
+          {/* FORM CARD */}
+          <div className="card border-0 shadow-sm rounded-4 p-4 mb-4">
             <div className="row g-3">
-
-              {/* TYPE */}
               <div className="col-md-4">
-                <label>Category Type</label>
+                <label className="form-label fw-semibold">Category Type</label>
                 <select
-                  className="form-control"
+                  className="form-control rounded-3"
                   name="type"
                   value={form.type}
                   onChange={handleChange}
@@ -123,37 +120,36 @@ export default function MasterData() {
                 </select>
               </div>
 
-              {/* NAME */}
               <div className="col-md-4">
-                <label>Option Name</label>
+                <label className="form-label fw-semibold">Option Name</label>
                 <input
-                  className="form-control"
+                  className="form-control rounded-3"
                   name="name"
-                  value={form.name}
                   placeholder="Enter option"
+                  value={form.name}
                   onChange={handleChange}
                 />
               </div>
 
-              {/* BUTTON */}
               <div className="col-md-4 d-flex align-items-end">
                 <button
-                  className={`btn w-100 ${
-                    editId ? "btn-warning" : "btn-primary"
+                  className={`btn w-100 rounded-3 fw-semibold ${
+                    editId ? "btn-warning" : "btn-success"
                   }`}
                   onClick={submit}
                 >
                   {editId ? "Update Option" : "Add Option"}
                 </button>
               </div>
-
             </div>
           </div>
 
           {/* FILTER */}
-          <div className="mb-3">
+          <div className="d-flex justify-content-between align-items-center mb-3">
+            <h6 className="fw-semibold mb-0">All Options</h6>
+
             <select
-              className="form-control w-25"
+              className="form-control w-auto rounded-3"
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
             >
@@ -164,52 +160,56 @@ export default function MasterData() {
             </select>
           </div>
 
-          {/* TABLE */}
-          <div className="card shadow-sm p-3">
-            <table className="table table-bordered table-hover">
-              <thead className="table-light">
-                <tr>
-                  <th>Type</th>
-                  <th>Name</th>
-                  <th width="150">Action</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {filteredList.length === 0 && (
+          {/* TABLE CARD */}
+          <div className="card border-0 shadow-sm rounded-4">
+            <div className="table-responsive">
+              <table className="table align-middle mb-0">
+                <thead className="bg-light">
                   <tr>
-                    <td colSpan="3" className="text-center">
-                      No data found
-                    </td>
+                    <th className="ps-4">Type</th>
+                    <th>Name</th>
+                    <th className="text-center">Action</th>
                   </tr>
-                )}
+                </thead>
 
-                {filteredList.map((item) => (
-                  <tr key={item.id}>
-                    <td className="text-capitalize">{item.type}</td>
-                    <td>{item.name}</td>
-                    <td>
-                      <button
-                        className="btn btn-sm btn-warning me-2"
-                        onClick={() => edit(item)}
-                      >
-                        Edit
-                      </button>
+                <tbody>
+                  {filteredList.length === 0 && (
+                    <tr>
+                      <td colSpan="3" className="text-center py-4 text-muted">
+                        No data found
+                      </td>
+                    </tr>
+                  )}
 
-                      <button
-                        className="btn btn-sm btn-danger"
-                        onClick={() => remove(item.id)}
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                  {filteredList.map((item) => (
+                    <tr key={item.id}>
+                      <td className="ps-4 fw-semibold text-capitalize">
+                        {item.type}
+                      </td>
 
-              </tbody>
-            </table>
+                      <td>{item.name}</td>
+
+                      <td className="text-center">
+                        <button
+                          className="btn btn-sm btn-outline-warning me-2"
+                          onClick={() => edit(item)}
+                        >
+                          ✏ Edit
+                        </button>
+
+                        <button
+                          className="btn btn-sm btn-outline-danger"
+                          onClick={() => remove(item.id)}
+                        >
+                          🗑 Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
-
         </div>
       </div>
     </div>
