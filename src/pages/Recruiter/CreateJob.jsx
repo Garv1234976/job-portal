@@ -12,6 +12,7 @@ export default function CreateJob() {
   const [subCategories, setSubCategories] = useState([]);
   const [logoPreview, setLogoPreview] = useState(null);
   const [isOther, setIsOther] = useState(false);
+  const [master, setMaster] = useState({});
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -74,6 +75,12 @@ export default function CreateJob() {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+
+  useEffect(() => {
+    API.get("/admin/master-data").then((res) => {
+      setMaster(res.data.data || {});
+    });
+  }, []);
 
   useEffect(() => {
     API.get("/categories").then((res) => {
@@ -307,10 +314,11 @@ export default function CreateJob() {
                       onChange={handleChange}
                     >
                       <option value="">Select</option>
-                      <option>10th</option>
-                      <option>12th</option>
-                      <option>Graduate</option>
-                      <option>Post Graduate</option>
+                      {master.education?.map((item) => (
+                        <option key={item.id} value={item.name}>
+                          {item.name}
+                        </option>
+                      ))}
                     </select>
                     <small className="text-danger">{errors.education}</small>
                   </div>
@@ -457,11 +465,11 @@ export default function CreateJob() {
                       onChange={handleChange}
                     >
                       <option value="">Select</option>
-                      <option>Delhi</option>
-                      <option>Zirakpur</option>
-                      <option>Mohali</option>
-                      <option>Chandigarh</option>
-                      <option>Remote</option>
+                      {master.location?.map((item) => (
+                        <option key={item.id} value={item.name}>
+                          {item.name}
+                        </option>
+                      ))}
                     </select>
                     <small className="text-danger">{errors.location}</small>
                   </div>
@@ -570,11 +578,11 @@ export default function CreateJob() {
                       onChange={handleChange}
                     >
                       <option value="">Select</option>
-                      <option>HTML</option>
-                      <option>CSS</option>
-                      <option>JavaScript</option>
-                      <option>Laravel</option>
-                      <option>React</option>
+                      {master.skill?.map((item) => (
+                        <option key={item.id} value={item.name}>
+                          {item.name}
+                        </option>
+                      ))}
                     </select>
                   </div>
 
@@ -587,9 +595,11 @@ export default function CreateJob() {
                       onChange={handleChange}
                     >
                       <option value="">Select</option>
-                      <option>English</option>
-                      <option>Hindi</option>
-                      <option>Punjabi</option>
+                      {master.language?.map((item) => (
+                        <option key={item.id} value={item.name}>
+                          {item.name}
+                        </option>
+                      ))}
                     </select>
                   </div>
 
