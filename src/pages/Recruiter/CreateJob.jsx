@@ -41,7 +41,6 @@ export default function CreateJob() {
     if (!form.job_title) newErrors.job_title = "Required";
     if (!form.job_description) newErrors.job_description = "Required";
     if (!form.education) newErrors.education = "Required";
-    if (!form.experience) newErrors.experience = "Required";
     if (!form.gender) newErrors.gender = "Required";
     if (!form.location) newErrors.location = "Required";
     if (!form.openings) newErrors.openings = "Required";
@@ -52,6 +51,17 @@ export default function CreateJob() {
     if (!form.salary_max) newErrors.salary_max = "Required";
     if (!form.salary_unit) newErrors.salary_unit = "Required";
     if (!form.salary_type) newErrors.salary_type = "Required";
+    if (!form.experience_min) newErrors.experience_min = "Required";
+    if (!form.experience_max) newErrors.experience_max = "Required";
+    if (!form.experience_unit) newErrors.experience_unit = "Required";
+
+    if (
+      form.experience_min &&
+      form.experience_max &&
+      Number(form.experience_min) > Number(form.experience_max)
+    ) {
+      newErrors.experience_max = "Max must be greater than Min";
+    }
 
     if (
       form.salary_min &&
@@ -305,27 +315,66 @@ export default function CreateJob() {
                     <small className="text-danger">{errors.education}</small>
                   </div>
 
-                  {/* Experience */}
-                  <div className="col-md-4">
+                  {/* Experience Range */}
+                  <div className="col-md-12">
                     <label>
-                      Experience (Years) <span className="text-danger">*</span>
+                      Experience <span className="text-danger">*</span>
                     </label>
 
-                    <select
-                      className="form-control"
-                      name="experience"
-                      onChange={handleChange}
-                    >
-                      <option value="">Select Experience</option>
-                      {[...Array(11)].map((_, i) => (
-                        <option key={i} value={i}>
-                          {i === 0 ? "Fresher" : `${i} Year`}
-                        </option>
-                      ))}
-                      <option value="11">10+ Years</option>
-                    </select>
+                    <div className="row">
+                      {/* Min Experience */}
+                      <div className="col-md-3">
+                        <select
+                          className="form-control"
+                          name="experience_min"
+                          onChange={handleChange}
+                        >
+                          <option value="">Min</option>
+                          {[...Array(11)].map((_, i) => (
+                            <option key={i} value={i}>
+                              {i}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
 
-                    <small className="text-danger">{errors.experience}</small>
+                      {/* Max Experience */}
+                      <div className="col-md-3">
+                        <select
+                          className="form-control"
+                          name="experience_max"
+                          onChange={handleChange}
+                        >
+                          <option value="">Max</option>
+                          {[...Array(21)].map((_, i) => (
+                            <option key={i} value={i}>
+                              {i}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      {/* Unit */}
+                      <div className="col-md-3">
+                        <select
+                          className="form-control"
+                          name="experience_unit"
+                          onChange={handleChange}
+                        >
+                          <option value="">Select Unit</option>
+                          <option value="year">Year</option>
+                          <option value="month">Month</option>
+                          <option value="both">Both</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <small className="text-muted">
+                      Example: 0 - 3 Years OR 6 - 24 Months
+                    </small>
+
+                    <div className="text-danger">{errors.experience_min}</div>
+                    <div className="text-danger">{errors.experience_max}</div>
                   </div>
 
                   {/* Gender (UPDATED) */}
