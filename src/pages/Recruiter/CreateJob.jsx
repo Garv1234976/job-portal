@@ -179,11 +179,14 @@ export default function CreateJob() {
                       }}
                     >
                       <option value="">Select</option>
-                      <option>Web Developer</option>
-                      <option>Graphic Designer</option>
-                      <option>Sales Executive</option>
-                      <option>Digital Marketing</option>
-                      <option>Other</option>
+
+                      {master.job_title?.map((item) => (
+                        <option key={item.id} value={item.name}>
+                          {item.name}
+                        </option>
+                      ))}
+
+                      <option value="Other">Other</option>
                     </select>
 
                     {isOther && (
