@@ -260,8 +260,8 @@ export default function CreateJob() {
                     <small className="text-danger">{errors.category_id}</small>
                   </div>
 
-                  {/* ✅ Job Timing (Professional) */}
-                  <div className="col-md-4">
+                  {/*  Job Timing (Professional) */}
+                  <div className="col-md-6">
                     <label>Job Timing</label>
 
                     <div className="d-flex gap-2">
@@ -290,7 +290,7 @@ export default function CreateJob() {
                   </div>
 
                   {/* ✅ Age Limit */}
-                  <div className="col-md-4">
+                  <div className="col-md-6">
                     <label>Age Limit</label>
 
                     <div className="d-flex gap-2">
