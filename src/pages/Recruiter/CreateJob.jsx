@@ -356,37 +356,32 @@ export default function CreateJob() {
                     </select>
                   </div>
 
-                  {/* DEGREE */}
-                  <div className="col-md-4">
-                    <label>
-                      Degree <span className="text-danger">*</span>
-                    </label>
+                  {educationParent &&
+                    master.education?.find((e) => e.id == educationParent)
+                      ?.children?.length > 0 && (
+                      <div className="col-md-4">
+                        <label>
+                          Degree <span className="text-danger">*</span>
+                        </label>
 
-                    <select
-                      className="form-control"
-                      name="education"
-                      value={form.education || ""}
-                      onChange={handleChange}
-                      disabled={!educationParent}
-                    >
-                      <option value="">
-                        {educationParent
-                          ? "Select Degree"
-                          : "Select Level First"}
-                      </option>
+                        <select
+                          className="form-control"
+                          name="education"
+                          value={form.education || ""}
+                          onChange={handleChange}
+                        >
+                          <option value="">Select Degree</option>
 
-                      {educationParent &&
-                        master.education
-                          ?.find((e) => e.id == educationParent)
-                          ?.children?.map((child) => (
-                            <option key={child.id} value={child.name}>
-                              {child.name}
-                            </option>
-                          ))}
-                    </select>
-
-                    <small className="text-danger">{errors.education}</small>
-                  </div>
+                          {master.education
+                            ?.find((e) => e.id == educationParent)
+                            ?.children?.map((child) => (
+                              <option key={child.id} value={child.name}>
+                                {child.name}
+                              </option>
+                            ))}
+                        </select>
+                      </div>
+                    )}
 
                   {/* Experience Range */}
                   <div className="col-md-12">
