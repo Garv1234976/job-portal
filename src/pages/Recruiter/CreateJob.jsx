@@ -81,14 +81,19 @@ export default function CreateJob() {
     API.get("/get-master-data").then((res) => {
       const raw = res.data.data || [];
 
-      //  GROUP BY TYPE
       const grouped = raw.reduce((acc, item) => {
         if (!acc[item.type]) acc[item.type] = [];
 
-        //  only parent for education
-        if (item.type === "education" && item.parent_id !== null) return acc;
+        // 🔥 EDUCATION: only parent (main level)
+        if (item.type === "education") {
+          if (item.parent_id === null) {
+            acc[item.type].push(item);
+          }
+        } else {
+          // other types normal
+          acc[item.type].push(item);
+        }
 
-        acc[item.type].push(item);
         return acc;
       }, {});
 
