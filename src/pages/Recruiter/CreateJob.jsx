@@ -552,7 +552,7 @@ export default function CreateJob() {
                   </div>
 
                   {/* Gender (UPDATED) */}
-                  <div className="col-md-4">
+                  <div className="col-md-6">
                     <label>
                       Gender <span className="text-danger">*</span>
                     </label>
@@ -569,18 +569,10 @@ export default function CreateJob() {
                     <small className="text-danger">{errors.gender}</small>
                   </div>
 
-                  {/* Working Hours */}
-                  <div className="col-md-4">
-                    <label>Working Hours</label>
-                    <input
-                      className="form-control"
-                      name="working_hours"
-                      onChange={handleChange}
-                    />
-                  </div>
+                
 
                   {/* Shift */}
-                  <div className="col-md-4">
+                  <div className="col-md-6">
                     <label>Shift</label>
                     <select
                       className="form-control"
