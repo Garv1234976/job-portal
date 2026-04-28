@@ -423,7 +423,7 @@ export default function CreateJob() {
                           onChange={handleChange}
                         >
                           <option value="">Min</option>
-                          {[...Array(11)].map((_, i) => (
+                          {[...Array(6)].map((_, i) => (
                             <option key={i} value={i}>
                               {i}
                             </option>
@@ -439,7 +439,7 @@ export default function CreateJob() {
                           onChange={handleChange}
                         >
                           <option value="">Max</option>
-                          {[...Array(21)].map((_, i) => (
+                          {[...Array(6)].map((_, i) => (
                             <option key={i} value={i}>
                               {i}
                             </option>
@@ -507,6 +507,7 @@ export default function CreateJob() {
                     >
                       <option>Day</option>
                       <option>Night</option>
+                      <option>Rotational</option>
                     </select>
                   </div>
 
