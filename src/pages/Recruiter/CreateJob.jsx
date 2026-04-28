@@ -79,7 +79,20 @@ export default function CreateJob() {
 
   useEffect(() => {
     API.get("/get-master-data").then((res) => {
-      setMaster(res.data.data || {});
+      const raw = res.data.data || [];
+
+      //  GROUP BY TYPE
+      const grouped = raw.reduce((acc, item) => {
+        if (!acc[item.type]) acc[item.type] = [];
+
+        //  only parent for education
+        if (item.type === "education" && item.parent_id !== null) return acc;
+
+        acc[item.type].push(item);
+        return acc;
+      }, {});
+
+      setMaster(grouped);
     });
   }, []);
 
