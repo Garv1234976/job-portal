@@ -14,6 +14,7 @@ export default function CreateJob() {
   const [isOther, setIsOther] = useState(false);
   const [master, setMaster] = useState({});
   const [educationParent, setEducationParent] = useState("");
+  const [isOtherSkill, setIsOtherSkill] = useState(false);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -274,12 +275,20 @@ export default function CreateJob() {
                   <div className="col-md-6">
                     <label>Key Skills</label>
 
-                    {/* SELECT FROM MASTER */}
+                    {/* SELECT */}
                     <select
                       className="form-control mb-2"
                       onChange={(e) => {
                         const value = e.target.value;
+
                         if (!value) return;
+
+                        if (value === "Other") {
+                          setIsOtherSkill(true);
+                          return;
+                        }
+
+                        setIsOtherSkill(false);
 
                         const current = form.key_skills
                           ? form.key_skills.split(",")
@@ -296,39 +305,45 @@ export default function CreateJob() {
                       }}
                     >
                       <option value="">Select Skill</option>
-                      {master.key_skills?.map((item) => (
+
+                      {/* 🔥 FIX: use master.skill (not key_skills) */}
+                      {master.skill?.map((item) => (
                         <option key={item.id} value={item.name}>
                           {item.name}
                         </option>
                       ))}
+
+                      <option value="Other">Other</option>
                     </select>
 
-                    {/* ADD CUSTOM SKILL */}
-                    <input
-                      className="form-control mb-2"
-                      placeholder="Type skill and press Enter"
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                          e.preventDefault();
+                    {/* ✅ SHOW INPUT ONLY IF OTHER */}
+                    {isOtherSkill && (
+                      <input
+                        className="form-control mb-2"
+                        placeholder="Enter custom skill and press Enter"
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault();
 
-                          const value = e.target.value.trim();
-                          if (!value) return;
+                            const value = e.target.value.trim();
+                            if (!value) return;
 
-                          const current = form.key_skills
-                            ? form.key_skills.split(",")
-                            : [];
+                            const current = form.key_skills
+                              ? form.key_skills.split(",")
+                              : [];
 
-                          if (!current.includes(value)) {
-                            setForm({
-                              ...form,
-                              key_skills: [...current, value].join(","),
-                            });
+                            if (!current.includes(value)) {
+                              setForm({
+                                ...form,
+                                key_skills: [...current, value].join(","),
+                              });
+                            }
+
+                            e.target.value = "";
                           }
-
-                          e.target.value = "";
-                        }
-                      }}
-                    />
+                        }}
+                      />
+                    )}
 
                     {/* TAG VIEW */}
                     <div>
