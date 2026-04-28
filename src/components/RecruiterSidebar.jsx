@@ -22,7 +22,7 @@ export default function RecruiterSidebar() {
       Swal.fire({
         icon: "warning",
         title: "Plan Required",
-        text: "Please buy or upgrade your plan",
+        text: "Please upgrade your plan",
       }).then(() => {
         navigate("/recruiter/plans");
       });
@@ -43,48 +43,75 @@ export default function RecruiterSidebar() {
 
   return (
     <div className="sidebar-container">
-      <h5 className="sidebar-title">Recruiter Panel</h5>
 
-      <ul className="sidebar-menu">
+      {/* HEADER */}
+      <div className="sidebar-header">
+        <h5>Recruiter Panel</h5>
+        <p>Manage your jobs</p>
+      </div>
+
+      {/* MENU */}
+      <div className="sidebar-menu">
         {menu.map((item, i) => (
-          <li key={i}>
-            <div
-              className={`sidebar-item ${item.path && isActive(item.path) ? "active" : ""}`}
-              onClick={() => {
-                if (item.action) {
-                  item.action();
-                } else {
-                  navigate(item.path);
-                }
-              }}
-            >
-              <i className={`fa ${item.icon}`}></i>
-              <span>{item.name}</span>
-            </div>
-          </li>
+          <div
+            key={i}
+            className={`sidebar-item ${
+              item.path && isActive(item.path) ? "active" : ""
+            }`}
+            onClick={() => {
+              if (item.action) {
+                item.action();
+              } else {
+                navigate(item.path);
+              }
+            }}
+          >
+            <i className={`fa ${item.icon}`}></i>
+            <span>{item.name}</span>
+          </div>
         ))}
-      </ul>
+      </div>
+
+      {/* PLAN CARD */}
+      {activePlan && (
+        <div className="plan-card">
+          <p>Remaining Jobs</p>
+          <h4>{activePlan.jobs_remaining}</h4>
+        </div>
+      )}
 
       <style>{`
         .sidebar-container {
-          background: #ffffff;
-          border-radius: 12px;
+          width: 250px;
+          background: #fff;
+          border-radius: 16px;
           padding: 20px;
-          box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+          box-shadow: 0 10px 30px rgba(0,0,0,0.05);
           position: sticky;
           top: 80px;
+          height: fit-content;
         }
 
-        .sidebar-title {
+        .sidebar-header {
+          margin-bottom: 25px;
+        }
+
+        .sidebar-header h5 {
           font-weight: 600;
-          margin-bottom: 20px;
-          color: #333;
+          margin: 0;
+          color: #222;
+        }
+
+        .sidebar-header p {
+          font-size: 13px;
+          color: #888;
+          margin: 4px 0 0;
         }
 
         .sidebar-menu {
-          list-style: none;
-          padding: 0;
-          margin: 0;
+          display: flex;
+          flex-direction: column;
+          gap: 6px;
         }
 
         .sidebar-item {
@@ -92,23 +119,20 @@ export default function RecruiterSidebar() {
           align-items: center;
           gap: 12px;
           padding: 12px 14px;
-          border-radius: 8px;
-          color: #555;
-          font-size: 15px;
+          border-radius: 10px;
           cursor: pointer;
           transition: all 0.25s ease;
-          margin-bottom: 6px;
+          color: #555;
         }
 
         .sidebar-item i {
-          font-size: 16px;
+          font-size: 15px;
           color: #888;
-          transition: 0.2s;
         }
 
         .sidebar-item:hover {
-          background: #f4f6f9;
-          transform: translateX(4px);
+          background: #f5f7fb;
+          transform: translateX(5px);
         }
 
         .sidebar-item:hover i {
@@ -116,14 +140,33 @@ export default function RecruiterSidebar() {
         }
 
         .sidebar-item.active {
-          background: rgba(13,110,253,0.1);
-          color: #0d6efd;
-          font-weight: 500;
-          border-left: 4px solid #0d6efd;
+          background: linear-gradient(135deg, #0d6efd, #4f8cff);
+          color: #fff;
+          box-shadow: 0 5px 15px rgba(13,110,253,0.2);
         }
 
         .sidebar-item.active i {
+          color: #fff;
+        }
+
+        .plan-card {
+          margin-top: 25px;
+          padding: 15px;
+          border-radius: 12px;
+          background: #f8f9fc;
+          text-align: center;
+        }
+
+        .plan-card p {
+          margin: 0;
+          font-size: 13px;
+          color: #777;
+        }
+
+        .plan-card h4 {
+          margin: 5px 0 0;
           color: #0d6efd;
+          font-weight: 600;
         }
       `}</style>
     </div>
