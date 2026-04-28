@@ -16,13 +16,13 @@ export default function MasterData() {
 
   const types = ["education", "skill", "language", "location", "job_title"];
 
-  // 🔥 FETCH DATA
+  //  FETCH DATA
   const fetchData = () => {
     API.get("/admin/master-data").then((res) => {
       const data = res.data.data || [];
       setList(data);
 
-      // 👇 get only parent items
+      //  get only parent items
       const parentItems = data.filter((item) => !item.parent_id);
       setParents(parentItems);
     });
@@ -98,7 +98,7 @@ export default function MasterData() {
         {/* HEADER */}
         <div className="mb-4">
           <h3 className="fw-bold">Dropdown Management</h3>
-          <p className="text-muted">Manage hierarchy like Graduate → BCA</p>
+          <p className="text-muted">Manage hierarchy like Graduate</p>
         </div>
 
         {/* FORM */}

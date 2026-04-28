@@ -304,6 +304,7 @@ export default function CreateJob() {
                     </small>
                   </div>
 
+                  {/* EDUCATION LEVEL */}
                   <div className="col-md-4">
                     <label>
                       Education Level <span className="text-danger">*</span>
@@ -311,9 +312,17 @@ export default function CreateJob() {
 
                     <select
                       className="form-control"
+                      value={educationParent}
                       onChange={(e) => {
-                        setEducationParent(e.target.value);
-                        setForm({ ...form, education: "" });
+                        const value = e.target.value;
+
+                        setEducationParent(value);
+
+                        // 🔥 reset degree when level changes
+                        setForm({
+                          ...form,
+                          education: "",
+                        });
                       }}
                     >
                       <option value="">Select Level</option>
@@ -326,6 +335,7 @@ export default function CreateJob() {
                     </select>
                   </div>
 
+                  {/* DEGREE */}
                   <div className="col-md-4">
                     <label>
                       Degree <span className="text-danger">*</span>
@@ -334,17 +344,24 @@ export default function CreateJob() {
                     <select
                       className="form-control"
                       name="education"
+                      value={form.education || ""}
                       onChange={handleChange}
+                      disabled={!educationParent}
                     >
-                      <option value="">Select Degree</option>
+                      <option value="">
+                        {educationParent
+                          ? "Select Degree"
+                          : "Select Level First"}
+                      </option>
 
-                      {master.education
-                        ?.find((e) => e.id == educationParent)
-                        ?.children?.map((child) => (
-                          <option key={child.id} value={child.name}>
-                            {child.name}
-                          </option>
-                        ))}
+                      {educationParent &&
+                        master.education
+                          ?.find((e) => e.id == educationParent)
+                          ?.children?.map((child) => (
+                            <option key={child.id} value={child.name}>
+                              {child.name}
+                            </option>
+                          ))}
                     </select>
 
                     <small className="text-danger">{errors.education}</small>
