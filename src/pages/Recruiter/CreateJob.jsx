@@ -499,34 +499,26 @@ export default function CreateJob() {
                     <div className="row">
                       {/* Min Experience */}
                       <div className="col-md-3">
-                        <select
+                        <input
+                          type="number"
                           className="form-control"
                           name="experience_min"
+                          placeholder="Min"
+                          min="0"
                           onChange={handleChange}
-                        >
-                          <option value="">Min</option>
-                          {[...Array(6)].map((_, i) => (
-                            <option key={i} value={i}>
-                              {i}
-                            </option>
-                          ))}
-                        </select>
+                        />
                       </div>
 
                       {/* Max Experience */}
                       <div className="col-md-3">
-                        <select
+                        <input
+                          type="number"
                           className="form-control"
                           name="experience_max"
+                          placeholder="Max"
+                          min="0"
                           onChange={handleChange}
-                        >
-                          <option value="">Max</option>
-                          {[...Array(6)].map((_, i) => (
-                            <option key={i} value={i}>
-                              {i}
-                            </option>
-                          ))}
-                        </select>
+                        />
                       </div>
 
                       {/* Unit */}
@@ -539,6 +531,7 @@ export default function CreateJob() {
                           <option value="">Select Unit</option>
                           <option value="year">Year</option>
                           <option value="month">Month</option>
+                          <option value="both">Year / Month</option>
                         </select>
                       </div>
                     </div>
@@ -568,8 +561,6 @@ export default function CreateJob() {
                     </select>
                     <small className="text-danger">{errors.gender}</small>
                   </div>
-
-                
 
                   {/* Shift */}
                   <div className="col-md-6">
