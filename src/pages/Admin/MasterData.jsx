@@ -13,8 +13,9 @@ export default function MasterData() {
   });
   const [editId, setEditId] = useState(null);
   const [filter, setFilter] = useState("");
+  const [search, setSearch] = useState(""); // ✅ already exists
 
-  // 🔥 PAGINATION
+  // PAGINATION
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
@@ -77,7 +78,7 @@ export default function MasterData() {
     fetchData();
   };
 
-  // EDIT (FIXED)
+  // EDIT
   const edit = (item) => {
     setForm({
       type: item.type,
@@ -86,17 +87,24 @@ export default function MasterData() {
     });
 
     setEditId(item.id);
-
-    // 🔥 Scroll to form
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // FILTER
-  const filteredList = filter
-    ? list.filter((item) => item.type === filter)
-    : list;
+  // ✅ UPDATED FILTER WITH SEARCH (ONLY CHANGE)
+  const filteredList = list.filter((item) => {
+    const parent = list.find((p) => p.id === item.parent_id);
 
-  // 🔥 PAGINATION LOGIC
+    const matchType = filter ? item.type === filter : true;
+
+    const matchSearch =
+      item.name.toLowerCase().includes(search.toLowerCase()) ||
+      item.type.toLowerCase().includes(search.toLowerCase()) ||
+      (parent?.name || "").toLowerCase().includes(search.toLowerCase());
+
+    return matchType && matchSearch;
+  });
+
+  // PAGINATION
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedData = filteredList.slice(
     startIndex,
@@ -123,7 +131,6 @@ export default function MasterData() {
         <div className="card p-4 shadow-sm rounded-4 mb-4">
           <div className="row g-3">
 
-            {/* TYPE */}
             <div className="col-md-3">
               <label>Type</label>
               <select
@@ -139,7 +146,6 @@ export default function MasterData() {
               </select>
             </div>
 
-            {/* PARENT */}
             {form.type === "education" && (
               <div className="col-md-3">
                 <label>
@@ -165,7 +171,6 @@ export default function MasterData() {
               </div>
             )}
 
-            {/* NAME */}
             <div className="col-md-3">
               <label>Name</label>
               <input
@@ -176,7 +181,6 @@ export default function MasterData() {
               />
             </div>
 
-            {/* BUTTON */}
             <div className="col-md-3 d-flex align-items-end">
               <button
                 className={`btn w-100 ${
@@ -188,7 +192,6 @@ export default function MasterData() {
               </button>
             </div>
 
-            {/* CANCEL BUTTON */}
             {editId && (
               <div className="col-md-3 d-flex align-items-end">
                 <button
@@ -204,6 +207,20 @@ export default function MasterData() {
             )}
 
           </div>
+        </div>
+
+        {/* 🔥 SEARCH INPUT (ADDED ONLY THIS UI) */}
+        <div className="mb-3">
+          <input
+            type="text"
+            placeholder="Search..."
+            className="form-control"
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setCurrentPage(1);
+            }}
+          />
         </div>
 
         {/* TABLE */}
