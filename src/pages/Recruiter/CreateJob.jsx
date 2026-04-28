@@ -324,7 +324,7 @@ export default function CreateJob() {
                       }}
                     >
                       <option value="">Select Skill</option>
-                      {master.skill?.map((item) => (
+                      {master.key_skills?.map((item) => (
                         <option key={item.id} value={item.name}>
                           {item.name}
                         </option>

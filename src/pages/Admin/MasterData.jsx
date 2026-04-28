@@ -13,13 +13,13 @@ export default function MasterData() {
   });
   const [editId, setEditId] = useState(null);
   const [filter, setFilter] = useState("");
-  const [search, setSearch] = useState(""); // ✅ already exists
+  const [search, setSearch] = useState(""); 
 
   // PAGINATION
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
-  const types = ["education", "skill", "language", "location", "job_title"];
+  const types = ["education", "skill", "language", "location", "job_title", "key_skills"];
 
   // FETCH DATA
   const fetchData = () => {
