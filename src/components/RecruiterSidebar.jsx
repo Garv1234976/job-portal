@@ -31,15 +31,38 @@ export default function RecruiterSidebar() {
     }
   };
 
+  const handleLogout = () => {
+    Swal.fire({
+      title: "Logout?",
+      icon: "warning",
+      showCancelButton: true,
+    }).then((res) => {
+      if (res.isConfirmed) {
+        localStorage.clear();
+        navigate("/login");
+      }
+    });
+  };
+
+  // ✅ UPDATED MENU (added path for Post Job)
   const menu = [
     { name: "Dashboard", icon: "fa-home", path: "/recruiter/dashboard" },
-    { name: "Post Job", icon: "fa-plus-circle", action: handlePostJob },
+    {
+      name: "Post Job",
+      icon: "fa-plus-circle",
+      path: "/recruiter/create-job",
+      action: handlePostJob,
+    },
     { name: "My Jobs", icon: "fa-briefcase", path: "/recruiter/jobs" },
     { name: "Closed Jobs", icon: "fa-times-circle", path: "/recruiter/closed-jobs" },
     { name: "Plans", icon: "fa-credit-card", path: "/recruiter/plans" },
   ];
 
-  const isActive = (path) => location.pathname.startsWith(path);
+  // ✅ UPDATED ACTIVE CHECK
+  const isActive = (path) => {
+    if (!path) return false;
+    return location.pathname.startsWith(path);
+  };
 
   return (
     <div className="sidebar-container">
@@ -79,6 +102,12 @@ export default function RecruiterSidebar() {
           <h4>{activePlan.jobs_remaining}</h4>
         </div>
       )}
+
+      {/* LOGOUT */}
+      <div className="logout-btn" onClick={handleLogout}>
+        <i className="fa fa-sign-out"></i>
+        <span>Logout</span>
+      </div>
 
       <style>{`
         .sidebar-container {
@@ -167,6 +196,24 @@ export default function RecruiterSidebar() {
           margin: 5px 0 0;
           color: #0d6efd;
           font-weight: 600;
+        }
+
+        .logout-btn {
+          margin-top: 20px;
+          padding: 12px;
+          border-radius: 10px;
+          background: #fff0f0;
+          color: #dc3545;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          cursor: pointer;
+          transition: 0.2s;
+          font-weight: 500;
+        }
+
+        .logout-btn:hover {
+          background: #ffe5e5;
         }
       `}</style>
     </div>
