@@ -21,23 +21,6 @@ export default function CreateJob() {
     setErrors({ ...errors, [e.target.name]: "" });
   };
 
-  const handleLogoChange = (e) => {
-    const file = e.target.files[0];
-
-    if (!file) return;
-
-    const allowedTypes = ["image/jpeg", "image/jpg", "image/png"];
-
-    if (!allowedTypes.includes(file.type)) {
-      Swal.fire("Error", "Only JPG, JPEG, PNG files allowed", "error");
-      return;
-    }
-
-    setForm({ ...form, logo: file });
-
-    setLogoPreview(URL.createObjectURL(file));
-  };
-
   const validate = () => {
     let newErrors = {};
 
@@ -58,7 +41,6 @@ export default function CreateJob() {
     if (!form.location) newErrors.location = "Required";
     if (!form.openings) newErrors.openings = "Required";
     if (!form.category_id) newErrors.category_id = "Required";
-    if (!form.company_name) newErrors.company_name = "Required";
     if (!form.application_limit) newErrors.application_limit = "Required";
     if (!form.salary_min) newErrors.salary_min = "Required";
     if (!form.salary_max) newErrors.salary_max = "Required";
@@ -67,7 +49,13 @@ export default function CreateJob() {
     if (!form.experience_min) newErrors.experience_min = "Required";
     if (!form.experience_max) newErrors.experience_max = "Required";
     if (!form.experience_unit) newErrors.experience_unit = "Required";
-
+    if (
+      form.age_min &&
+      form.age_max &&
+      Number(form.age_min) > Number(form.age_max)
+    ) {
+      newErrors.age_max = "Max age must be greater than Min";
+    }
     if (
       form.experience_min &&
       form.experience_max &&
@@ -272,23 +260,73 @@ export default function CreateJob() {
                     <small className="text-danger">{errors.category_id}</small>
                   </div>
 
+                  {/* ✅ Job Timing (Professional) */}
+                  <div className="col-md-4">
+                    <label>Job Timing</label>
+
+                    <div className="d-flex gap-2">
+                      <input
+                        type="time"
+                        className="form-control"
+                        name="job_time_from"
+                        onChange={(e) =>
+                          setForm({ ...form, job_time_from: e.target.value })
+                        }
+                      />
+
+                      <input
+                        type="time"
+                        className="form-control"
+                        name="job_time_to"
+                        onChange={(e) =>
+                          setForm({ ...form, job_time_to: e.target.value })
+                        }
+                      />
+                    </div>
+
+                    <small className="text-muted">
+                      Example: 09:00 AM - 06:00 PM
+                    </small>
+                  </div>
+
+                  {/* ✅ Age Limit */}
+                  <div className="col-md-4">
+                    <label>Age Limit</label>
+
+                    <div className="d-flex gap-2">
+                      <input
+                        type="number"
+                        className="form-control"
+                        name="age_min"
+                        placeholder="Min Age"
+                        onChange={handleChange}
+                      />
+
+                      <input
+                        type="number"
+                        className="form-control"
+                        name="age_max"
+                        placeholder="Max Age"
+                        onChange={handleChange}
+                      />
+                    </div>
+
+                    <small className="text-muted">Example: 18 - 35 years</small>
+
+                    {errors.age_max && (
+                      <small className="text-danger">{errors.age_max}</small>
+                    )}
+                  </div>
+
                   <div className="col-md-6">
                     <label>Key Skills</label>
 
-                    {/* SELECT */}
+                    {/* SELECT FROM MASTER */}
                     <select
                       className="form-control mb-2"
                       onChange={(e) => {
                         const value = e.target.value;
-
                         if (!value) return;
-
-                        if (value === "Other") {
-                          setIsOtherSkill(true);
-                          return;
-                        }
-
-                        setIsOtherSkill(false);
 
                         const current = form.key_skills
                           ? form.key_skills.split(",")
@@ -305,45 +343,39 @@ export default function CreateJob() {
                       }}
                     >
                       <option value="">Select Skill</option>
-
-                      {/* 🔥 FIX: use master.skill (not key_skills) */}
-                      {master.skill?.map((item) => (
+                      {master.key_skills?.map((item) => (
                         <option key={item.id} value={item.name}>
                           {item.name}
                         </option>
                       ))}
-
-                      <option value="Other">Other</option>
                     </select>
 
-                    {/* ✅ SHOW INPUT ONLY IF OTHER */}
-                    {isOtherSkill && (
-                      <input
-                        className="form-control mb-2"
-                        placeholder="Enter custom skill and press Enter"
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") {
-                            e.preventDefault();
+                    {/* ADD CUSTOM SKILL */}
+                    <input
+                      className="form-control mb-2"
+                      placeholder="Type skill and press Enter"
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
 
-                            const value = e.target.value.trim();
-                            if (!value) return;
+                          const value = e.target.value.trim();
+                          if (!value) return;
 
-                            const current = form.key_skills
-                              ? form.key_skills.split(",")
-                              : [];
+                          const current = form.key_skills
+                            ? form.key_skills.split(",")
+                            : [];
 
-                            if (!current.includes(value)) {
-                              setForm({
-                                ...form,
-                                key_skills: [...current, value].join(","),
-                              });
-                            }
-
-                            e.target.value = "";
+                          if (!current.includes(value)) {
+                            setForm({
+                              ...form,
+                              key_skills: [...current, value].join(","),
+                            });
                           }
-                        }}
-                      />
-                    )}
+
+                          e.target.value = "";
+                        }
+                      }}
+                    />
 
                     {/* TAG VIEW */}
                     <div>
@@ -739,18 +771,46 @@ export default function CreateJob() {
                     </select>
                   </div>
 
-                  {/* Openings */}
-                  <div className="col-md-3">
-                    <label>
-                      Openings <span className="text-danger">*</span>
-                    </label>
+                  {/* ✅ Number of Openings */}
+                  <div className="col-md-4">
+                    <label>Number of Openings</label>
+
                     <input
                       type="number"
                       className="form-control"
                       name="openings"
+                      placeholder="Enter number of openings"
+                      min="1"
                       onChange={handleChange}
                     />
-                    <small className="text-danger">{errors.openings}</small>
+
+                    <small className="text-muted">Example: 1, 5, 10</small>
+
+                    {errors.openings && (
+                      <small className="text-danger">{errors.openings}</small>
+                    )}
+                  </div>
+
+                  {/* ✅ Interview Deadline */}
+                  <div className="col-md-4">
+                    <label>Interview Deadline</label>
+
+                    <input
+                      type="date"
+                      className="form-control"
+                      name="interview_deadline"
+                      onChange={handleChange}
+                    />
+
+                    <small className="text-muted">
+                      Select last date for interview
+                    </small>
+
+                    {errors.interview_deadline && (
+                      <small className="text-danger">
+                        {errors.interview_deadline}
+                      </small>
+                    )}
                   </div>
 
                   <div className="col-md-3">
@@ -761,6 +821,29 @@ export default function CreateJob() {
                       onChange={handleChange}
                     />
                   </div>
+                </div>
+                {/* ✅ Company Link (Website / Google) */}
+                <div className="col-md-12">
+                  <label>Company Link (Website / Google Profile)</label>
+
+                  <input
+                    type="url"
+                    className="form-control"
+                    name="external_link"
+                    placeholder="https://example.com or Google Business link"
+                    onChange={handleChange}
+                  />
+
+                  <small className="text-muted">
+                    Candidate can click this link to visit company profile or
+                    website
+                  </small>
+
+                  {errors.external_link && (
+                    <small className="text-danger">
+                      {errors.external_link}
+                    </small>
+                  )}
                 </div>
 
                 <div className="text-center mt-4">
