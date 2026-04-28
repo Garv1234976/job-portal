@@ -289,7 +289,7 @@ export default function CreateJob() {
                     </small>
                   </div>
 
-                  {/* ✅ Age Limit */}
+                  {/*  Age Limit */}
                   <div className="col-md-6">
                     <label>Age Limit</label>
 
@@ -418,7 +418,7 @@ export default function CreateJob() {
                   </div>
 
                   {/* EDUCATION LEVEL */}
-                  <div className="col-md-4">
+                  <div className="col-md-6">
                     <label>
                       Education Level <span className="text-danger">*</span>
                     </label>
