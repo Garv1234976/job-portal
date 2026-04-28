@@ -102,7 +102,7 @@ export default function RecruiterSidebar() {
       <style>{`
         .sidebar-container {
           width: 250px;
-          min-width: 250px;
+          // min-width: 250px;
           background: #fff;
           border-radius: 16px;
           padding: 20px;
