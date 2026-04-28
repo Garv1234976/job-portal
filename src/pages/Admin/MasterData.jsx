@@ -14,15 +14,18 @@ export default function MasterData() {
   const [editId, setEditId] = useState(null);
   const [filter, setFilter] = useState("");
 
+  // 🔥 PAGINATION
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+
   const types = ["education", "skill", "language", "location", "job_title"];
 
-  //  FETCH DATA
+  // FETCH DATA
   const fetchData = () => {
     API.get("/admin/master-data").then((res) => {
       const data = res.data.data || [];
       setList(data);
 
-      //  get only parent items
       const parentItems = data.filter((item) => !item.parent_id);
       setParents(parentItems);
     });
@@ -64,6 +67,7 @@ export default function MasterData() {
   const remove = async (id) => {
     const confirm = await Swal.fire({
       title: "Delete?",
+      icon: "warning",
       showCancelButton: true,
     });
 
@@ -73,20 +77,33 @@ export default function MasterData() {
     fetchData();
   };
 
-  // EDIT
+  // EDIT (FIXED)
   const edit = (item) => {
     setForm({
       type: item.type,
       name: item.name,
       parent_id: item.parent_id || "",
     });
+
     setEditId(item.id);
+
+    // 🔥 Scroll to form
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   // FILTER
   const filteredList = filter
     ? list.filter((item) => item.type === filter)
     : list;
+
+  // 🔥 PAGINATION LOGIC
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedData = filteredList.slice(
+    startIndex,
+    startIndex + itemsPerPage
+  );
+
+  const totalPages = Math.ceil(filteredList.length / itemsPerPage);
 
   return (
     <div
@@ -105,6 +122,7 @@ export default function MasterData() {
         {/* FORM */}
         <div className="card p-4 shadow-sm rounded-4 mb-4">
           <div className="row g-3">
+
             {/* TYPE */}
             <div className="col-md-3">
               <label>Type</label>
@@ -121,6 +139,7 @@ export default function MasterData() {
               </select>
             </div>
 
+            {/* PARENT */}
             {form.type === "education" && (
               <div className="col-md-3">
                 <label>
@@ -168,6 +187,22 @@ export default function MasterData() {
                 {editId ? "Update" : "Add"}
               </button>
             </div>
+
+            {/* CANCEL BUTTON */}
+            {editId && (
+              <div className="col-md-3 d-flex align-items-end">
+                <button
+                  className="btn btn-secondary w-100"
+                  onClick={() => {
+                    setForm({ type: "", name: "", parent_id: "" });
+                    setEditId(null);
+                  }}
+                >
+                  Cancel
+                </button>
+              </div>
+            )}
+
           </div>
         </div>
 
@@ -184,7 +219,7 @@ export default function MasterData() {
             </thead>
 
             <tbody>
-              {filteredList.map((item) => {
+              {paginatedData.map((item) => {
                 const parent = list.find((p) => p.id === item.parent_id);
 
                 return (
@@ -211,6 +246,29 @@ export default function MasterData() {
               })}
             </tbody>
           </table>
+
+          {/* PAGINATION */}
+          <div className="d-flex justify-content-center mt-3">
+            <button
+              className="btn btn-sm btn-outline-secondary me-2"
+              disabled={currentPage === 1}
+              onClick={() => setCurrentPage(currentPage - 1)}
+            >
+              Prev
+            </button>
+
+            <span className="align-self-center">
+              Page {currentPage} of {totalPages}
+            </span>
+
+            <button
+              className="btn btn-sm btn-outline-secondary ms-2"
+              disabled={currentPage === totalPages}
+              onClick={() => setCurrentPage(currentPage + 1)}
+            >
+              Next
+            </button>
+          </div>
         </div>
       </div>
     </div>
