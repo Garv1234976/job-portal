@@ -42,7 +42,17 @@ export default function CreateJob() {
 
     if (!form.job_title) newErrors.job_title = "Required";
     if (!form.job_description) newErrors.job_description = "Required";
-    if (!form.education) newErrors.education = "Required";
+    const selected = master.education?.find((e) => e.id == educationParent);
+
+    //  only validate degree if children exist
+    if (selected?.children?.length > 0 && !form.education) {
+      newErrors.education = "Required";
+    }
+
+    //  if no parent selected at all
+    if (!educationParent) {
+      newErrors.education = "Required";
+    }
     if (!form.gender) newErrors.gender = "Required";
     if (!form.location) newErrors.location = "Required";
     if (!form.openings) newErrors.openings = "Required";
@@ -84,7 +94,7 @@ export default function CreateJob() {
       const grouped = raw.reduce((acc, item) => {
         if (!acc[item.type]) acc[item.type] = [];
 
-        // 🔥 EDUCATION: only parent (main level)
+        //  EDUCATION: only parent (main level)
         if (item.type === "education") {
           if (item.parent_id === null) {
             acc[item.type].push(item);
@@ -339,11 +349,26 @@ export default function CreateJob() {
 
                         setEducationParent(value);
 
-                        // 🔥 reset degree when level changes
-                        setForm({
-                          ...form,
-                          education: "",
-                        });
+                        //  reset degree when level changes
+                        const selected = master.education?.find(
+                          (i) => i.id == value,
+                        );
+
+                        //  AUTO SET EDUCATION IF NO CHILD
+                        if (
+                          !selected?.children ||
+                          selected.children.length === 0
+                        ) {
+                          setForm({
+                            ...form,
+                            education: selected.name,
+                          });
+                        } else {
+                          setForm({
+                            ...form,
+                            education: "",
+                          });
+                        }
                       }}
                     >
                       <option value="">Select Level</option>
