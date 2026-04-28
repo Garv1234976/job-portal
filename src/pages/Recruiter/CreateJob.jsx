@@ -246,19 +246,6 @@ export default function CreateJob() {
 
                   <div className="col-md-6">
                     <label>
-                      Company Name <span className="text-danger">*</span>
-                    </label>
-                    <input
-                      className="form-control"
-                      name="company_name"
-                      placeholder="Enter company name"
-                      onChange={handleChange}
-                    />
-                    <small className="text-danger">{errors.company_name}</small>
-                  </div>
-
-                  <div className="col-md-6">
-                    <label>
                       Application Limit <span className="text-danger">*</span>
                     </label>
                     <input
@@ -268,6 +255,9 @@ export default function CreateJob() {
                       placeholder="e.g. 1000"
                       onChange={handleChange}
                     />
+                    <small className="text-danger">
+                      {errors.application_limit}
+                    </small>
                   </div>
 
                   {/* CATEGORY */}
@@ -309,14 +299,87 @@ export default function CreateJob() {
                     <small className="text-danger">{errors.category_id}</small>
                   </div>
 
-                  {/* Key Skills */}
                   <div className="col-md-6">
                     <label>Key Skills</label>
+
+                    {/* SELECT FROM MASTER */}
+                    <select
+                      className="form-control mb-2"
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        if (!value) return;
+
+                        const current = form.key_skills
+                          ? form.key_skills.split(",")
+                          : [];
+
+                        if (!current.includes(value)) {
+                          setForm({
+                            ...form,
+                            key_skills: [...current, value].join(","),
+                          });
+                        }
+
+                        e.target.value = "";
+                      }}
+                    >
+                      <option value="">Select Skill</option>
+                      {master.skill?.map((item) => (
+                        <option key={item.id} value={item.name}>
+                          {item.name}
+                        </option>
+                      ))}
+                    </select>
+
+                    {/* ADD CUSTOM SKILL */}
                     <input
-                      className="form-control"
-                      name="key_skills"
-                      onChange={handleChange}
+                      className="form-control mb-2"
+                      placeholder="Type skill and press Enter"
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+
+                          const value = e.target.value.trim();
+                          if (!value) return;
+
+                          const current = form.key_skills
+                            ? form.key_skills.split(",")
+                            : [];
+
+                          if (!current.includes(value)) {
+                            setForm({
+                              ...form,
+                              key_skills: [...current, value].join(","),
+                            });
+                          }
+
+                          e.target.value = "";
+                        }
+                      }}
                     />
+
+                    {/* TAG VIEW */}
+                    <div>
+                      {form.key_skills?.split(",").map((skill, index) => (
+                        <span
+                          key={index}
+                          className="badge bg-primary me-2 mb-2"
+                          style={{ cursor: "pointer" }}
+                          onClick={() => {
+                            const updated = form.key_skills
+                              .split(",")
+                              .filter((_, i) => i !== index);
+
+                            setForm({
+                              ...form,
+                              key_skills: updated.join(","),
+                            });
+                          }}
+                        >
+                          {skill} ×
+                        </span>
+                      ))}
+                    </div>
                   </div>
 
                   {/* Description */}
