@@ -9,7 +9,7 @@ export default function MasterData() {
   const [form, setForm] = useState({
     type: "",
     name: "",
-    parent_id: ""
+    parent_id: "",
   });
   const [editId, setEditId] = useState(null);
   const [filter, setFilter] = useState("");
@@ -78,7 +78,7 @@ export default function MasterData() {
     setForm({
       type: item.type,
       name: item.name,
-      parent_id: item.parent_id || ""
+      parent_id: item.parent_id || "",
     });
     setEditId(item.id);
   };
@@ -89,12 +89,13 @@ export default function MasterData() {
     : list;
 
   return (
-    <div className="d-flex" style={{ minHeight: "100vh", background: "#f4f6f9" }}>
-      
+    <div
+      className="d-flex"
+      style={{ minHeight: "100vh", background: "#f4f6f9" }}
+    >
       <AdminSidebar />
 
       <div className="flex-grow-1 p-4">
-
         {/* HEADER */}
         <div className="mb-4">
           <h3 className="fw-bold">Dropdown Management</h3>
@@ -104,7 +105,6 @@ export default function MasterData() {
         {/* FORM */}
         <div className="card p-4 shadow-sm rounded-4 mb-4">
           <div className="row g-3">
-
             {/* TYPE */}
             <div className="col-md-3">
               <label>Type</label>
@@ -121,23 +121,30 @@ export default function MasterData() {
               </select>
             </div>
 
-            {/* PARENT */}
-            <div className="col-md-3">
-              <label>Parent (Optional)</label>
-              <select
-                className="form-control"
-                name="parent_id"
-                value={form.parent_id}
-                onChange={handleChange}
-              >
-                <option value="">Main Category</option>
-                {parents.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.name}
-                  </option>
-                ))}
-              </select>
-            </div>
+            {form.type === "education" && (
+              <div className="col-md-3">
+                <label>
+                  Parent Category <small>(optional)</small>
+                </label>
+
+                <select
+                  className="form-control"
+                  name="parent_id"
+                  value={form.parent_id}
+                  onChange={handleChange}
+                >
+                  <option value="">Main Category</option>
+
+                  {parents
+                    .filter((p) => p.type === "education")
+                    .map((p) => (
+                      <option key={p.id} value={p.id}>
+                        {p.name}
+                      </option>
+                    ))}
+                </select>
+              </div>
+            )}
 
             {/* NAME */}
             <div className="col-md-3">
@@ -161,7 +168,6 @@ export default function MasterData() {
                 {editId ? "Update" : "Add"}
               </button>
             </div>
-
           </div>
         </div>
 
@@ -204,10 +210,8 @@ export default function MasterData() {
                 );
               })}
             </tbody>
-
           </table>
         </div>
-
       </div>
     </div>
   );
