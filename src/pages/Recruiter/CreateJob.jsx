@@ -216,34 +216,6 @@ export default function CreateJob() {
                     <small className="text-danger">{errors.job_title}</small>
                   </div>
 
-                  {/* Logo */}
-                  <div className="col-md-6">
-                    <label>
-                      Logo <span className="text-danger">*</span>
-                    </label>
-                    <input
-                      type="file"
-                      name="logo"
-                      className="form-control"
-                      accept="image/png, image/jpeg, image/jpg"
-                      onChange={handleLogoChange}
-                    />
-                    {logoPreview && (
-                      <div className="mt-2">
-                        <img
-                          src={logoPreview}
-                          alt="Logo Preview"
-                          style={{
-                            width: "100px",
-                            height: "100px",
-                            objectFit: "cover",
-                          }}
-                          loading="lazy"
-                        />
-                      </div>
-                    )}
-                  </div>
-
                   <div className="col-md-6">
                     <label>
                       Application Limit <span className="text-danger">*</span>
