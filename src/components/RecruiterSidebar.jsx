@@ -44,7 +44,6 @@ export default function RecruiterSidebar() {
     });
   };
 
-  // ✅ UPDATED MENU (added path for Post Job)
   const menu = [
     { name: "Dashboard", icon: "fa-home", path: "/recruiter/dashboard" },
     {
@@ -58,7 +57,6 @@ export default function RecruiterSidebar() {
     { name: "Plans", icon: "fa-credit-card", path: "/recruiter/plans" },
   ];
 
-  // ✅ UPDATED ACTIVE CHECK
   const isActive = (path) => {
     if (!path) return false;
     return location.pathname.startsWith(path);
@@ -95,14 +93,6 @@ export default function RecruiterSidebar() {
         ))}
       </div>
 
-      {/* PLAN CARD */}
-      {activePlan && (
-        <div className="plan-card">
-          <p>Remaining Jobs</p>
-          <h4>{activePlan.jobs_remaining}</h4>
-        </div>
-      )}
-
       {/* LOGOUT */}
       <div className="logout-btn" onClick={handleLogout}>
         <i className="fa fa-sign-out"></i>
@@ -112,12 +102,11 @@ export default function RecruiterSidebar() {
       <style>{`
         .sidebar-container {
           width: 250px;
+          min-width: 250px;
           background: #fff;
           border-radius: 16px;
           padding: 20px;
           box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-          position: sticky;
-          top: 80px;
           height: fit-content;
         }
 
@@ -176,26 +165,6 @@ export default function RecruiterSidebar() {
 
         .sidebar-item.active i {
           color: #fff;
-        }
-
-        .plan-card {
-          margin-top: 25px;
-          padding: 15px;
-          border-radius: 12px;
-          background: #f8f9fc;
-          text-align: center;
-        }
-
-        .plan-card p {
-          margin: 0;
-          font-size: 13px;
-          color: #777;
-        }
-
-        .plan-card h4 {
-          margin: 5px 0 0;
-          color: #0d6efd;
-          font-weight: 600;
         }
 
         .logout-btn {
