@@ -5,9 +5,9 @@ import JobCard from "./JobCard";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import "./skeleton.css";
 
-const [loading, setLoading] = useState(false);
 
 function JobList({ filters }) {
+  const [loading, setLoading] = useState(false);
   const [jobs, setJobs] = useState([]);
 
   const [page, setPage] = useState(1);
