@@ -35,7 +35,6 @@ export default function EditJob() {
           }
         });
 
-        // ✅ EXPERIENCE PARSE
         let exp_min = "";
         let exp_max = "";
         let exp_unit = "";
@@ -43,18 +42,15 @@ export default function EditJob() {
         if (job.experience) {
           const exp = job.experience.trim();
 
-          if (exp.includes("-")) {
-            const parts = exp.split(" ");
-            const range = parts[0].split("-");
+          // ✅ extract numbers using regex (BEST WAY)
+          const numbers = exp.match(/\d+/g);
 
-            exp_min = range[0]?.trim();
-            exp_max = range[1]?.trim();
-          } else {
-            const parts = exp.split(" ");
-            exp_min = parts[0];
-            exp_max = parts[0];
+          if (numbers) {
+            exp_min = numbers[0] || "";
+            exp_max = numbers[1] || numbers[0] || "";
           }
 
+          // unit detect
           if (exp.toLowerCase().includes("year")) {
             exp_unit = "year";
           } else if (exp.toLowerCase().includes("month")) {
@@ -64,17 +60,17 @@ export default function EditJob() {
           }
         }
 
-        // ✅ JOB TIMING PARSE
         let job_time_from = "";
         let job_time_to = "";
 
         if (job.job_timing) {
           const timing = job.job_timing.trim();
 
-          if (timing.includes("-")) {
-            const parts = timing.split("-");
-            job_time_from = parts[0]?.trim();
-            job_time_to = parts[1]?.trim();
+          const parts = timing.split("-");
+
+          if (parts.length === 2) {
+            job_time_from = parts[0].trim();
+            job_time_to = parts[1].trim();
           } else {
             job_time_from = timing;
             job_time_to = timing;
