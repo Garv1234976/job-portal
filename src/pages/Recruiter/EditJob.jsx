@@ -19,12 +19,25 @@ export default function EditJob() {
   useEffect(() => {
     API.get(`/job/${id}`).then((res) => {
       const job = res.data.data;
-      setForm(job);
+
+      // ✅ SPLIT job_timing into from/to
+      let job_time_from = "";
+      let job_time_to = "";
+
+      if (job.job_timing && job.job_timing.includes("-")) {
+        const parts = job.job_timing.split("-");
+        job_time_from = parts[0]?.trim();
+        job_time_to = parts[1]?.trim();
+      }
+
+      setForm({
+        ...job,
+        job_time_from,
+        job_time_to,
+      });
 
       if (job.logo) {
-        setLogoPreview(
-          `${BASE_URL}/public/storage/${job.logo}`,
-        );
+        setLogoPreview(`${BASE_URL}/public/storage/${job.logo}`);
       }
 
       if (job.parent_category) {
@@ -32,7 +45,9 @@ export default function EditJob() {
           const cats = res.data.data || [];
           setCategories(cats);
 
-          const selectedCat = cats.find((c) => c.id == job.parent_category);
+          const selectedCat = cats.find(
+            (c) => c.id == job.parent_category
+          );
           setSubCategories(selectedCat?.children || []);
         });
       }
@@ -72,8 +87,16 @@ export default function EditJob() {
     try {
       const formData = new FormData();
 
+      // ✅ FIX job timing combine
+      formData.append(
+        "job_timing",
+        `${form.job_time_from || ""} - ${form.job_time_to || ""}`
+      );
+
       Object.keys(form).forEach((key) => {
         if (key === "logo" && !(form.logo instanceof File)) return;
+        if (key === "job_time_from" || key === "job_time_to") return;
+
         if (form[key] !== null && form[key] !== undefined) {
           formData.append(key, form[key]);
         }
@@ -107,11 +130,10 @@ export default function EditJob() {
                 <h2 className="text-center mb-4">Edit Job</h2>
 
                 <div className="row g-3">
+
                   {/* Job Title */}
                   <div className="col-md-6">
-                    <label>
-                      Job Title <span className="text-danger">*</span>
-                    </label>
+                    <label>Job Title</label>
                     <input
                       className="form-control"
                       name="job_title"
@@ -120,35 +142,9 @@ export default function EditJob() {
                     />
                   </div>
 
-                  {/* Logo */}
+                  {/* Application Limit */}
                   <div className="col-md-6">
-                    <label>Logo</label>
-                    <input
-                      type="file"
-                      className="form-control"
-                      onChange={handleLogoChange}
-                    />
-                    {logoPreview && (
-                      <img src={logoPreview} style={{ width: 100 }} loading="lazy" />
-                    )}
-                  </div>
-
-                  <div className="col-md-6">
-                    <label>
-                      Company Name <span className="text-danger">*</span>
-                    </label>
-                    <input
-                      className="form-control"
-                      name="company_name"
-                      value={form.company_name || ""}
-                      onChange={handleChange}
-                    />
-                  </div>
-
-                  <div className="col-md-6">
-                    <label>
-                      Application Limit <span className="text-danger">*</span>
-                    </label>
+                    <label>Application Limit</label>
                     <input
                       type="number"
                       className="form-control"
@@ -158,234 +154,135 @@ export default function EditJob() {
                     />
                   </div>
 
-                  {/* Category */}
+                  {/* Job Timing */}
                   <div className="col-md-6">
-                    <label>
-                      Category <span className="text-danger">*</span>
-                    </label>
-                    <select
-                      className="form-control"
-                      value={form.parent_category || ""}
-                      onChange={handleCategoryChange}
-                    >
-                      <option value="">Select</option>
-                      {categories.map((c) => (
-                        <option key={c.id} value={c.id}>
-                          {c.name}
-                        </option>
-                      ))}
-                    </select>
+                    <label>Job Timing</label>
+                    <div className="d-flex gap-2">
+                      <input
+                        type="time"
+                        className="form-control"
+                        name="job_time_from"
+                        value={form.job_time_from || ""}
+                        onChange={handleChange}
+                      />
+                      <input
+                        type="time"
+                        className="form-control"
+                        name="job_time_to"
+                        value={form.job_time_to || ""}
+                        onChange={handleChange}
+                      />
+                    </div>
                   </div>
 
+                  {/* Age */}
                   <div className="col-md-6">
-                    <label>
-                      Sub Category <span className="text-danger">*</span>
-                    </label>
-                    <select
-                      className="form-control"
-                      name="category_id"
-                      value={form.category_id || ""}
-                      onChange={handleChange}
-                    >
-                      <option value="">Select</option>
-                      {subCategories.map((s) => (
-                        <option key={s.id} value={s.id}>
-                          {s.name}
-                        </option>
-                      ))}
-                    </select>
+                    <label>Age Limit</label>
+                    <div className="d-flex gap-2">
+                      <input
+                        type="number"
+                        className="form-control"
+                        name="age_min"
+                        value={form.age_min || ""}
+                        onChange={handleChange}
+                      />
+                      <input
+                        type="number"
+                        className="form-control"
+                        name="age_max"
+                        value={form.age_max || ""}
+                        onChange={handleChange}
+                      />
+                    </div>
                   </div>
 
-                  {/* Description */}
+                  {/* Experience */}
                   <div className="col-md-12">
-                    <label>
-                      Job Description <span className="text-danger">*</span>
-                    </label>
-                    <textarea
-                      className="form-control"
-                      name="job_description"
-                      value={form.job_description || ""}
-                      onChange={handleChange}
-                    />
+                    <label>Experience</label>
+                    <div className="row">
+                      <div className="col-md-3">
+                        <input
+                          type="number"
+                          className="form-control"
+                          name="experience_min"
+                          value={form.experience_min || ""}
+                          onChange={handleChange}
+                        />
+                      </div>
+                      <div className="col-md-3">
+                        <input
+                          type="number"
+                          className="form-control"
+                          name="experience_max"
+                          value={form.experience_max || ""}
+                          onChange={handleChange}
+                        />
+                      </div>
+                      <div className="col-md-3">
+                        <select
+                          className="form-control"
+                          name="experience_unit"
+                          value={form.experience_unit || ""}
+                          onChange={handleChange}
+                        >
+                          <option value="year">Year</option>
+                          <option value="month">Month</option>
+                          <option value="both">Both</option>
+                        </select>
+                      </div>
+                    </div>
                   </div>
 
-                  {/* Key Skills */}
-                  <div className="col-md-6">
-                    <label>Key Skills</label>
-                    <input
-                      className="form-control"
-                      name="key_skills"
-                      value={form.key_skills || ""}
-                      onChange={handleChange}
-                    />
-                  </div>
-
-                  <div className="col-md-4">
-                    <label>Education</label>
-                    <input
-                      className="form-control"
-                      name="education"
-                      value={form.education || ""}
-                      onChange={handleChange}
-                    />
-                  </div>
-
-                  <div className="col-md-4">
-                    <label>
-                      Experience <span className="text-danger">*</span>
-                    </label>
-                    <input
-                      className="form-control"
-                      name="experience"
-                      value={form.experience || ""}
-                      onChange={handleChange}
-                    />
-                  </div>
-
-                  <div className="col-md-4">
-                    <label>
-                      Gender <span className="text-danger">*</span>
-                    </label>
-                    <select
-                      className="form-control"
-                      name="gender"
-                      value={form.gender || ""}
-                      onChange={handleChange}
-                    >
-                      <option value="">Select</option>
-                      <option>Male</option>
-                      <option>Female</option>
-                      <option>Both</option>
-                    </select>
-                  </div>
-
-                  <div className="col-md-4">
-                    <label>Working Hours</label>
-                    <input
-                      className="form-control"
-                      name="working_hours"
-                      value={form.working_hours || ""}
-                      onChange={handleChange}
-                    />
-                  </div>
-
-                  <div className="col-md-4">
-                    <label>Shift</label>
-                    <select
-                      className="form-control"
-                      name="shift"
-                      value={form.shift || ""}
-                      onChange={handleChange}
-                    >
-                      <option>Day</option>
-                      <option>Night</option>
-                    </select>
-                  </div>
-
-                  <div className="col-md-4">
-                    <label>Employment Type</label>
-                    <select
-                      className="form-control"
-                      name="employment_type"
-                      value={form.employment_type || ""}
-                      onChange={handleChange}
-                    >
-                      <option>Full Time</option>
-                      <option>Part Time</option>
-                      <option>Contract</option>
-                    </select>
-                  </div>
-
-                  <div className="col-md-4">
-                    <label>Work Mode</label>
-                    <select
-                      className="form-control"
-                      name="work_mode"
-                      value={form.work_mode || ""}
-                      onChange={handleChange}
-                    >
-                      <option>Onsite</option>
-                      <option>Hybrid</option>
-                      <option>WFH</option>
-                    </select>
-                  </div>
-
-                  <div className="col-md-4">
-                    <label>Location</label>
-                    <input
-                      className="form-control"
-                      name="location"
-                      value={form.location || ""}
-                      onChange={handleChange}
-                    />
-                  </div>
-
-                  <div className="col-md-4">
-                    <label>
-                      Salary <span className="text-danger">*</span>
-                    </label>
-                    <input
-                      className="form-control"
-                      name="salary_range"
-                      value={form.salary_range || ""}
-                      onChange={handleChange}
-                    />
-                  </div>
-
+                  {/* Salary */}
                   <div className="col-md-12">
-                    <label>Benefits</label>
-                    <textarea
-                      className="form-control"
-                      name="benefits"
-                      value={form.benefits || ""}
-                      onChange={handleChange}
-                    />
+                    <label>Salary</label>
+                    <div className="row">
+                      <div className="col-md-3">
+                        <input
+                          type="number"
+                          className="form-control"
+                          name="salary_min"
+                          value={form.salary_min || ""}
+                          onChange={handleChange}
+                        />
+                      </div>
+                      <div className="col-md-3">
+                        <input
+                          type="number"
+                          className="form-control"
+                          name="salary_max"
+                          value={form.salary_max || ""}
+                          onChange={handleChange}
+                        />
+                      </div>
+                      <div className="col-md-3">
+                        <select
+                          className="form-control"
+                          name="salary_unit"
+                          value={form.salary_unit || ""}
+                          onChange={handleChange}
+                        >
+                          <option value="thousand">Thousand</option>
+                          <option value="lakh">Lakh</option>
+                        </select>
+                      </div>
+                      <div className="col-md-3">
+                        <select
+                          className="form-control"
+                          name="salary_type"
+                          value={form.salary_type || ""}
+                          onChange={handleChange}
+                        >
+                          <option value="monthly">Monthly</option>
+                          <option value="yearly">Yearly</option>
+                        </select>
+                      </div>
+                    </div>
                   </div>
 
-                  <div className="col-md-3">
-                    <label>Overtime</label>
-                    <input
-                      className="form-control"
-                      name="overtime"
-                      value={form.overtime || ""}
-                      onChange={handleChange}
-                    />
-                  </div>
-
-                  <div className="col-md-3">
-                    <label>Cab Facility</label>
-                    <input
-                      className="form-control"
-                      name="cab_facility"
-                      value={form.cab_facility || ""}
-                      onChange={handleChange}
-                    />
-                  </div>
-
-                  <div className="col-md-3">
-                    <label>Skills</label>
-                    <input
-                      className="form-control"
-                      name="skills_required"
-                      value={form.skills_required || ""}
-                      onChange={handleChange}
-                    />
-                  </div>
-
-                  <div className="col-md-3">
-                    <label>Language</label>
-                    <input
-                      className="form-control"
-                      name="language_required"
-                      value={form.language_required || ""}
-                      onChange={handleChange}
-                    />
-                  </div>
-
-                  <div className="col-md-3">
-                    <label>
-                      Openings <span className="text-danger">*</span>
-                    </label>
+                  {/* Openings */}
+                  <div className="col-md-4">
+                    <label>Openings</label>
                     <input
                       type="number"
                       className="form-control"
@@ -395,15 +292,30 @@ export default function EditJob() {
                     />
                   </div>
 
-                  <div className="col-md-3">
-                    <label>Interview Mode</label>
+                  {/* Deadline */}
+                  <div className="col-md-4">
+                    <label>Interview Deadline</label>
                     <input
+                      type="date"
                       className="form-control"
-                      name="interview_mode"
-                      value={form.interview_mode || ""}
+                      name="interview_deadline"
+                      value={form.interview_deadline || ""}
                       onChange={handleChange}
                     />
                   </div>
+
+                  {/* Link */}
+                  <div className="col-md-12">
+                    <label>Company Link</label>
+                    <input
+                      type="url"
+                      className="form-control"
+                      name="external_link"
+                      value={form.external_link || ""}
+                      onChange={handleChange}
+                    />
+                  </div>
+
                 </div>
 
                 <div className="text-center mt-4">
@@ -411,11 +323,13 @@ export default function EditJob() {
                     Update Job
                   </button>
                 </div>
+
               </div>
             </div>
           </div>
         </div>
       </div>
+
       <Footer />
     </>
   );
