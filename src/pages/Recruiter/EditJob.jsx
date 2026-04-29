@@ -13,49 +13,67 @@ export default function EditJob() {
   const [form, setForm] = useState({});
   const [categories, setCategories] = useState([]);
   const [subCategories, setSubCategories] = useState([]);
-  const [logoPreview, setLogoPreview] = useState(null);
 
-  // LOAD JOB
   useEffect(() => {
     API.get(`/job/${id}`).then((res) => {
       const job = res.data.data;
-      setForm(job);
 
-      if (job.logo) {
-        setLogoPreview(
-          `${BASE_URL}/public/storage/${job.logo}`,
-        );
-      }
+      API.get("/categories").then((catRes) => {
+        const cats = catRes.data.data || [];
+        setCategories(cats);
 
-      if (job.parent_category) {
-        API.get("/categories").then((res) => {
-          const cats = res.data.data || [];
-          setCategories(cats);
+        let parentId = "";
 
-          const selectedCat = cats.find((c) => c.id == job.parent_category);
-          setSubCategories(selectedCat?.children || []);
+        // 🔥 FIND PARENT CATEGORY FROM SUB CATEGORY
+        cats.forEach((cat) => {
+          const found = cat.children?.find(
+            (child) => child.id == job.category_id,
+          );
+          if (found) {
+            parentId = cat.id;
+            setSubCategories(cat.children);
+          }
         });
-      }
+
+        let exp_min = "";
+        let exp_max = "";
+        let exp_unit = "";
+
+        if (job.experience) {
+          const exp = job.experience.trim();
+
+          // CASE 1: RANGE → "2 - 5 Years"
+          if (exp.includes("-")) {
+            const parts = exp.split(" ");
+            const range = parts[0].split("-");
+
+            exp_min = range[0]?.trim();
+            exp_max = range[1]?.trim();
+          }
+          // CASE 2: SINGLE VALUE → "5 Years"
+          else {
+            const parts = exp.split(" ");
+            exp_min = parts[0]; // put in min
+            exp_max = parts[0]; // same value in max
+          }
+
+          // UNIT DETECT
+          if (exp.toLowerCase().includes("year")) {
+            exp_unit = "year";
+          } else if (exp.toLowerCase().includes("month")) {
+            exp_unit = "month";
+          } else {
+            exp_unit = "both";
+          }
+        }
+
+        
+      });
     });
   }, [id]);
 
-  // categories
-  useEffect(() => {
-    API.get("/categories").then((res) => {
-      setCategories(res.data.data || []);
-    });
-  }, []);
-
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const handleLogoChange = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    setForm({ ...form, logo: file });
-    setLogoPreview(URL.createObjectURL(file));
   };
 
   const handleCategoryChange = (e) => {
@@ -73,7 +91,6 @@ export default function EditJob() {
       const formData = new FormData();
 
       Object.keys(form).forEach((key) => {
-        if (key === "logo" && !(form.logo instanceof File)) return;
         if (form[key] !== null && form[key] !== undefined) {
           formData.append(key, form[key]);
         }
@@ -116,31 +133,6 @@ export default function EditJob() {
                       className="form-control"
                       name="job_title"
                       value={form.job_title || ""}
-                      onChange={handleChange}
-                    />
-                  </div>
-
-                  {/* Logo */}
-                  <div className="col-md-6">
-                    <label>Logo</label>
-                    <input
-                      type="file"
-                      className="form-control"
-                      onChange={handleLogoChange}
-                    />
-                    {logoPreview && (
-                      <img src={logoPreview} style={{ width: 100 }} loading="lazy" />
-                    )}
-                  </div>
-
-                  <div className="col-md-6">
-                    <label>
-                      Company Name <span className="text-danger">*</span>
-                    </label>
-                    <input
-                      className="form-control"
-                      name="company_name"
-                      value={form.company_name || ""}
                       onChange={handleChange}
                     />
                   </div>
@@ -230,16 +222,41 @@ export default function EditJob() {
                     />
                   </div>
 
-                  <div className="col-md-4">
-                    <label>
-                      Experience <span className="text-danger">*</span>
-                    </label>
-                    <input
-                      className="form-control"
-                      name="experience"
-                      value={form.experience || ""}
-                      onChange={handleChange}
-                    />
+                  {/* Experience */}
+                  <div className="col-md-12">
+                    <label>Experience</label>
+                    <div className="row">
+                      <div className="col-md-3">
+                        <input
+                          type="number"
+                          className="form-control"
+                          name="experience_min"
+                          value={form.experience_min || ""}
+                          onChange={handleChange}
+                        />
+                      </div>
+                      <div className="col-md-3">
+                        <input
+                          type="number"
+                          className="form-control"
+                          name="experience_max"
+                          value={form.experience_max || ""}
+                          onChange={handleChange}
+                        />
+                      </div>
+                      <div className="col-md-3">
+                        <select
+                          className="form-control"
+                          name="experience_unit"
+                          value={form.experience_unit || ""}
+                          onChange={handleChange}
+                        >
+                          <option value="year">Year</option>
+                          <option value="month">Month</option>
+                          <option value="both">Both</option>
+                        </select>
+                      </div>
+                    </div>
                   </div>
 
                   <div className="col-md-4">
@@ -257,16 +274,6 @@ export default function EditJob() {
                       <option>Female</option>
                       <option>Both</option>
                     </select>
-                  </div>
-
-                  <div className="col-md-4">
-                    <label>Working Hours</label>
-                    <input
-                      className="form-control"
-                      name="working_hours"
-                      value={form.working_hours || ""}
-                      onChange={handleChange}
-                    />
                   </div>
 
                   <div className="col-md-4">
@@ -320,16 +327,92 @@ export default function EditJob() {
                     />
                   </div>
 
-                  <div className="col-md-4">
-                    <label>
-                      Salary <span className="text-danger">*</span>
-                    </label>
-                    <input
-                      className="form-control"
-                      name="salary_range"
-                      value={form.salary_range || ""}
-                      onChange={handleChange}
-                    />
+                  <div className="col-md-12">
+                    <label>Salary</label>
+                    <div className="row">
+                      <div className="col-md-3">
+                        <input
+                          type="number"
+                          className="form-control"
+                          name="salary_min"
+                          value={form.salary_min || ""}
+                          onChange={handleChange}
+                        />
+                      </div>
+                      <div className="col-md-3">
+                        <input
+                          type="number"
+                          className="form-control"
+                          name="salary_max"
+                          value={form.salary_max || ""}
+                          onChange={handleChange}
+                        />
+                      </div>
+                      <div className="col-md-3">
+                        <select
+                          className="form-control"
+                          name="salary_unit"
+                          value={form.salary_unit || ""}
+                          onChange={handleChange}
+                        >
+                          <option value="thousand">Thousand</option>
+                          <option value="lakh">Lakh</option>
+                        </select>
+                      </div>
+                      <div className="col-md-3">
+                        <select
+                          className="form-control"
+                          name="salary_type"
+                          value={form.salary_type || ""}
+                          onChange={handleChange}
+                        >
+                          <option value="monthly">Monthly</option>
+                          <option value="yearly">Yearly</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Age */}
+                  <div className="col-md-6">
+                    <label>Age Limit</label>
+                    <div className="d-flex gap-2">
+                      <input
+                        type="number"
+                        className="form-control"
+                        name="age_min"
+                        value={form.age_min || ""}
+                        onChange={handleChange}
+                      />
+                      <input
+                        type="number"
+                        className="form-control"
+                        name="age_max"
+                        value={form.age_max || ""}
+                        onChange={handleChange}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Job Timing */}
+                  <div className="col-md-6">
+                    <label>Job Timing</label>
+                    <div className="d-flex gap-2">
+                      <input
+                        type="time"
+                        className="form-control"
+                        name="job_time_from"
+                        value={form.job_time_from || ""}
+                        onChange={handleChange}
+                      />
+                      <input
+                        type="time"
+                        className="form-control"
+                        name="job_time_to"
+                        value={form.job_time_to || ""}
+                        onChange={handleChange}
+                      />
+                    </div>
                   </div>
 
                   <div className="col-md-12">
@@ -401,6 +484,30 @@ export default function EditJob() {
                       className="form-control"
                       name="interview_mode"
                       value={form.interview_mode || ""}
+                      onChange={handleChange}
+                    />
+                  </div>
+
+                  {/* Deadline */}
+                  <div className="col-md-4">
+                    <label>Interview Deadline</label>
+                    <input
+                      type="date"
+                      className="form-control"
+                      name="interview_deadline"
+                      value={form.interview_deadline || ""}
+                      onChange={handleChange}
+                    />
+                  </div>
+
+                  {/* Link */}
+                  <div className="col-md-12">
+                    <label>Company Link</label>
+                    <input
+                      type="url"
+                      className="form-control"
+                      name="external_link"
+                      value={form.external_link || ""}
                       onChange={handleChange}
                     />
                   </div>
