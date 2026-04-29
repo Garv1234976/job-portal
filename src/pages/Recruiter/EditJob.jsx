@@ -13,49 +13,40 @@ export default function EditJob() {
   const [form, setForm] = useState({});
   const [categories, setCategories] = useState([]);
   const [subCategories, setSubCategories] = useState([]);
-  const [logoPreview, setLogoPreview] = useState(null);
 
-  // LOAD JOB
   useEffect(() => {
     API.get(`/job/${id}`).then((res) => {
       const job = res.data.data;
-      setForm(job);
 
-      if (job.logo) {
-        setLogoPreview(
-          `${BASE_URL}/public/storage/${job.logo}`,
-        );
-      }
+      API.get("/categories").then((catRes) => {
+        const cats = catRes.data.data || [];
+        setCategories(cats);
 
-      if (job.parent_category) {
-        API.get("/categories").then((res) => {
-          const cats = res.data.data || [];
-          setCategories(cats);
+        let parentId = "";
 
-          const selectedCat = cats.find((c) => c.id == job.parent_category);
-          setSubCategories(selectedCat?.children || []);
+        // 🔥 FIND PARENT CATEGORY FROM SUB CATEGORY
+        cats.forEach((cat) => {
+          const found = cat.children?.find(
+            (child) => child.id == job.category_id,
+          );
+          if (found) {
+            parentId = cat.id;
+            setSubCategories(cat.children);
+          }
         });
-      }
+
+        setForm({
+          ...job,
+          parent_category: parentId,
+        });
+      });
     });
   }, [id]);
 
-  // categories
-  useEffect(() => {
-    API.get("/categories").then((res) => {
-      setCategories(res.data.data || []);
-    });
-  }, []);
+
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const handleLogoChange = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    setForm({ ...form, logo: file });
-    setLogoPreview(URL.createObjectURL(file));
   };
 
   const handleCategoryChange = (e) => {
@@ -73,7 +64,6 @@ export default function EditJob() {
       const formData = new FormData();
 
       Object.keys(form).forEach((key) => {
-        if (key === "logo" && !(form.logo instanceof File)) return;
         if (form[key] !== null && form[key] !== undefined) {
           formData.append(key, form[key]);
         }
@@ -116,31 +106,6 @@ export default function EditJob() {
                       className="form-control"
                       name="job_title"
                       value={form.job_title || ""}
-                      onChange={handleChange}
-                    />
-                  </div>
-
-                  {/* Logo */}
-                  <div className="col-md-6">
-                    <label>Logo</label>
-                    <input
-                      type="file"
-                      className="form-control"
-                      onChange={handleLogoChange}
-                    />
-                    {logoPreview && (
-                      <img src={logoPreview} style={{ width: 100 }} loading="lazy" />
-                    )}
-                  </div>
-
-                  <div className="col-md-6">
-                    <label>
-                      Company Name <span className="text-danger">*</span>
-                    </label>
-                    <input
-                      className="form-control"
-                      name="company_name"
-                      value={form.company_name || ""}
                       onChange={handleChange}
                     />
                   </div>
@@ -345,7 +310,7 @@ export default function EditJob() {
                     />
                   </div>
 
-                     <div className="col-md-12">
+                  <div className="col-md-12">
                     <label>Salary</label>
                     <div className="row">
                       <div className="col-md-3">
@@ -391,7 +356,7 @@ export default function EditJob() {
                     </div>
                   </div>
 
-                    {/* Age */}
+                  {/* Age */}
                   <div className="col-md-6">
                     <label>Age Limit</label>
                     <div className="d-flex gap-2">
@@ -412,7 +377,7 @@ export default function EditJob() {
                     </div>
                   </div>
 
-                    {/* Job Timing */}
+                  {/* Job Timing */}
                   <div className="col-md-6">
                     <label>Job Timing</label>
                     <div className="d-flex gap-2">
@@ -506,7 +471,7 @@ export default function EditJob() {
                     />
                   </div>
 
-                   {/* Deadline */}
+                  {/* Deadline */}
                   <div className="col-md-4">
                     <label>Interview Deadline</label>
                     <input
@@ -529,7 +494,6 @@ export default function EditJob() {
                       onChange={handleChange}
                     />
                   </div>
-
                 </div>
 
                 <div className="text-center mt-4">
