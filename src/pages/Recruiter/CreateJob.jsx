@@ -527,7 +527,6 @@ export default function CreateJob() {
                           <option value="">Select Unit</option>
                           <option value="year">Year</option>
                           <option value="month">Month</option>
-                          <option value="both">Year / Month</option>
                         </select>
                       </div>
                     </div>
