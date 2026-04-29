@@ -35,15 +35,55 @@ export default function EditJob() {
           }
         });
 
+        // 🔥 EXPERIENCE PARSE
+        let exp_min = "";
+        let exp_max = "";
+        let exp_unit = "";
+
+        if (job.experience) {
+          const expParts = job.experience.split(" ");
+
+          if (expParts.length >= 3) {
+            const range = expParts[0].split("-");
+            exp_min = range[0]?.trim();
+            exp_max = range[1]?.trim();
+
+            if (job.experience.toLowerCase().includes("year")) {
+              exp_unit = "year";
+            } else if (job.experience.toLowerCase().includes("month")) {
+              exp_unit = "month";
+            } else {
+              exp_unit = "both";
+            }
+          }
+        }
+
+        //  JOB TIMING PARSE
+        let job_time_from = "";
+        let job_time_to = "";
+
+        if (job.job_timing && job.job_timing.includes("-")) {
+          const parts = job.job_timing.split("-");
+          job_time_from = parts[0]?.trim();
+          job_time_to = parts[1]?.trim();
+        }
+
         setForm({
           ...job,
           parent_category: parentId,
+
+          //  FIX EXPERIENCE
+          experience_min: exp_min,
+          experience_max: exp_max,
+          experience_unit: exp_unit,
+
+          //  FIX TIME
+          job_time_from,
+          job_time_to,
         });
       });
     });
   }, [id]);
-
-
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -247,16 +287,6 @@ export default function EditJob() {
                       <option>Female</option>
                       <option>Both</option>
                     </select>
-                  </div>
-
-                  <div className="col-md-4">
-                    <label>Working Hours</label>
-                    <input
-                      className="form-control"
-                      name="working_hours"
-                      value={form.working_hours || ""}
-                      onChange={handleChange}
-                    />
                   </div>
 
                   <div className="col-md-4">
