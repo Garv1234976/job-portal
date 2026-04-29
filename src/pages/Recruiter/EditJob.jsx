@@ -35,52 +35,56 @@ export default function EditJob() {
           }
         });
 
-        // 🔥 EXPERIENCE PARSE
         let exp_min = "";
         let exp_max = "";
         let exp_unit = "";
 
         if (job.experience) {
-          const expParts = job.experience.split(" ");
+          const exp = job.experience.trim();
 
-          if (expParts.length >= 3) {
-            const range = expParts[0].split("-");
+          // CASE 1: RANGE → "2 - 5 Years"
+          if (exp.includes("-")) {
+            const parts = exp.split(" ");
+            const range = parts[0].split("-");
+
             exp_min = range[0]?.trim();
             exp_max = range[1]?.trim();
+          }
+          // CASE 2: SINGLE VALUE → "5 Years"
+          else {
+            const parts = exp.split(" ");
+            exp_min = parts[0]; // put in min
+            exp_max = parts[0]; // same value in max
+          }
 
-            if (job.experience.toLowerCase().includes("year")) {
-              exp_unit = "year";
-            } else if (job.experience.toLowerCase().includes("month")) {
-              exp_unit = "month";
-            } else {
-              exp_unit = "both";
-            }
+          // UNIT DETECT
+          if (exp.toLowerCase().includes("year")) {
+            exp_unit = "year";
+          } else if (exp.toLowerCase().includes("month")) {
+            exp_unit = "month";
+          } else {
+            exp_unit = "both";
           }
         }
 
-        //  JOB TIMING PARSE
+        // 🔥 JOB TIMING PARSE
         let job_time_from = "";
         let job_time_to = "";
 
-        if (job.job_timing && job.job_timing.includes("-")) {
-          const parts = job.job_timing.split("-");
-          job_time_from = parts[0]?.trim();
-          job_time_to = parts[1]?.trim();
+        if (job.job_timing) {
+          const timing = job.job_timing.trim();
+
+          if (timing.includes("-")) {
+            const parts = timing.split("-");
+
+            job_time_from = parts[0]?.trim();
+            job_time_to = parts[1]?.trim();
+          } else {
+            // single value fallback
+            job_time_from = timing;
+            job_time_to = timing;
+          }
         }
-
-        setForm({
-          ...job,
-          parent_category: parentId,
-
-          //  FIX EXPERIENCE
-          experience_min: exp_min,
-          experience_max: exp_max,
-          experience_unit: exp_unit,
-
-          //  FIX TIME
-          job_time_from,
-          job_time_to,
-        });
       });
     });
   }, [id]);
