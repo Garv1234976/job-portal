@@ -99,6 +99,19 @@ export default function EditJob() {
     });
   }, [id]);
 
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleCategoryChange = (e) => {
+    const selectedId = e.target.value;
+
+    setForm({ ...form, parent_category: selectedId, category_id: "" });
+
+    const selectedCat = categories.find((c) => c.id == selectedId);
+    setSubCategories(selectedCat?.children || []);
+  };
+
   // SUBMIT
   const submit = async () => {
     try {
