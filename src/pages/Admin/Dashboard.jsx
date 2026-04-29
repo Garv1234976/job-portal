@@ -48,7 +48,7 @@ export default function AdminDashboard() {
 
   return (
     <AdminLayout>
-      <div className="container-fluid">
+      <div className="mt-3">
 
         {/* HEADER */}
         <div className="d-flex flex-wrap justify-content-between align-items-center mb-4">
