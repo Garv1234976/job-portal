@@ -110,8 +110,7 @@ export default function AdminSidebar() {
                 onClick={() => {
                   if (item.path) navigate(item.path);
                   else item.action();
-
-                  setOpen(false); // close on mobile
+                  setOpen(false);
                 }}
               >
                 <span className="icon">{item.icon}</span>
@@ -140,12 +139,13 @@ export default function AdminSidebar() {
           left: 0;
           height: 100%;
           width: 250px;
+          min-width: 250px;
           background: #0f172a;
           color: white;
           display: flex;
           flex-direction: column;
           transform: translateX(-100%);
-          transition: 0.3s;
+          transition: all 0.3s ease;
           z-index: 1000;
         }
 
@@ -153,6 +153,7 @@ export default function AdminSidebar() {
           transform: translateX(0);
         }
 
+        /* DESKTOP FIX */
         @media (min-width: 768px) {
           .admin-sidebar {
             transform: translateX(0);
@@ -171,15 +172,16 @@ export default function AdminSidebar() {
         .sidebar-item {
           display: flex;
           align-items: center;
-          gap: 10px;
-          padding: 10px 12px;
+          gap: 12px;
+          padding: 12px 14px;
           border-radius: 8px;
           cursor: pointer;
-          transition: 0.2s;
+          transition: all 0.2s ease;
         }
 
         .sidebar-item:hover {
           background: rgba(255,255,255,0.1);
+          transform: translateX(4px);
         }
 
         .sidebar-item.active {
