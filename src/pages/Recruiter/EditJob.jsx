@@ -67,24 +67,7 @@ export default function EditJob() {
           }
         }
 
-        // 🔥 JOB TIMING PARSE
-        let job_time_from = "";
-        let job_time_to = "";
-
-        if (job.job_timing) {
-          const timing = job.job_timing.trim();
-
-          if (timing.includes("-")) {
-            const parts = timing.split("-");
-
-            job_time_from = parts[0]?.trim();
-            job_time_to = parts[1]?.trim();
-          } else {
-            // single value fallback
-            job_time_from = timing;
-            job_time_to = timing;
-          }
-        }
+        
       });
     });
   }, [id]);
