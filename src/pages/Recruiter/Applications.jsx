@@ -7,6 +7,7 @@ import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import RecruiterSidebar from "../../components/RecruiterSidebar";
 import { BASE_URL } from "../../config/constants";
+import "../../components/skeleton.css";
 
 export default function Applications() {
   const { id } = useParams();
@@ -17,12 +18,14 @@ export default function Applications() {
   const [lastPage, setLastPage] = useState(1);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
+  const [loading, setLoading] = useState(true);
 
-  // ✅ loading state
+  // loading state
   const [loadingId, setLoadingId] = useState(null);
 
   // FETCH
   const fetchApplications = () => {
+    setLoading(true);
     API.get(`/job-applications/${id}`, {
       params: { page, search, status: filter },
     })
@@ -31,7 +34,8 @@ export default function Applications() {
         setApplications(data.data || []);
         setLastPage(data.last_page || 1);
       })
-      .catch(() => setApplications([]));
+      .catch(() => setApplications([]))
+      .finally(() => setLoading(false));
   };
 
   useEffect(() => {
@@ -83,7 +87,7 @@ export default function Applications() {
         onClick={() => setPage(page - 1)}
       >
         Prev
-      </button>
+      </button>,
     );
 
     for (let i = 1; i <= lastPage; i++) {
@@ -94,7 +98,7 @@ export default function Applications() {
           onClick={() => setPage(i)}
         >
           {i}
-        </button>
+        </button>,
       );
     }
 
@@ -106,11 +110,19 @@ export default function Applications() {
         onClick={() => setPage(page + 1)}
       >
         Next
-      </button>
+      </button>,
     );
 
     return pages;
   };
+
+  const TableSkeleton = () => (
+    <tr>
+      <td colSpan="7">
+        <div className="skeleton skeleton-row mb-2"></div>
+      </td>
+    </tr>
+  );
 
   return (
     <>
@@ -177,15 +189,17 @@ export default function Applications() {
                 </thead>
 
                 <tbody>
-                  {applications.length > 0 ? (
+                  {loading ? (
+                    [...Array(5)].map((_, i) => <TableSkeleton key={i} />)
+                  ) : applications.length > 0 ? (
                     applications.map((app, i) => {
                       const resumeUrl = app.resume_url?.startsWith("http")
                         ? app.resume_url
                         : app.resume_url
-                        ? `${BASE_URL}/${app.resume_url}`
-                        : null;
+                          ? `${BASE_URL}/${app.resume_url}`
+                          : null;
 
-                      // ✅ FIX: handle multiple possible default statuses
+                      //  FIX: handle multiple possible default statuses
                       const isPending =
                         app.status === "pending" ||
                         app.status === "applied" ||
@@ -237,10 +251,10 @@ export default function Applications() {
                                 app.status === "shortlisted"
                                   ? "bg-info"
                                   : app.status === "selected"
-                                  ? "bg-success"
-                                  : app.status === "rejected"
-                                  ? "bg-danger"
-                                  : "bg-warning"
+                                    ? "bg-success"
+                                    : app.status === "rejected"
+                                      ? "bg-danger"
+                                      : "bg-warning"
                               }`}
                             >
                               {app.status || "pending"}
@@ -265,7 +279,6 @@ export default function Applications() {
                                 </button>
 
                                 <ul className="dropdown-menu shadow-sm">
-
                                   {/* SHORTLIST */}
                                   {isPending && (
                                     <li>
@@ -273,13 +286,10 @@ export default function Applications() {
                                         disabled={loadingId === app.id}
                                         className="dropdown-item d-flex align-items-center gap-2"
                                         onClick={() =>
-                                          updateStatus(
-                                            app.id,
-                                            "shortlisted"
-                                          )
+                                          updateStatus(app.id, "shortlisted")
                                         }
                                       >
-                                         <span>Shortlist</span>
+                                        <span>Shortlist</span>
                                       </button>
                                     </li>
                                   )}
@@ -295,7 +305,7 @@ export default function Applications() {
                                           updateStatus(app.id, "selected")
                                         }
                                       >
-                                         <span>Select</span>
+                                        <span>Select</span>
                                       </button>
                                     </li>
                                   )}
@@ -309,7 +319,7 @@ export default function Applications() {
                                         updateStatus(app.id, "rejected")
                                       }
                                     >
-                                       <span>Reject</span>
+                                      <span>Reject</span>
                                     </button>
                                   </li>
                                 </ul>
