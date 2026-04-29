@@ -6,7 +6,7 @@ import Swal from "sweetalert2";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import RecruiterSidebar from "../../components/RecruiterSidebar";
-import "./skeleton.css";
+import "../../components/skeleton.css";
 
 export default function MyJobs() {
   const [jobs, setJobs] = useState([]);
