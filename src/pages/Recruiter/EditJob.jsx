@@ -13,6 +13,59 @@ export default function EditJob() {
   const [form, setForm] = useState({});
   const [categories, setCategories] = useState([]);
   const [subCategories, setSubCategories] = useState([]);
+  const [errors, setErrors] = useState({});
+
+  const validate = () => {
+    let newErrors = {};
+
+    if (!form.job_title) newErrors.job_title = "Job title is required";
+    if (!form.category_id) newErrors.category_id = "Sub category is required";
+    if (!form.job_description)
+      newErrors.job_description = "Description is required";
+    if (!form.location) newErrors.location = "Location is required";
+    if (!form.gender) newErrors.gender = "Gender is required";
+
+    // Experience
+    if (!form.experience_min)
+      newErrors.experience_min = "Min experience required";
+    if (!form.experience_max)
+      newErrors.experience_max = "Max experience required";
+
+    if (
+      form.experience_min &&
+      form.experience_max &&
+      Number(form.experience_min) > Number(form.experience_max)
+    ) {
+      newErrors.experience_max = "Max must be greater than Min";
+    }
+
+    // Salary
+    if (!form.salary_min) newErrors.salary_min = "Min salary required";
+    if (!form.salary_max) newErrors.salary_max = "Max salary required";
+
+    if (
+      form.salary_min &&
+      form.salary_max &&
+      Number(form.salary_min) > Number(form.salary_max)
+    ) {
+      newErrors.salary_max = "Max must be greater than Min";
+    }
+
+    // Job Timing
+    if (!form.job_time_from) newErrors.job_time_from = "Start time required";
+    if (!form.job_time_to) newErrors.job_time_to = "End time required";
+
+    if (
+      form.job_time_from &&
+      form.job_time_to &&
+      form.job_time_from >= form.job_time_to
+    ) {
+      newErrors.job_time_to = "End time must be after start time";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   useEffect(() => {
     API.get(`/job/${id}`).then((res) => {
@@ -94,8 +147,9 @@ export default function EditJob() {
     setSubCategories(selectedCat?.children || []);
   };
 
-  // SUBMIT
   const submit = async () => {
+    if (!validate()) return;
+
     try {
       const formData = new FormData();
 
@@ -107,16 +161,79 @@ export default function EditJob() {
 
       formData.append("_method", "PUT");
 
-      await API.post(`/update-job/${id}`, formData);
+      const res = await API.post(`/update-job/${id}`, formData);
 
-      Swal.fire("Success", "Job Updated Successfully", "success").then(() => {
-        window.location.href = "/recruiter/jobs";
+      Swal.fire({
+        icon: "success",
+        title: "Success",
+        text: res.data?.message || "Job Updated Successfully",
+        timer: 2000,
+        showConfirmButton: false,
       });
+
+      setTimeout(() => {
+        window.location.href = "/recruiter/jobs";
+      }, 2000);
     } catch (err) {
-      Swal.fire("Error", "Something went wrong", "error");
+      // BACKEND VALIDATION ERROR (422)
+      if (err.response?.status === 422) {
+        const backendErrors = err.response.data.errors;
+
+        let formattedErrors = {};
+
+        Object.keys(backendErrors).forEach((key) => {
+          formattedErrors[key] = backendErrors[key][0];
+        });
+
+        setErrors(formattedErrors);
+
+        Swal.fire({
+          icon: "warning",
+          title: "Validation Error",
+          text: "Please fix the highlighted fields",
+        });
+      }
+
+      //  UNAUTHORIZED (TOKEN EXPIRED)
+      else if (err.response?.status === 401) {
+        Swal.fire({
+          icon: "error",
+          title: "Session Expired",
+          text: "Please login again",
+        }).then(() => {
+          localStorage.clear();
+          window.location.href = "/login";
+        });
+      }
+
+      //  SERVER ERROR
+      else if (err.response?.status >= 500) {
+        Swal.fire({
+          icon: "error",
+          title: "Server Error",
+          text: "Something went wrong on server",
+        });
+      }
+
+      //  NETWORK ERROR
+      else if (err.message === "Network Error") {
+        Swal.fire({
+          icon: "error",
+          title: "Network Error",
+          text: "Check your internet connection",
+        });
+      }
+
+      //  DEFAULT
+      else {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: err.response?.data?.message || "Something went wrong",
+        });
+      }
     }
   };
-
   return (
     <>
       <Navbar />
