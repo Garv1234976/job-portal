@@ -12,6 +12,7 @@ import "../../components/skeleton.css";
 export default function Applications() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [selected, setSelected] = useState([]);
 
   const [applications, setApplications] = useState([]);
   const [page, setPage] = useState(1);
@@ -41,6 +42,49 @@ export default function Applications() {
   useEffect(() => {
     fetchApplications();
   }, [id, page, search, filter]);
+
+  const handleSelect = (id) => {
+    setSelected((prev) =>
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id],
+    );
+  };
+
+  const handleSelectAll = () => {
+    if (selected.length === applications.length) {
+      setSelected([]);
+    } else {
+      setSelected(applications.map((a) => a.id));
+    }
+  };
+
+  const bulkUpdate = async (status) => {
+    if (selected.length === 0) {
+      return Swal.fire("Warning", "Select at least one candidate", "warning");
+    }
+
+    const confirm = await Swal.fire({
+      title: "Are you sure?",
+      text: `Apply "${status}" to selected candidates?`,
+      icon: "warning",
+      showCancelButton: true,
+    });
+
+    if (!confirm.isConfirmed) return;
+
+    try {
+      await API.post("/bulk-application-status", {
+        ids: selected,
+        status,
+      });
+
+      setSelected([]);
+      fetchApplications();
+
+      Swal.fire("Success", "Updated successfully", "success");
+    } catch {
+      Swal.fire("Error", "Something went wrong", "error");
+    }
+  };
 
   // UPDATE STATUS
   const updateStatus = async (appId, status) => {
@@ -174,10 +218,43 @@ export default function Applications() {
                   setPage(1);
                 }}
               />
+              {selected.length > 0 && (
+                <div className="mb-3 d-flex gap-2">
+                  <button
+                    className="btn btn-info btn-sm"
+                    onClick={() => bulkUpdate("shortlisted")}
+                  >
+                    Shortlist Selected
+                  </button>
 
+                  <button
+                    className="btn btn-success btn-sm"
+                    onClick={() => bulkUpdate("selected")}
+                  >
+                    Select Selected
+                  </button>
+
+                  <button
+                    className="btn btn-danger btn-sm"
+                    onClick={() => bulkUpdate("rejected")}
+                  >
+                    Reject Selected
+                  </button>
+                </div>
+              )}
               <table className="table table-bordered">
                 <thead className="table-dark">
                   <tr>
+                    <th>
+                      <input
+                        type="checkbox"
+                        checked={
+                          selected.length === applications.length &&
+                          applications.length > 0
+                        }
+                        onChange={handleSelectAll}
+                      />
+                    </th>
                     <th>#</th>
                     <th>Name</th>
                     <th>Email</th>
@@ -207,6 +284,13 @@ export default function Applications() {
 
                       return (
                         <tr key={app.id}>
+                          <td>
+                            <input
+                              type="checkbox"
+                              checked={selected.includes(app.id)}
+                              onChange={() => handleSelect(app.id)}
+                            />
+                          </td>
                           <td>{(page - 1) * 5 + i + 1}</td>
 
                           <td>{app.name}</td>
