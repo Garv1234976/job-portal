@@ -24,7 +24,7 @@ export default function EditJob() {
 
         let parentId = "";
 
-        // 🔥 FIND PARENT CATEGORY FROM SUB CATEGORY
+        // ✅ FIND PARENT CATEGORY
         cats.forEach((cat) => {
           const found = cat.children?.find(
             (child) => child.id == job.category_id,
@@ -35,6 +35,7 @@ export default function EditJob() {
           }
         });
 
+        // ✅ EXPERIENCE PARSE
         let exp_min = "";
         let exp_max = "";
         let exp_unit = "";
@@ -42,22 +43,18 @@ export default function EditJob() {
         if (job.experience) {
           const exp = job.experience.trim();
 
-          // CASE 1: RANGE → "2 - 5 Years"
           if (exp.includes("-")) {
             const parts = exp.split(" ");
             const range = parts[0].split("-");
 
             exp_min = range[0]?.trim();
             exp_max = range[1]?.trim();
-          }
-          // CASE 2: SINGLE VALUE → "5 Years"
-          else {
+          } else {
             const parts = exp.split(" ");
-            exp_min = parts[0]; // put in min
-            exp_max = parts[0]; // same value in max
+            exp_min = parts[0];
+            exp_max = parts[0];
           }
 
-          // UNIT DETECT
           if (exp.toLowerCase().includes("year")) {
             exp_unit = "year";
           } else if (exp.toLowerCase().includes("month")) {
@@ -67,23 +64,40 @@ export default function EditJob() {
           }
         }
 
-        
+        // ✅ JOB TIMING PARSE
+        let job_time_from = "";
+        let job_time_to = "";
+
+        if (job.job_timing) {
+          const timing = job.job_timing.trim();
+
+          if (timing.includes("-")) {
+            const parts = timing.split("-");
+            job_time_from = parts[0]?.trim();
+            job_time_to = parts[1]?.trim();
+          } else {
+            job_time_from = timing;
+            job_time_to = timing;
+          }
+        }
+
+        // ✅ FINAL SET FORM (MOST IMPORTANT)
+        setForm({
+          ...job,
+          parent_category: parentId,
+
+          // experience
+          experience_min: exp_min,
+          experience_max: exp_max,
+          experience_unit: exp_unit,
+
+          // job timing
+          job_time_from,
+          job_time_to,
+        });
       });
     });
   }, [id]);
-
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const handleCategoryChange = (e) => {
-    const selectedId = e.target.value;
-
-    setForm({ ...form, parent_category: selectedId, category_id: "" });
-
-    const selectedCat = categories.find((c) => c.id == selectedId);
-    setSubCategories(selectedCat?.children || []);
-  };
 
   // SUBMIT
   const submit = async () => {
