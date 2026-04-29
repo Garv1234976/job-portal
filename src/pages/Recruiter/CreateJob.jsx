@@ -284,9 +284,7 @@ export default function CreateJob() {
                       />
                     </div>
 
-                    <small className="text-muted">
-                      Example: 09:00 AM - 06:00 PM
-                    </small>
+                 
                   </div>
 
                   {/*  Age Limit */}
@@ -310,8 +308,6 @@ export default function CreateJob() {
                         onChange={handleChange}
                       />
                     </div>
-
-                    <small className="text-muted">Example: 18 - 35 years</small>
 
                     {errors.age_max && (
                       <small className="text-danger">{errors.age_max}</small>
@@ -536,9 +532,7 @@ export default function CreateJob() {
                       </div>
                     </div>
 
-                    <small className="text-muted">
-                      Example: 0 - 3 Years OR 6 - 24 Months
-                    </small>
+                
 
                     <div className="text-danger">{errors.experience_min}</div>
                     <div className="text-danger">{errors.experience_max}</div>
@@ -639,6 +633,7 @@ export default function CreateJob() {
                           className="form-control"
                           name="salary_min"
                           placeholder="Min"
+                           min="0"
                           onChange={handleChange}
                         />
                       </div>
@@ -650,6 +645,7 @@ export default function CreateJob() {
                           className="form-control"
                           name="salary_max"
                           placeholder="Max"
+                           min="0"
                           onChange={handleChange}
                         />
                       </div>
@@ -664,6 +660,8 @@ export default function CreateJob() {
                           <option value="">Select Unit</option>
                           <option value="thousand">Thousand</option>
                           <option value="lakh">Lakh</option>
+                          <option value="crore">Crore</option>
+
                         </select>
                       </div>
 
@@ -675,16 +673,15 @@ export default function CreateJob() {
                           onChange={handleChange}
                         >
                           <option value="">Select Type</option>
-                          <option value="monthly">Per Month</option>
                           <option value="yearly">Per Year</option>
+                          <option value="monthly">Per Month</option>
+                          <option value="weekly">Per Week</option>
+                          <option value="daily">Per Day</option>
                         </select>
                       </div>
                     </div>
 
-                    <small className="text-muted">
-                      Example: 20 - 40 Lakh Per Year OR 15 - 25 Thousand Per
-                      Month
-                    </small>
+                  
 
                     <div className="text-danger">{errors.salary_min}</div>
                     <div className="text-danger">{errors.salary_max}</div>
@@ -817,10 +814,7 @@ export default function CreateJob() {
                     onChange={handleChange}
                   />
 
-                  <small className="text-muted">
-                    Candidate can click this link to visit company profile or
-                    website
-                  </small>
+                
 
                   {errors.external_link && (
                     <small className="text-danger">
