@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import API from "../../services/api";
 import Swal from "sweetalert2";
 import AdminSidebar from "../../components/Admin/AdminSidebar";
+import AdminLayout from "./Layout";
 
 export default function MasterData() {
   const [list, setList] = useState([]);
@@ -114,6 +115,7 @@ export default function MasterData() {
   const totalPages = Math.ceil(filteredList.length / itemsPerPage);
 
   return (
+     <AdminLayout>
     <div
       className="d-flex"
       style={{ minHeight: "100vh", background: "#f4f6f9" }}
@@ -289,5 +291,6 @@ export default function MasterData() {
         </div>
       </div>
     </div>
+      </AdminLayout>
   );
 }
