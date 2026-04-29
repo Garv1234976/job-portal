@@ -6,12 +6,14 @@ import Swal from "sweetalert2";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
 import RecruiterSidebar from "../../components/RecruiterSidebar";
+import "./skeleton.css";
 
 export default function MyJobs() {
   const [jobs, setJobs] = useState([]);
   const [search, setSearch] = useState("");
   const [location, setLocation] = useState("");
   const [salary, setSalary] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const [page, setPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
@@ -20,14 +22,17 @@ export default function MyJobs() {
 
   //  FETCH JOBS
   const fetchJobs = () => {
+    setLoading(true);
+
     API.get("/my-jobs", {
-      params: { page, search, location, salary }
+      params: { page, search, location, salary },
     })
       .then((res) => {
         setJobs(res.data.data.data || []);
         setLastPage(res.data.data.last_page || 1);
       })
-      .catch(() => setJobs([]));
+      .catch(() => setJobs([]))
+      .finally(() => setLoading(false));
   };
 
   useEffect(() => {
@@ -97,7 +102,7 @@ export default function MyJobs() {
         onClick={() => setPage(page - 1)}
       >
         Prev
-      </button>
+      </button>,
     );
 
     // PAGE NUMBERS
@@ -109,7 +114,7 @@ export default function MyJobs() {
           onClick={() => setPage(i)}
         >
           {i}
-        </button>
+        </button>,
       );
     }
 
@@ -122,11 +127,19 @@ export default function MyJobs() {
         onClick={() => setPage(page + 1)}
       >
         Next
-      </button>
+      </button>,
     );
 
     return pages;
   };
+
+  const TableSkeleton = () => (
+    <tr>
+      <td colSpan="8">
+        <div className="skeleton skeleton-row mb-2"></div>
+      </td>
+    </tr>
+  );
 
   return (
     <>
@@ -134,7 +147,6 @@ export default function MyJobs() {
 
       <div className="container-fluid mt-4 mb-5">
         <div className="row">
-
           {/* SIDEBAR */}
           <div className="col-md-3 col-lg-2 mb-3">
             <RecruiterSidebar />
@@ -143,7 +155,6 @@ export default function MyJobs() {
           {/* MAIN CONTENT */}
           <div className="col-md-9 col-lg-10">
             <div className="container">
-
               <h2 className="mb-3">My Jobs</h2>
 
               {/* FILTERS */}
@@ -202,7 +213,9 @@ export default function MyJobs() {
                   </thead>
 
                   <tbody>
-                    {jobs.length > 0 ? (
+                    {loading ? (
+                      [...Array(5)].map((_, i) => <TableSkeleton key={i} />)
+                    ) : jobs.length > 0 ? (
                       jobs.map((job, index) => {
                         const isClosed = job.is_closed;
 
@@ -287,7 +300,6 @@ export default function MyJobs() {
                   {renderPagination()}
                 </div>
               )}
-
             </div>
           </div>
         </div>
