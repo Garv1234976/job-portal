@@ -7,14 +7,24 @@ export default function Users() {
   const [page, setPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
   const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const fetchUsers = () => {
+    setLoading(true);
+
     API.get("/admin/users", {
       params: { page, search },
-    }).then((res) => {
-      setUsers(res.data.data.data);
-      setLastPage(res.data.data.last_page);
-    });
+    })
+      .then((res) => {
+        setUsers(res.data.data.data);
+        setLastPage(res.data.data.last_page);
+      })
+      .catch(() => {
+        setUsers([]);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   useEffect(() => {
@@ -25,11 +35,12 @@ export default function Users() {
     <AdminLayout>
       <div className="container-fluid">
 
-        <h4 className="mb-3">Users</h4>
+        {/* HEADER */}
+        <div className="d-flex flex-wrap justify-content-between align-items-center mb-3">
+          <h4 className="mb-2 mb-md-0">Users</h4>
 
-        {/* SEARCH */}
-        <div className="row mb-3">
-          <div className="col-12 col-md-6 col-lg-4">
+          {/* SEARCH */}
+          <div style={{ maxWidth: "300px", width: "100%" }}>
             <input
               className="form-control"
               placeholder="Search users..."
@@ -55,14 +66,33 @@ export default function Users() {
             </thead>
 
             <tbody>
-              {users.length > 0 ? (
+              {loading ? (
+                <tr>
+                  <td colSpan="4" className="text-center py-4">
+                    Loading...
+                  </td>
+                </tr>
+              ) : users.length > 0 ? (
                 users.map((user, i) => (
                   <tr key={user.id}>
                     <td>{(page - 1) * 10 + i + 1}</td>
-                    <td className="fw-semibold">{user.name}</td>
-                    <td className="text-break">{user.email}</td>
+
+                    <td className="fw-semibold text-nowrap">
+                      {user.name}
+                    </td>
+
+                    <td className="text-break">
+                      {user.email}
+                    </td>
+
                     <td>
-                      <span className="badge bg-primary">
+                      <span
+                        className={`badge ${
+                          user.role === "admin"
+                            ? "bg-danger"
+                            : "bg-primary"
+                        }`}
+                      >
                         {user.role}
                       </span>
                     </td>
@@ -94,7 +124,9 @@ export default function Users() {
             <button
               key={i}
               className={`btn btn-sm ${
-                page === i + 1 ? "btn-primary" : "btn-outline-secondary"
+                page === i + 1
+                  ? "btn-primary"
+                  : "btn-outline-secondary"
               }`}
               onClick={() => setPage(i + 1)}
             >
