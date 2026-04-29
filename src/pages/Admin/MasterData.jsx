@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import API from "../../services/api";
 import Swal from "sweetalert2";
-import AdminSidebar from "../../components/Admin/AdminSidebar";
 import AdminLayout from "./Layout";
 
 export default function MasterData() {
@@ -120,7 +119,6 @@ export default function MasterData() {
       className="d-flex"
       style={{ minHeight: "100vh", background: "#f4f6f9" }}
     >
-      <AdminSidebar />
 
       <div className="flex-grow-1 p-4">
         {/* HEADER */}
