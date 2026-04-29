@@ -3,6 +3,9 @@ import { useLocation } from "react-router-dom";
 import API from "../services/api";
 import JobCard from "./JobCard";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import "./skeleton.css";
+
+const [loading, setLoading] = useState(false);
 
 function JobList({ filters }) {
   const [jobs, setJobs] = useState([]);
@@ -32,6 +35,7 @@ function JobList({ filters }) {
   }, [page, filters, location.search]);
 
   const fetchJobs = () => {
+    setLoading(true);
 
     const query = getQueryParams();
 
@@ -49,7 +53,8 @@ function JobList({ filters }) {
         setJobs(res?.data?.data?.data || []);
         setLastPage(res?.data?.data?.last_page || 1);
       })
-      .catch(() => setJobs([]));
+      .catch(() => setJobs([]))
+      .finally(() => setLoading(false));
   };
 
   const getPagination = () => {
@@ -73,21 +78,34 @@ function JobList({ filters }) {
     return pages;
   };
 
+  const SkeletonCard = () => (
+    <div className="card mb-3 p-3">
+      <div className="d-flex justify-content-between">
+        <div style={{ width: "70%" }}>
+          <div className="skeleton skeleton-title mb-2"></div>
+          <div className="skeleton skeleton-text mb-2"></div>
+          <div className="skeleton skeleton-text"></div>
+        </div>
+        <div className="skeleton skeleton-box"></div>
+      </div>
+    </div>
+  );
+
   return (
     <div className="container py-5">
-
       <div className="mb-4">
         <h2 className="fw-bold">Find Jobs</h2>
         <p className="text-muted">Explore latest opportunities across India</p>
       </div>
-
-      {jobs.map((job) => (
-        <JobCard key={job.id} job={job} />
-      ))}
-
+      {loading ? (
+        [...Array(5)].map((_, i) => <SkeletonCard key={i} />)
+      ) : jobs.length > 0 ? (
+        jobs.map((job) => <JobCard key={job.id} job={job} />)
+      ) : (
+        <p className="text-center text-muted">No jobs found</p>
+      )}
       {lastPage > 1 && (
         <div className="d-flex justify-content-center mt-4 flex-wrap gap-2">
-
           <button
             className="btn btn-light border"
             disabled={page === 1}
@@ -100,9 +118,7 @@ function JobList({ filters }) {
             <button
               key={i}
               disabled={p === "..."}
-              className={`btn ${
-                page === p ? "btn-dark" : "btn-light border"
-              }`}
+              className={`btn ${page === p ? "btn-dark" : "btn-light border"}`}
               onClick={() => typeof p === "number" && setPage(p)}
             >
               {p}
@@ -116,7 +132,6 @@ function JobList({ filters }) {
           >
             <FaChevronRight />
           </button>
-
         </div>
       )}
     </div>
