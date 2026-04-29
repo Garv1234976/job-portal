@@ -60,24 +60,10 @@ export default function EditJob() {
           }
         }
 
-        let job_time_from = "";
-        let job_time_to = "";
+        let job_time_from = job.job_time_from || "";
+        let job_time_to = job.job_time_to || "";
 
-        if (job.job_timing) {
-          const timing = job.job_timing.trim();
-
-          const parts = timing.split("-");
-
-          if (parts.length === 2) {
-            job_time_from = parts[0].trim();
-            job_time_to = parts[1].trim();
-          } else {
-            job_time_from = timing;
-            job_time_to = timing;
-          }
-        }
-
-        // ✅ FINAL SET FORM (MOST IMPORTANT)
+        // FINAL SET FORM (MOST IMPORTANT)
         setForm({
           ...job,
           parent_category: parentId,
