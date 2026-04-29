@@ -120,8 +120,20 @@ export default function CreateJob() {
 
     try {
       const formData = new FormData();
+
+      //  FIX JOB TIMING (IMPORTANT)
+      formData.append(
+        "job_timing",
+        `${form.job_time_from || ""} - ${form.job_time_to || ""}`,
+      );
+
+      //  LOOP OTHER FIELDS
       Object.keys(form).forEach((key) => {
-        formData.append(key, form[key]);
+        if (key === "job_time_from" || key === "job_time_to") return;
+
+        if (form[key] !== null && form[key] !== undefined) {
+          formData.append(key, form[key]);
+        }
       });
 
       await API.post("/create-job", formData, {
