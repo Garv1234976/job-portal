@@ -70,14 +70,14 @@ function RegisterCandidate() {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
- const handleChange = (e) => {
-  setForm({
-    ...form,
-    [e.target.name]: e.target.value, 
-  });
+  const handleChange = (e) => {
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value,
+    });
 
-  setErrors({ ...errors, [e.target.name]: "" });
-};
+    setErrors({ ...errors, [e.target.name]: "" });
+  };
 
   const validate = () => {
     let newErrors = {};
@@ -137,7 +137,17 @@ function RegisterCandidate() {
       const formData = new FormData();
 
       for (let key in form) {
-        if (
+        // ✅ QUALIFICATION ARRAY (FIXED)
+        if (key === "qualification") {
+          if (Array.isArray(form.qualification)) {
+            form.qualification.forEach((item, index) => {
+              formData.append(`qualification[${index}]`, item);
+            });
+          }
+        }
+
+        // ✅ MULTI SELECT FIELDS
+        else if (
           key === "skills" ||
           key === "languages_writing" ||
           key === "languages_speaking"
@@ -145,7 +155,10 @@ function RegisterCandidate() {
           form[key].forEach((item, index) => {
             formData.append(`${key}[${index}]`, item);
           });
-        } else if (key === "experience_details") {
+        }
+
+        // ✅ EXPERIENCE DETAILS ARRAY
+        else if (key === "experience_details") {
           form.experience_details.forEach((exp, index) => {
             formData.append(
               `experience_details[${index}][job_profile]`,
@@ -153,8 +166,18 @@ function RegisterCandidate() {
             );
             formData.append(`experience_details[${index}][years]`, exp.years);
           });
-        } else {
-          formData.append(key, form[key]);
+        }
+
+        // ✅ FILE UPLOAD
+        else if (key === "cv") {
+          if (form.cv) {
+            formData.append("cv", form.cv);
+          }
+        }
+
+        // ✅ NORMAL FIELDS
+        else {
+          formData.append(key, form[key] || "");
         }
       }
 
