@@ -7,13 +7,18 @@ import CandidateSidebar from "../components/candidate/CandidateSidebar";
 import { FaEdit, FaMapMarkerAlt, FaPhone } from "react-icons/fa";
 import Swal from "sweetalert2";
 import Select from "react-select";
-import { BASE_URL } from "../config/constants"; 
+import { BASE_URL } from "../config/constants";
 
 function Profile() {
   const [profile, setProfile] = useState({});
   const [loading, setLoading] = useState(true);
   const [editSection, setEditSection] = useState(null);
   const [form, setForm] = useState({});
+
+  // ✅ NEW STATES (dynamic qualification)
+  const [master, setMaster] = useState({});
+  const [qualificationParent, setQualificationParent] = useState("");
+  const [qualificationChild, setQualificationChild] = useState([]);
 
   const safeArray = (data) => {
     if (!data) return [];
@@ -33,18 +38,12 @@ function Profile() {
     { value: "Vue", label: "Vue" },
   ];
 
-  const qualificationOptions = [
-    { value: "10th", label: "10th" },
-    { value: "12th", label: "12th" },
-    { value: "Diploma", label: "Diploma" },
-    { value: "Graduate", label: "Graduate" },
-    { value: "Post Graduate", label: "Post Graduate" },
-  ];
-
   useEffect(() => {
     fetchProfile();
+    fetchMaster();
   }, []);
 
+  // ✅ PROFILE
   const fetchProfile = async () => {
     try {
       const res = await API.get("/profile");
@@ -59,6 +58,31 @@ function Profile() {
       setLoading(false);
     } catch {
       setLoading(false);
+    }
+  };
+
+  // ✅ MASTER DATA (DYNAMIC QUALIFICATION)
+  const fetchMaster = async () => {
+    try {
+      const res = await API.get("/get-master-data");
+      const raw = res.data.data || [];
+
+      const grouped = {};
+
+      raw.forEach((item) => {
+        if (!grouped[item.type]) grouped[item.type] = [];
+
+        if (item.type === "education" && item.parent_id === null) {
+          grouped[item.type].push({
+            ...item,
+            children: raw.filter((i) => i.parent_id === item.id),
+          });
+        }
+      });
+
+      setMaster(grouped);
+    } catch (err) {
+      console.log(err);
     }
   };
 
@@ -78,24 +102,18 @@ function Profile() {
     fetchProfile();
   };
 
-  // ✅ UPDATED SAVE (ARRAY SAFE)
+  // ✅ SAVE
   const handleSave = async () => {
     const formData = new FormData();
 
     Object.keys(form).forEach((key) => {
-
-      // ✅ ARRAY HANDLING (qualification + skills)
       if (Array.isArray(form[key])) {
         form[key].forEach((item, i) => {
           formData.append(`${key}[${i}]`, item);
         });
-      }
-
-      // ✅ NORMAL FIELDS
-      else {
+      } else {
         formData.append(key, form[key] || "");
       }
-
     });
 
     await API.post("/update-profile", formData);
@@ -306,24 +324,74 @@ function Profile() {
                 />
               )}
 
-              {/* QUALIFICATION */}
+              {/* QUALIFICATION (DYNAMIC) */}
               {editSection === "qualification" && (
-                <Select
-                  isMulti
-                  options={qualificationOptions}
-                  value={(form.qualification || []).map((q) => ({
-                    value: q,
-                    label: q,
-                  }))}
-                  onChange={(selected) =>
-                    setForm({
-                      ...form,
-                      qualification: selected
-                        ? selected.map((i) => i.value)
-                        : [],
-                    })
-                  }
-                />
+                <>
+                  <label>Qualification Level</label>
+                  <select
+                    className="form-control mb-2"
+                    value={qualificationParent}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      setQualificationParent(value);
+
+                      const selected = master.education?.find(
+                        (i) => i.id == value
+                      );
+
+                      setQualificationChild(selected?.children || []);
+
+                      if (!selected?.children?.length) {
+                        setForm({
+                          ...form,
+                          qualification: selected ? [selected.name] : [],
+                        });
+                      } else {
+                        setForm({
+                          ...form,
+                          qualification: [],
+                        });
+                      }
+                    }}
+                  >
+                    <option value="">Select Level</option>
+                    {master.education?.map((item) => (
+                      <option key={item.id} value={item.id}>
+                        {item.name}
+                      </option>
+                    ))}
+                  </select>
+
+                  {qualificationChild.length > 0 && (
+                    <>
+                      <label>Degree</label>
+                      <select
+                        className="form-control"
+                        onChange={(e) => {
+                          const degree = e.target.value;
+
+                          const parent = master.education?.find(
+                            (i) => i.id == qualificationParent
+                          );
+
+                          setForm({
+                            ...form,
+                            qualification: parent
+                              ? [parent.name, degree]
+                              : [],
+                          });
+                        }}
+                      >
+                        <option value="">Select Degree</option>
+                        {qualificationChild.map((child) => (
+                          <option key={child.id} value={child.name}>
+                            {child.name}
+                          </option>
+                        ))}
+                      </select>
+                    </>
+                  )}
+                </>
               )}
 
               <div className="mt-3 text-end">
