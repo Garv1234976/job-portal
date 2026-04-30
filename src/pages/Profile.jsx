@@ -7,17 +7,13 @@ import CandidateSidebar from "../components/candidate/CandidateSidebar";
 import { FaEdit, FaMapMarkerAlt, FaPhone } from "react-icons/fa";
 import Swal from "sweetalert2";
 import Select from "react-select";
-import { BASE_URL } from "../config/constants";
+import { BASE_URL } from "../config/constants"; 
 
 function Profile() {
   const [profile, setProfile] = useState({});
   const [loading, setLoading] = useState(true);
   const [editSection, setEditSection] = useState(null);
   const [form, setForm] = useState({});
-
-  const [master, setMaster] = useState({});
-  const [qualificationParent, setQualificationParent] = useState("");
-  const [qualificationChild, setQualificationChild] = useState([]);
 
   const safeArray = (data) => {
     if (!data) return [];
@@ -30,9 +26,23 @@ function Profile() {
     }
   };
 
+  const skillOptions = [
+    { value: "PHP", label: "PHP" },
+    { value: "Laravel", label: "Laravel" },
+    { value: "React", label: "React" },
+    { value: "Vue", label: "Vue" },
+  ];
+
+  const qualificationOptions = [
+    { value: "10th", label: "10th" },
+    { value: "12th", label: "12th" },
+    { value: "Diploma", label: "Diploma" },
+    { value: "Graduate", label: "Graduate" },
+    { value: "Post Graduate", label: "Post Graduate" },
+  ];
+
   useEffect(() => {
     fetchProfile();
-    fetchMaster();
   }, []);
 
   const fetchProfile = async () => {
@@ -52,41 +62,14 @@ function Profile() {
     }
   };
 
-  // ✅ FIXED FUNCTION (MAIN ISSUE)
-  const fetchMaster = async () => {
-    try {
-      const res = await API.get("/get-master-data");
-      const raw = res.data.data || [];
-
-      const grouped = {};
-
-      raw.forEach((item) => {
-        if (!grouped[item.type]) grouped[item.type] = [];
-
-        if (item.type === "education" && item.parent_id === null) {
-          // 🔥 FIX: attach children correctly
-          const children = raw.filter(
-            (i) => i.parent_id == item.id
-          );
-
-          grouped[item.type].push({
-            ...item,
-            children: children || [],
-          });
-        }
-      });
-
-      console.log("MASTER EDUCATION:", grouped.education); // debug
-
-      setMaster(grouped);
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
+  //  PHOTO UPLOAD FIXED
   const handlePhotoUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
+
+    if (!["image/jpeg", "image/png", "image/jpg"].includes(file.type)) {
+      return Swal.fire("Error", "Only JPG, PNG allowed", "error");
+    }
 
     const formData = new FormData();
     formData.append("photo", file);
@@ -96,6 +79,7 @@ function Profile() {
     fetchProfile();
   };
 
+  //  SAVE
   const handleSave = async () => {
     const formData = new FormData();
 
@@ -105,7 +89,7 @@ function Profile() {
           formData.append(`${key}[${i}]`, item);
         });
       } else {
-        formData.append(key, form[key] || "");
+        formData.append(key, form[key]);
       }
     });
 
@@ -124,6 +108,7 @@ function Profile() {
 
       <div className="container-fluid mt-4 mb-5">
         <div className="row">
+
           <div className="col-md-3 col-lg-2">
             <CandidateSidebar />
           </div>
@@ -131,19 +116,56 @@ function Profile() {
           <div className="col-md-9 col-lg-10">
 
             {/* HEADER */}
-            <div className="card p-4 mb-4 shadow-sm">
-              <div className="d-flex justify-content-between">
+            <div className="card p-4 mb-4 rounded-4 shadow-sm">
+              <div className="d-flex justify-content-between align-items-center">
 
-                <div className="d-flex gap-3">
-                  <img
-                    src={
-                      profile.photo
-                        ? `${BASE_URL}/public/${profile.photo}`
-                        : "/assets/img/default.png"
+                <div className="d-flex gap-3 align-items-center">
+
+                  {/* FIXED PHOTO CLICK */}
+                  <div
+                    style={{ position: "relative" }}
+                    onClick={() =>
+                      document.getElementById("photoInput").click()
                     }
-                    className="rounded-circle"
-                    style={{ width: 80, height: 80 }}
-                  />
+                  >
+                    <img
+                      src={
+                        profile.photo
+                          ? `${BASE_URL}/public/${profile.photo}`
+                          : "/assets/img/default.png"
+                      }
+                      className="rounded-circle"
+                      style={{
+                        width: 90,
+                        height: 90,
+                        objectFit: "cover",
+                        cursor: "pointer",
+                      }}
+                      loading="lazy"
+                    />
+
+                    <div
+                      style={{
+                        position: "absolute",
+                        bottom: 0,
+                        right: 0,
+                        background: "#fff",
+                        borderRadius: "50%",
+                        padding: 6,
+                        cursor: "pointer",
+                      }}
+                    >
+                      <FaEdit />
+                    </div>
+
+                    <input
+                      type="file"
+                      id="photoInput"
+                      hidden
+                      accept="image/*"
+                      onChange={handlePhotoUpload}
+                    />
+                  </div>
 
                   <div>
                     <h4>{profile.full_name}</h4>
@@ -152,6 +174,7 @@ function Profile() {
                   </div>
                 </div>
 
+                {/* FIXED EDIT BUTTON */}
                 <button
                   className="btn btn-primary"
                   onClick={() => {
@@ -165,34 +188,63 @@ function Profile() {
                 >
                   Edit Profile
                 </button>
+
               </div>
             </div>
 
-            {/* QUALIFICATION */}
-            <div className="card p-3 mb-3">
+            {/* SKILLS */}
+            <div className="card p-4 mb-3">
               <div className="d-flex justify-content-between">
-                <h5>Qualification</h5>
+                <h5>Skills</h5>
                 <button
-                  className="btn btn-light"
+                  className="btn btn-light btn-sm border"
                   onClick={() => {
-                    setEditSection("qualification");
-                    setForm({ qualification: profile.qualification || [] });
+                    setEditSection("skills");
+                    setForm({ skills: profile.skills });
                   }}
                 >
                   <FaEdit />
                 </button>
               </div>
 
-              {(profile.qualification || []).map((q, i) => (
-                <span key={i} className="badge bg-success me-2">{q}</span>
-              ))}
+               <div className="d-flex flex-wrap gap-2">
+                {profile.skills.map((s, i) => (
+                  <span key={i} className="badge bg-primary">
+                    {s}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* QUALIFICATION */}
+            <div className="card p-4 mb-3">
+              <div className="d-flex justify-content-between">
+                <h5>Qualification</h5>
+                <button
+                  className="btn btn-light btn-sm border"
+                  onClick={() => {
+                    setEditSection("qualification");
+                    setForm({ qualification: profile.qualification });
+                  }}
+                >
+                  <FaEdit />
+                </button>
+              </div>
+
+               <div className="d-flex flex-wrap gap-2">
+                {profile.qualification.map((q, i) => (
+                  <span key={i} className="badge bg-success">
+                    {q}
+                  </span>
+                ))}
+              </div>
             </div>
 
           </div>
         </div>
       </div>
 
-      {/* MODAL */}
+      {/*  FIXED MODAL */}
       {editSection && (
         <div className="modal d-block" style={{ background: "#00000080" }}>
           <div className="modal-dialog">
@@ -200,94 +252,70 @@ function Profile() {
 
               <h5>Edit {editSection}</h5>
 
-              {editSection === "qualification" && (
+              {/*  BASIC FIX */}
+              {editSection === "basic" && (
                 <>
-                  <label>Qualification Level</label>
-                  <select
+                  <label>Name</label>
+                  <input
                     className="form-control mb-2"
-                    value={qualificationParent}
-                    onChange={(e) => {
-                      const value = e.target.value;
-                      setQualificationParent(value);
+                    value={form.full_name || ""}
+                    onChange={(e) =>
+                      setForm({ ...form, full_name: e.target.value })
+                    }
+                  />
 
-                      const selected = master.education?.find(
-                        (i) => i.id == value
-                      );
-
-                      console.log("SELECTED:", selected);
-                      console.log("CHILDREN:", selected?.children);
-
-                      const children = selected?.children || [];
-                      setQualificationChild(children);
-
-                      if (!children.length && selected) {
-                        setForm({
-                          ...form,
-                          qualification: [
-                            ...(form.qualification || []),
-                            selected.name,
-                          ],
-                        });
-                      }
-                    }}
-                  >
-                    <option value="">Select Level</option>
-                    {master.education?.map((item) => (
-                      <option key={item.id} value={item.id}>
-                        {item.name}
-                      </option>
-                    ))}
-                  </select>
-
-                  {/* DEGREE */}
-                  <label>Degree</label>
-                  <select
+                  <label>Phone</label>
+                  <input
                     className="form-control mb-2"
-                    onChange={(e) => {
-                      const degree = e.target.value;
+                    value={form.phone || ""}
+                    onChange={(e) =>
+                      setForm({ ...form, phone: e.target.value })
+                    }
+                  />
 
-                      const parent = master.education?.find(
-                        (i) => i.id == qualificationParent
-                      );
-
-                      if (!parent || !degree) return;
-
+                  <label>Location</label>
+                  <input
+                    className="form-control"
+                    value={form.preferred_location || ""}
+                    onChange={(e) =>
                       setForm({
                         ...form,
-                        qualification: [
-                          ...(form.qualification || []),
-                          `${parent.name} - ${degree}`,
-                        ],
-                      });
-                    }}
-                  >
-                    <option value="">Select Degree</option>
-                    {(qualificationChild || []).map((child) => (
-                      <option key={child.id} value={child.name}>
-                        {child.name}
-                      </option>
-                    ))}
-                  </select>
-
-                  {/* SELECTED */}
-                  <div className="d-flex flex-wrap gap-2 mt-2">
-                    {(form.qualification || []).map((q, i) => (
-                      <span
-                        key={i}
-                        className="badge bg-success"
-                        style={{ cursor: "pointer" }}
-                        onClick={() => {
-                          const updated = form.qualification.filter(
-                            (_, index) => index !== i
-                          );
-                          setForm({ ...form, qualification: updated });
-                        }}
-                      >
-                        {q} ❌
-                      </span>
-                    ))}
-                  </div>
+                        preferred_location: e.target.value,
+                      })
+                    }
+                  />
                 </>
+              )}
+
+              {/* SKILLS MULTI */}
+              {editSection === "skills" && (
+                <Select
+                  isMulti
+                  options={skillOptions}
+                  value={form.skills.map((s) => ({ value: s, label: s }))}
+                  onChange={(selected) =>
+                    setForm({
+                      skills: selected.map((i) => i.value),
+                    })
+                  }
+                />
+              )}
+
+              {/* QUALIFICATION MULTI */}
+              {editSection === "qualification" && (
+                <Select
+                  isMulti
+                  options={qualificationOptions}
+                  value={form.qualification.map((q) => ({
+                    value: q,
+                    label: q,
+                  }))}
+                  onChange={(selected) =>
+                    setForm({
+                      qualification: selected.map((i) => i.value),
+                    })
+                  }
+                />
               )}
 
               <div className="mt-3 text-end">
