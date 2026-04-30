@@ -1,27 +1,27 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../services/api";
 import Swal from "sweetalert2";
 import Select from "react-select";
 import Navbar from "../../components/Navbar";
 import Footer from "../../components/Footer";
-
-const qualificationOptions = [
-  { value: "10th", label: "10th" },
-  { value: "12th", label: "12th" },
-  { value: "Diploma", label: "Diploma" },
-  { value: "Graduate", label: "Graduate" },
-  { value: "Post Graduate", label: "Post Graduate" },
-];
-
-const languageOptions = [
-  { value: "Hindi", label: "Hindi" },
-  { value: "English", label: "English" },
-  { value: "Punjabi", label: "Punjabi" },
-];
+import { useState, useEffect } from "react";
 
 function RegisterCandidate() {
   const navigate = useNavigate();
+
+  const languageOptions = [
+    { value: "Hindi", label: "Hindi" },
+    { value: "English", label: "English" },
+    { value: "Punjabi", label: "Punjabi" },
+  ];
+
+  const [master, setMaster] = useState({});
+
+  useEffect(() => {
+    api.get("/get-master-data").then((res) => {
+      setMaster(res.data.data);
+    });
+  }, []);
 
   const [form, setForm] = useState({
     name: "",
@@ -34,7 +34,7 @@ function RegisterCandidate() {
     aadhar_number: "",
     permanent_address: "",
     current_address: "",
-    qualification: [],
+    qualification: "",
     languages_writing: [],
     languages_speaking: [],
     type: "",
@@ -47,6 +47,9 @@ function RegisterCandidate() {
     experience_details: [{ job_profile: "", years: "" }],
   });
 
+  const [qualificationParent, setQualificationParent] = useState("");
+  const [qualificationChild, setQualificationChild] = useState([]);
+
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
@@ -55,110 +58,66 @@ function RegisterCandidate() {
     setErrors({ ...errors, [e.target.name]: "" });
   };
 
+  const validate = () => {
+    let newErrors = {};
 
-const validate = () => {
-  let newErrors = {};
+    if (!form.name) newErrors.name = "Name required";
+    else if (form.name.length > 255)
+      newErrors.name = "Maximum 255 characters allowed";
 
-  // 🔹 Name (required|string|max:255)
-  if (!form.name) {
-    newErrors.name = "Name required";
-  } else if (form.name.length > 255) {
-    newErrors.name = "Maximum 255 characters allowed";
-  }
+    if (!form.email) newErrors.email = "Email required";
+    else if (!/^\S+@\S+\.\S+$/.test(form.email))
+      newErrors.email = "Invalid email";
 
-  // 🔹 Email (required|email|max:255)
-  if (!form.email) {
-    newErrors.email = "Email required";
-  } else if (!/^\S+@\S+\.\S+$/.test(form.email)) {
-    newErrors.email = "Invalid email";
-  } else if (form.email.length > 255) {
-    newErrors.email = "Maximum 255 characters allowed";
-  }
+    if (!form.phone) newErrors.phone = "Phone required";
+    else if (!/^[0-9]{10}$/.test(form.phone))
+      newErrors.phone = "Phone must be 10 digits";
 
-  // 🔹 Phone (required|digits:10)
-  if (!form.phone) {
-    newErrors.phone = "Phone required";
-  } else if (!/^[0-9]{10}$/.test(form.phone)) {
-    newErrors.phone = "Phone must be exactly 10 digits";
-  }
-
-  // 🔹 Alt Phone (nullable|digits:10|different)
-  if (form.alt_phone) {
-    if (!/^[0-9]{10}$/.test(form.alt_phone)) {
-      newErrors.alt_phone = "Alt phone must be 10 digits";
-    } else if (form.alt_phone === form.phone) {
-      newErrors.alt_phone = "Alt phone must be different";
+    if (form.alt_phone) {
+      if (!/^[0-9]{10}$/.test(form.alt_phone))
+        newErrors.alt_phone = "Alt phone must be 10 digits";
+      else if (form.alt_phone === form.phone)
+        newErrors.alt_phone = "Alt phone must be different";
     }
-  }
 
-  // 🔹 Aadhar (nullable|digits:12)
-  if (form.aadhar_number) {
-    if (!/^[0-9]{12}$/.test(form.aadhar_number)) {
-      newErrors.aadhar_number = "Aadhar must be exactly 12 digits";
-    }
-  }
+    if (form.aadhar_number && !/^[0-9]{12}$/.test(form.aadhar_number))
+      newErrors.aadhar_number = "Aadhar must be 12 digits";
 
-  // 🔹 Address (required)
-  if (!form.permanent_address) {
-    newErrors.permanent_address = "Address required";
-  }
+    if (!form.permanent_address)
+      newErrors.permanent_address = "Address required";
 
-  // 🔹 Keep your existing validations (NO REMOVAL)
-  if (!form.job_profile) {
-    newErrors.job_profile = "Job profile required";
-  }
+    if (!form.job_profile) newErrors.job_profile = "Job profile required";
+    if (!form.preferred_location)
+      newErrors.preferred_location = "Preferred location required";
 
-  if (!form.preferred_location) {
-    newErrors.preferred_location = "Preferred location required";
-  }
+    if (form.skills.length === 0) newErrors.skills = "Select at least 1 skill";
 
-  if (form.skills.length === 0) {
-    newErrors.skills = "Select at least 1 skill";
-  } else if (form.skills.length > 5) {
-    newErrors.skills = "Maximum 5 skills allowed";
-  }
+    if (!form.shift) newErrors.shift = "Select shift";
+    if (!form.gender) newErrors.gender = "Gender required";
+    if (!form.dob) newErrors.dob = "DOB required";
 
-  if (!form.shift) {
-    newErrors.shift = "Select shift";
-  }
+    if (!form.qualification) newErrors.qualification = "Select qualification";
 
-  if (!form.gender) {
-    newErrors.gender = "Gender required";
-  }
+    if (form.languages_speaking.length === 0)
+      newErrors.languages_speaking = "Select language";
 
-  if (!form.dob) {
-    newErrors.dob = "DOB required";
-  }
+    if (!form.type) newErrors.type = "Select type";
 
-  if (form.qualification.length === 0) {
-    newErrors.qualification = "Select qualification";
-  }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
-  if (form.languages_speaking.length === 0) {
-    newErrors.languages_speaking = "Select language";
-  }
-
-  if (!form.type) {
-    newErrors.type = "Select type";
-  }
-
-  setErrors(newErrors);
-  return Object.keys(newErrors).length === 0;
-};
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!validate()) return;
 
     try {
       setLoading(true);
-
       const formData = new FormData();
 
       for (let key in form) {
         if (
           key === "skills" ||
-          key === "qualification" ||
           key === "languages_writing" ||
           key === "languages_speaking"
         ) {
@@ -183,16 +142,13 @@ const validate = () => {
       });
 
       sessionStorage.setItem("login_id", res.data.login_id);
+
       Swal.fire({
         icon: "success",
         title: "Success",
-        text: "Registered Successfully\nYour Login ID: " + res.data.login_id,
-      }).then(() => {
-        navigate("/login");
-      });
+        text: "Registered Successfully\nLogin ID: " + res.data.login_id,
+      }).then(() => navigate("/login"));
     } catch (err) {
-      console.log(err.response?.data);
-
       let errorMessage = "Registration failed";
 
       if (err.response?.data?.errors) {
@@ -284,8 +240,10 @@ const validate = () => {
                       className="form-control"
                       onChange={handleChange}
                     />
-                     {errors.aadhar_number && (
-                      <small className="text-danger">{errors.aadhar_number}</small>
+                    {errors.aadhar_number && (
+                      <small className="text-danger">
+                        {errors.aadhar_number}
+                      </small>
                     )}
                   </div>
 
@@ -356,29 +314,49 @@ const validate = () => {
 
                 <hr />
 
-                {/* Qualification */}
-                <div className="mb-3">
-                  <label>
-                    Qualification <span className="text-danger">*</span>
-                  </label>
-                  <Select
-                    options={qualificationOptions}
-                    isMulti
-                    onChange={(selected) =>
-                      setForm({
-                        ...form,
-                        qualification: selected
-                          ? selected.map((i) => i.value)
-                          : [],
-                      })
+                {/* QUALIFICATION */}
+                <select
+                  value={qualificationParent}
+                  className="form-control mb-2"
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setQualificationParent(value);
+
+                    const selected = master.qualification?.find(
+                      (i) => i.id == value,
+                    );
+
+                    setQualificationChild(selected?.children || []);
+
+                    if (!selected?.children?.length) {
+                      setForm({ ...form, qualification: selected.name });
+                    } else {
+                      setForm({ ...form, qualification: "" });
                     }
-                  />
-                  {errors.qualification && (
-                    <small className="text-danger">
-                      {errors.qualification}
-                    </small>
-                  )}
-                </div>
+                  }}
+                >
+                  <option>Select Qualification</option>
+                  {master.qualification?.map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.name}
+                    </option>
+                  ))}
+                </select>
+
+                {qualificationChild.length > 0 && (
+                  <select
+                    className="form-control mb-2"
+                    value={form.qualification}
+                    onChange={(e) =>
+                      setForm({ ...form, qualification: e.target.value })
+                    }
+                  >
+                    <option>Select Degree</option>
+                    {qualificationChild.map((c) => (
+                      <option key={c.id}>{c.name}</option>
+                    ))}
+                  </select>
+                )}
 
                 {/* Languages Writing */}
                 <div className="mb-3">
