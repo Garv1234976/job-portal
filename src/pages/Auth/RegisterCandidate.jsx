@@ -18,11 +18,11 @@ function RegisterCandidate() {
   const [master, setMaster] = useState({});
 
   useEffect(() => {
-  api.get("/get-master-data").then((res) => {
-    console.log('res=====>',res.data);
-    setMaster(res.data.data);
-  });
-}, []);
+    api.get("/get-master-data").then((res) => {
+      console.log("res=====>", res.data);
+      setMaster(res.data.data);
+    });
+  }, []);
 
   const [form, setForm] = useState({
     name: "",
@@ -316,52 +316,38 @@ function RegisterCandidate() {
                 <hr />
 
                 {/* QUALIFICATION */}
-                 <label className="form-label">
-                    Qualification
-                  </label>
+                <label className="form-label">Qualification</label>
                 <select
-                  value={qualificationParent}
-                  className="form-control mb-2"
+                  className="form-control"
+                  name="education"
+                  value={form.education || ""}
                   onChange={(e) => {
-                    const value = e.target.value;
-                    setQualificationParent(value);
+                    const selectedDegree = e.target.value;
 
-                    const selected = master.qualification?.find(
-                      (i) => i.id == value,
+                    const parent = master.education?.find(
+                      (i) => i.id == educationParent,
                     );
 
-                    setQualificationChild(selected?.children || []);
+                    const finalValue = parent
+                      ? `${parent.name} - ${selectedDegree}`
+                      : selectedDegree;
 
-                    if (!selected?.children?.length) {
-                      setForm({ ...form, qualification: selected.name });
-                    } else {
-                      setForm({ ...form, qualification: "" });
-                    }
+                    setForm({
+                      ...form,
+                      education: finalValue,
+                    });
                   }}
                 >
-                  <option>Select Qualification</option>
-                  {master.qualification?.map((item) => (
-                    <option key={item.id} value={item.id}>
-                      {item.name}
-                    </option>
-                  ))}
-                </select>  
+                  <option value="">Select Degree</option>
 
-                {qualificationChild.length > 0 && (
-                  
-                  <select
-                    className="form-control mb-2"
-                    value={form.qualification}
-                    onChange={(e) =>
-                      setForm({ ...form, qualification: e.target.value })
-                    }
-                  >
-                    <option>Select Degree</option>
-                    {qualificationChild.map((c) => (
-                      <option key={c.id}>{c.name}</option>
+                  {master.education
+                    ?.find((e) => e.id == educationParent)
+                    ?.children?.map((child) => (
+                      <option key={child.id} value={child.name}>
+                        {child.name}
+                      </option>
                     ))}
-                  </select>
-                )}
+                </select>
 
                 {/* Languages Writing */}
                 <div className="mb-3">
