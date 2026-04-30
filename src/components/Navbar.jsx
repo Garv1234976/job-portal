@@ -212,7 +212,7 @@ function Navbar() {
             >
               <FaPlus /> Post Job
             </button>
-          ) : !token ? (
+          ) : !token ?  (
             //  RESTORED ORIGINAL DROPDOWN (FIXED)
             <div className="d-flex align-items-center gap-3 ms-lg-3">
               <div className="dropdown">
@@ -241,7 +241,7 @@ function Navbar() {
                 </div>
               </div>
             </div>
-          )}
+        ) : null}
         </div>
       </div>
     </nav>
