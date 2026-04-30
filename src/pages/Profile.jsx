@@ -7,13 +7,16 @@ import CandidateSidebar from "../components/candidate/CandidateSidebar";
 import { FaEdit, FaMapMarkerAlt, FaPhone } from "react-icons/fa";
 import Swal from "sweetalert2";
 import Select from "react-select";
-import { BASE_URL } from "../config/constants"; 
+import { BASE_URL } from "../config/constants";
 
 function Profile() {
   const [profile, setProfile] = useState({});
   const [loading, setLoading] = useState(true);
   const [editSection, setEditSection] = useState(null);
   const [form, setForm] = useState({});
+
+  // 🔥 NEW: master data
+  const [master, setMaster] = useState({});
 
   const safeArray = (data) => {
     if (!data) return [];
@@ -33,16 +36,26 @@ function Profile() {
     { value: "Vue", label: "Vue" },
   ];
 
-  const qualificationOptions = [
-    { value: "10th", label: "10th" },
-    { value: "12th", label: "12th" },
-    { value: "Diploma", label: "Diploma" },
-    { value: "Graduate", label: "Graduate" },
-    { value: "Post Graduate", label: "Post Graduate" },
-  ];
+  // 🔥 DYNAMIC QUALIFICATION OPTIONS
+  const qualificationOptions = (master.education || []).flatMap((parent) => {
+    if (!parent.children || parent.children.length === 0) {
+      return [
+        {
+          value: parent.name,
+          label: parent.name,
+        },
+      ];
+    }
+
+    return parent.children.map((child) => ({
+      value: `${parent.name} - ${child.name}`,
+      label: `${parent.name} → ${child.name}`,
+    }));
+  });
 
   useEffect(() => {
     fetchProfile();
+    fetchMaster(); // 🔥 added
   }, []);
 
   const fetchProfile = async () => {
@@ -62,7 +75,35 @@ function Profile() {
     }
   };
 
-  //  PHOTO UPLOAD FIXED
+  // 🔥 NEW FUNCTION
+  const fetchMaster = async () => {
+    try {
+      const res = await API.get("/get-master-data");
+      const raw = res.data.data || [];
+
+      const grouped = {};
+
+      raw.forEach((item) => {
+        if (!grouped[item.type]) grouped[item.type] = [];
+
+        if (item.type === "education" && item.parent_id === null) {
+          const children = raw.filter(
+            (i) => i.parent_id == item.id
+          );
+
+          grouped[item.type].push({
+            ...item,
+            children,
+          });
+        }
+      });
+
+      setMaster(grouped);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   const handlePhotoUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -79,7 +120,6 @@ function Profile() {
     fetchProfile();
   };
 
-  //  SAVE
   const handleSave = async () => {
     const formData = new FormData();
 
@@ -121,7 +161,6 @@ function Profile() {
 
                 <div className="d-flex gap-3 align-items-center">
 
-                  {/* FIXED PHOTO CLICK */}
                   <div
                     style={{ position: "relative" }}
                     onClick={() =>
@@ -174,7 +213,6 @@ function Profile() {
                   </div>
                 </div>
 
-                {/* FIXED EDIT BUTTON */}
                 <button
                   className="btn btn-primary"
                   onClick={() => {
@@ -207,7 +245,7 @@ function Profile() {
                 </button>
               </div>
 
-               <div className="d-flex flex-wrap gap-2">
+              <div className="d-flex flex-wrap gap-2">
                 {profile.skills.map((s, i) => (
                   <span key={i} className="badge bg-primary">
                     {s}
@@ -231,7 +269,7 @@ function Profile() {
                 </button>
               </div>
 
-               <div className="d-flex flex-wrap gap-2">
+              <div className="d-flex flex-wrap gap-2">
                 {profile.qualification.map((q, i) => (
                   <span key={i} className="badge bg-success">
                     {q}
@@ -244,7 +282,7 @@ function Profile() {
         </div>
       </div>
 
-      {/*  FIXED MODAL */}
+      {/* MODAL */}
       {editSection && (
         <div className="modal d-block" style={{ background: "#00000080" }}>
           <div className="modal-dialog">
@@ -252,42 +290,6 @@ function Profile() {
 
               <h5>Edit {editSection}</h5>
 
-              {/*  BASIC FIX */}
-              {editSection === "basic" && (
-                <>
-                  <label>Name</label>
-                  <input
-                    className="form-control mb-2"
-                    value={form.full_name || ""}
-                    onChange={(e) =>
-                      setForm({ ...form, full_name: e.target.value })
-                    }
-                  />
-
-                  <label>Phone</label>
-                  <input
-                    className="form-control mb-2"
-                    value={form.phone || ""}
-                    onChange={(e) =>
-                      setForm({ ...form, phone: e.target.value })
-                    }
-                  />
-
-                  <label>Location</label>
-                  <input
-                    className="form-control"
-                    value={form.preferred_location || ""}
-                    onChange={(e) =>
-                      setForm({
-                        ...form,
-                        preferred_location: e.target.value,
-                      })
-                    }
-                  />
-                </>
-              )}
-
-              {/* SKILLS MULTI */}
               {editSection === "skills" && (
                 <Select
                   isMulti
@@ -301,18 +303,20 @@ function Profile() {
                 />
               )}
 
-              {/* QUALIFICATION MULTI */}
+              {/* 🔥 ONLY THIS PART UPDATED */}
               {editSection === "qualification" && (
                 <Select
                   isMulti
                   options={qualificationOptions}
-                  value={form.qualification.map((q) => ({
+                  value={(form.qualification || []).map((q) => ({
                     value: q,
-                    label: q,
+                    label: q.replace(" - ", " → "),
                   }))}
                   onChange={(selected) =>
                     setForm({
-                      qualification: selected.map((i) => i.value),
+                      qualification: selected
+                        ? selected.map((i) => i.value)
+                        : [],
                     })
                   }
                 />
