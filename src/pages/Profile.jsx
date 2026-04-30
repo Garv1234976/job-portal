@@ -15,7 +15,7 @@ function Profile() {
   const [editSection, setEditSection] = useState(null);
   const [form, setForm] = useState({});
 
-  // ✅ NEW STATES (dynamic qualification)
+  // dynamic qualification states
   const [master, setMaster] = useState({});
   const [qualificationParent, setQualificationParent] = useState("");
   const [qualificationChild, setQualificationChild] = useState([]);
@@ -43,7 +43,6 @@ function Profile() {
     fetchMaster();
   }, []);
 
-  // ✅ PROFILE
   const fetchProfile = async () => {
     try {
       const res = await API.get("/profile");
@@ -61,7 +60,6 @@ function Profile() {
     }
   };
 
-  // ✅ MASTER DATA (DYNAMIC QUALIFICATION)
   const fetchMaster = async () => {
     try {
       const res = await API.get("/get-master-data");
@@ -90,10 +88,6 @@ function Profile() {
     const file = e.target.files[0];
     if (!file) return;
 
-    if (!["image/jpeg", "image/png", "image/jpg"].includes(file.type)) {
-      return Swal.fire("Error", "Only JPG, PNG allowed", "error");
-    }
-
     const formData = new FormData();
     formData.append("photo", file);
 
@@ -102,7 +96,6 @@ function Profile() {
     fetchProfile();
   };
 
-  // ✅ SAVE
   const handleSave = async () => {
     const formData = new FormData();
 
@@ -131,7 +124,6 @@ function Profile() {
 
       <div className="container-fluid mt-4 mb-5">
         <div className="row">
-
           <div className="col-md-3 col-lg-2">
             <CandidateSidebar />
           </div>
@@ -139,53 +131,19 @@ function Profile() {
           <div className="col-md-9 col-lg-10">
 
             {/* HEADER */}
-            <div className="card p-4 mb-4 rounded-4 shadow-sm">
-              <div className="d-flex justify-content-between align-items-center">
+            <div className="card p-4 mb-4 shadow-sm">
+              <div className="d-flex justify-content-between">
 
-                <div className="d-flex gap-3 align-items-center">
-
-                  <div
-                    style={{ position: "relative" }}
-                    onClick={() =>
-                      document.getElementById("photoInput").click()
+                <div className="d-flex gap-3">
+                  <img
+                    src={
+                      profile.photo
+                        ? `${BASE_URL}/public/${profile.photo}`
+                        : "/assets/img/default.png"
                     }
-                  >
-                    <img
-                      src={
-                        profile.photo
-                          ? `${BASE_URL}/public/${profile.photo}`
-                          : "/assets/img/default.png"
-                      }
-                      className="rounded-circle"
-                      style={{
-                        width: 90,
-                        height: 90,
-                        objectFit: "cover",
-                        cursor: "pointer",
-                      }}
-                    />
-
-                    <div
-                      style={{
-                        position: "absolute",
-                        bottom: 0,
-                        right: 0,
-                        background: "#fff",
-                        borderRadius: "50%",
-                        padding: 6,
-                      }}
-                    >
-                      <FaEdit />
-                    </div>
-
-                    <input
-                      type="file"
-                      id="photoInput"
-                      hidden
-                      accept="image/*"
-                      onChange={handlePhotoUpload}
-                    />
-                  </div>
+                    className="rounded-circle"
+                    style={{ width: 80, height: 80 }}
+                  />
 
                   <div>
                     <h4>{profile.full_name}</h4>
@@ -207,16 +165,15 @@ function Profile() {
                 >
                   Edit Profile
                 </button>
-
               </div>
             </div>
 
             {/* SKILLS */}
-            <div className="card p-4 mb-3">
+            <div className="card p-3 mb-3">
               <div className="d-flex justify-content-between">
                 <h5>Skills</h5>
                 <button
-                  className="btn btn-light btn-sm border"
+                  className="btn btn-light"
                   onClick={() => {
                     setEditSection("skills");
                     setForm({ skills: profile.skills || [] });
@@ -226,21 +183,17 @@ function Profile() {
                 </button>
               </div>
 
-              <div className="d-flex flex-wrap gap-2">
-                {(profile.skills || []).map((s, i) => (
-                  <span key={i} className="badge bg-primary">
-                    {s}
-                  </span>
-                ))}
-              </div>
+              {(profile.skills || []).map((s, i) => (
+                <span key={i} className="badge bg-primary me-2">{s}</span>
+              ))}
             </div>
 
             {/* QUALIFICATION */}
-            <div className="card p-4 mb-3">
+            <div className="card p-3 mb-3">
               <div className="d-flex justify-content-between">
                 <h5>Qualification</h5>
                 <button
-                  className="btn btn-light btn-sm border"
+                  className="btn btn-light"
                   onClick={() => {
                     setEditSection("qualification");
                     setForm({ qualification: profile.qualification || [] });
@@ -250,13 +203,9 @@ function Profile() {
                 </button>
               </div>
 
-              <div className="d-flex flex-wrap gap-2">
-                {(profile.qualification || []).map((q, i) => (
-                  <span key={i} className="badge bg-success">
-                    {q}
-                  </span>
-                ))}
-              </div>
+              {(profile.qualification || []).map((q, i) => (
+                <span key={i} className="badge bg-success me-2">{q}</span>
+              ))}
             </div>
 
           </div>
@@ -271,60 +220,7 @@ function Profile() {
 
               <h5>Edit {editSection}</h5>
 
-              {/* BASIC */}
-              {editSection === "basic" && (
-                <>
-                  <label>Name</label>
-                  <input
-                    className="form-control mb-2"
-                    value={form.full_name || ""}
-                    onChange={(e) =>
-                      setForm({ ...form, full_name: e.target.value })
-                    }
-                  />
-
-                  <label>Phone</label>
-                  <input
-                    className="form-control mb-2"
-                    value={form.phone || ""}
-                    onChange={(e) =>
-                      setForm({ ...form, phone: e.target.value })
-                    }
-                  />
-
-                  <label>Location</label>
-                  <input
-                    className="form-control"
-                    value={form.preferred_location || ""}
-                    onChange={(e) =>
-                      setForm({
-                        ...form,
-                        preferred_location: e.target.value,
-                      })
-                    }
-                  />
-                </>
-              )}
-
-              {/* SKILLS */}
-              {editSection === "skills" && (
-                <Select
-                  isMulti
-                  options={skillOptions}
-                  value={(form.skills || []).map((s) => ({
-                    value: s,
-                    label: s,
-                  }))}
-                  onChange={(selected) =>
-                    setForm({
-                      ...form,
-                      skills: selected ? selected.map((i) => i.value) : [],
-                    })
-                  }
-                />
-              )}
-
-              {/* QUALIFICATION (DYNAMIC) */}
+              {/* QUALIFICATION FIXED */}
               {editSection === "qualification" && (
                 <>
                   <label>Qualification Level</label>
@@ -339,17 +235,16 @@ function Profile() {
                         (i) => i.id == value
                       );
 
-                      setQualificationChild(selected?.children || []);
+                      const children = selected?.children || [];
+                      setQualificationChild(children);
 
-                      if (!selected?.children?.length) {
+                      if (!children.length && selected) {
                         setForm({
                           ...form,
-                          qualification: selected ? [selected.name] : [],
-                        });
-                      } else {
-                        setForm({
-                          ...form,
-                          qualification: [],
+                          qualification: [
+                            ...(form.qualification || []),
+                            selected.name,
+                          ],
                         });
                       }
                     }}
@@ -362,35 +257,56 @@ function Profile() {
                     ))}
                   </select>
 
-                  {qualificationChild.length > 0 && (
-                    <>
-                      <label>Degree</label>
-                      <select
-                        className="form-control"
-                        onChange={(e) => {
-                          const degree = e.target.value;
+                  {/* ALWAYS SHOW DEGREE */}
+                  <label>Degree</label>
+                  <select
+                    className="form-control mb-2"
+                    onChange={(e) => {
+                      const degree = e.target.value;
 
-                          const parent = master.education?.find(
-                            (i) => i.id == qualificationParent
+                      const parent = master.education?.find(
+                        (i) => i.id == qualificationParent
+                      );
+
+                      if (!parent || !degree) return;
+
+                      setForm({
+                        ...form,
+                        qualification: [
+                          ...(form.qualification || []),
+                          `${parent.name} - ${degree}`,
+                        ],
+                      });
+                    }}
+                  >
+                    <option value="">Select Degree</option>
+                    {(qualificationChild || []).map((child) => (
+                      <option key={child.id} value={child.name}>
+                        {child.name}
+                      </option>
+                    ))}
+                  </select>
+
+                  {/* MULTI SELECT VIEW */}
+                  <div className="d-flex flex-wrap gap-2 mt-2">
+                    {(form.qualification || []).map((q, i) => (
+                      <span
+                        key={i}
+                        className="badge bg-success"
+                        style={{ cursor: "pointer" }}
+                        onClick={() => {
+                          const updated = form.qualification.filter(
+                            (_, index) => index !== i
                           );
-
-                          setForm({
-                            ...form,
-                            qualification: parent
-                              ? [parent.name, degree]
-                              : [],
-                          });
+                          setForm({ ...form, qualification: updated });
                         }}
                       >
-                        <option value="">Select Degree</option>
-                        {qualificationChild.map((child) => (
-                          <option key={child.id} value={child.name}>
-                            {child.name}
-                          </option>
-                        ))}
-                      </select>
-                    </>
-                  )}
+                        {q} ❌
+                      </span>
+                    ))}
+                  </div>
+
+                  <small>Click to remove</small>
                 </>
               )}
 
