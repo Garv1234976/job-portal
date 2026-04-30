@@ -29,7 +29,7 @@ function RegisterCandidate() {
         // ONLY EDUCATION PARENTS
         if (item.type === "education" && item.parent_id === null) {
           grouped[item.type].push({
-            ...item,
+            ...item,  
             // 🔥 ATTACH CHILDREN HERE
             children: raw.filter((i) => i.parent_id === item.id),
           });
