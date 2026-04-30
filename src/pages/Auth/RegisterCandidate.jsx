@@ -17,35 +17,28 @@ function RegisterCandidate() {
 
   const [master, setMaster] = useState({});
 
-  useEffect(() => {
-    api.get("/get-master-data").then((res) => {
-      const raw = res.data.data || [];
+ useEffect(() => {
+  api.get("/get-master-data").then((res) => {
+    const raw = res.data.data || [];
 
-      const grouped = {};
+    const grouped = raw.reduce((acc, item) => {
+      if (!acc[item.type]) acc[item.type] = [];
 
-      raw.forEach((item) => {
-        if (!grouped[item.type]) grouped[item.type] = [];
-
-        // ONLY EDUCATION PARENTS
-        if (item.type === "education" && item.parent_id === null) {
-          grouped[item.type].push({
-            ...item,  
-            // 🔥 ATTACH CHILDREN HERE
-            children: raw.filter((i) => i.parent_id === item.id),
-          });
+      // SAME AS CREATE JOB
+      if (item.type === "education") {
+        if (item.parent_id === null) {
+          acc[item.type].push(item);
         }
+      } else {
+        acc[item.type].push(item);
+      }
 
-        // OTHER TYPES NORMAL
-        if (item.type !== "education") {
-          grouped[item.type].push(item);
-        }
-      });
+      return acc;
+    }, {});
 
-      console.log("MASTER:", grouped); // 🔍 CHECK THIS
-
-      setMaster(grouped);
-    });
-  }, []);
+    setMaster(grouped);
+  });
+}, []);
 
   const [form, setForm] = useState({
     name: "",
