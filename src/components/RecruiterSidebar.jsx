@@ -39,7 +39,7 @@ export default function RecruiterSidebar() {
     }).then((res) => {
       if (res.isConfirmed) {
         localStorage.clear();
-        navigate("/login");
+        navigate("/recruiter/login");
       }
     });
   };

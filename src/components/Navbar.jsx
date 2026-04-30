@@ -20,7 +20,7 @@ function Navbar() {
   const [loading, setLoading] = useState(true);
 
   const token = localStorage.getItem("token");
-  const role = localStorage.getItem("role");
+  const role = localStorage.getItem("role") || "";
 
   // FIXED API CALL (safe handling)
   useEffect(() => {
@@ -203,7 +203,7 @@ function Navbar() {
           </div>
 
           {/*  POST JOB BUTTON */}
-          {token && role === "recruiter" ? (
+         {token && role?.toLowerCase() === "recruiter" ? (
             <button
               onClick={handlePostJob}
               disabled={loading}
@@ -212,7 +212,7 @@ function Navbar() {
             >
               <FaPlus /> Post Job
             </button>
-          ) : (
+          ) : !token ? (
             //  RESTORED ORIGINAL DROPDOWN (FIXED)
             <div className="d-flex align-items-center gap-3 ms-lg-3">
               <div className="dropdown">
