@@ -86,7 +86,7 @@ function JobCard({ job }) {
           <img
             src={
               job.logo
-                ? `${BASE_URL}/public/storage/${job.logo}`
+                ? `${BASE_URL}/public/${job.logo}`
                 : "/assets/img/default.png"
             }
             alt="logo"
