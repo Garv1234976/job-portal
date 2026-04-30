@@ -102,10 +102,13 @@ function JobCard({ job }) {
             )}
 
             <h5 className="fw-bold mb-1">{job.job_title}</h5>
+            <div className="text-muted small mb-1">
+              {job.company_name || "Unknown Company"}
+            </div>
 
             <div className="text-muted small mb-1 d-flex flex-wrap align-items-center gap-2">
               <span>
-                <FaBriefcase className="me-1" /> {job.experience} 
+                <FaBriefcase className="me-1" /> {job.experience}
               </span>
               <span>|</span>
               <span>₹ {job.salary_range}</span>
