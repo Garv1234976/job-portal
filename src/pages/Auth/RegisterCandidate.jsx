@@ -18,10 +18,11 @@ function RegisterCandidate() {
   const [master, setMaster] = useState({});
 
   useEffect(() => {
-    api.get("/get-master-data").then((res) => {
-      setMaster(res.data.data);
-    });
-  }, []);
+  api.get("/get-master-data").then((res) => {
+    console.log('res=====>',res.data);
+    setMaster(res.data.data);
+  });
+}, []);
 
   const [form, setForm] = useState({
     name: "",
@@ -315,6 +316,9 @@ function RegisterCandidate() {
                 <hr />
 
                 {/* QUALIFICATION */}
+                 <label className="form-label">
+                    Qualification
+                  </label>
                 <select
                   value={qualificationParent}
                   className="form-control mb-2"
@@ -341,9 +345,10 @@ function RegisterCandidate() {
                       {item.name}
                     </option>
                   ))}
-                </select>
+                </select>  
 
                 {qualificationChild.length > 0 && (
+                  
                   <select
                     className="form-control mb-2"
                     value={form.qualification}
