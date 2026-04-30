@@ -70,13 +70,14 @@ function RegisterCandidate() {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
-  const handleChange = (e) => {
-    setForm({
-      ...form,
-      qualification: [selected?.name],
-    });
-    setErrors({ ...errors, [e.target.name]: "" });
-  };
+ const handleChange = (e) => {
+  setForm({
+    ...form,
+    [e.target.name]: e.target.value, 
+  });
+
+  setErrors({ ...errors, [e.target.name]: "" });
+};
 
   const validate = () => {
     let newErrors = {};
