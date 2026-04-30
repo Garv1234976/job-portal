@@ -15,7 +15,6 @@ function Profile() {
   const [editSection, setEditSection] = useState(null);
   const [form, setForm] = useState({});
 
-  // 🔥 NEW: master data
   const [master, setMaster] = useState({});
 
   const safeArray = (data) => {
@@ -36,7 +35,7 @@ function Profile() {
     { value: "Vue", label: "Vue" },
   ];
 
-  // 🔥 DYNAMIC QUALIFICATION OPTIONS
+  // ✅ Dynamic qualification
   const qualificationOptions = (master.education || []).flatMap((parent) => {
     if (!parent.children || parent.children.length === 0) {
       return [
@@ -55,7 +54,7 @@ function Profile() {
 
   useEffect(() => {
     fetchProfile();
-    fetchMaster(); // 🔥 added
+    fetchMaster();
   }, []);
 
   const fetchProfile = async () => {
@@ -75,7 +74,6 @@ function Profile() {
     }
   };
 
-  // 🔥 NEW FUNCTION
   const fetchMaster = async () => {
     try {
       const res = await API.get("/get-master-data");
@@ -87,9 +85,7 @@ function Profile() {
         if (!grouped[item.type]) grouped[item.type] = [];
 
         if (item.type === "education" && item.parent_id === null) {
-          const children = raw.filter(
-            (i) => i.parent_id == item.id
-          );
+          const children = raw.filter((i) => i.parent_id == item.id);
 
           grouped[item.type].push({
             ...item,
@@ -294,16 +290,17 @@ function Profile() {
                 <Select
                   isMulti
                   options={skillOptions}
-                  value={form.skills.map((s) => ({ value: s, label: s }))}
+                  value={(form.skills || []).map((s) => ({ value: s, label: s }))}
                   onChange={(selected) =>
                     setForm({
+                      ...form,
                       skills: selected.map((i) => i.value),
                     })
                   }
                 />
               )}
 
-              {/* 🔥 ONLY THIS PART UPDATED */}
+              {/* ✅ FIXED QUALIFICATION */}
               {editSection === "qualification" && (
                 <Select
                   isMulti
@@ -314,6 +311,7 @@ function Profile() {
                   }))}
                   onChange={(selected) =>
                     setForm({
+                      ...form,
                       qualification: selected
                         ? selected.map((i) => i.value)
                         : [],
