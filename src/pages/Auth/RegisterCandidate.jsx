@@ -19,8 +19,23 @@ function RegisterCandidate() {
 
   useEffect(() => {
     api.get("/get-master-data").then((res) => {
-      console.log("res=====>", res.data);
-      setMaster(res.data.data);
+      const raw = res.data.data || [];
+
+      const grouped = {};
+
+      raw.forEach((item) => {
+        if (!grouped[item.type]) grouped[item.type] = [];
+
+        // ONLY parent education
+        if (item.type === "education" && item.parent_id === null) {
+          grouped[item.type].push({
+            ...item,
+            children: raw.filter((i) => i.parent_id === item.id),
+          });
+        }
+      });
+
+      setMaster(grouped);
     });
   }, []);
 
@@ -315,39 +330,72 @@ function RegisterCandidate() {
 
                 <hr />
 
-                {/* QUALIFICATION */}
-                <label className="form-label">Qualification</label>
-                <select
-                  className="form-control"
-                  name="education"
-                  value={form.education || ""}
-                  onChange={(e) => {
-                    const selectedDegree = e.target.value;
+                <label>Qualification Level</label>
 
-                    const parent = master.education?.find(
-                      (i) => i.id == educationParent,
+                <select
+                  className="form-control mb-2"
+                  value={qualificationParent}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setQualificationParent(value);
+
+                    const selected = master.education?.find(
+                      (i) => i.id == value,
                     );
 
-                    const finalValue = parent
-                      ? `${parent.name} - ${selectedDegree}`
-                      : selectedDegree;
+                    setQualificationChild(selected?.children || []);
 
-                    setForm({
-                      ...form,
-                      education: finalValue,
-                    });
+                    if (!selected?.children?.length) {
+                      setForm({
+                        ...form,
+                        qualification: selected?.name,
+                      });
+                    } else {
+                      setForm({
+                        ...form,
+                        qualification: "",
+                      });
+                    }
                   }}
                 >
-                  <option value="">Select Degree</option>
+                  <option value="">Select Level</option>
 
-                  {master.education
-                    ?.find((e) => e.id == educationParent)
-                    ?.children?.map((child) => (
-                      <option key={child.id} value={child.name}>
-                        {child.name}
-                      </option>
-                    ))}
+                  {master.education?.map((item) => (
+                    <option key={item.id} value={item.id}>
+                      {item.name}
+                    </option>
+                  ))}
                 </select>
+
+                {qualificationChild.length > 0 && (
+                  <>
+                    <label>Degree</label>
+
+                    <select
+                      className="form-control"
+                      onChange={(e) => {
+                        const degree = e.target.value;
+
+                        const parent = master.education?.find(
+                          (i) => i.id == qualificationParent,
+                        );
+
+                        setForm({
+                          ...form,
+                          qualification: `${parent?.name} - ${degree}`,
+                        });
+                      }}
+                    >
+                      <option value="">Select Degree</option>
+
+                      {qualificationChild.map((child) => (
+                        <option key={child.id} value={child.name}>
+                          {child.name}
+                        </option>
+                      ))}
+                    </select>
+                  </>
+                )}
 
                 {/* Languages Writing */}
                 <div className="mb-3">
