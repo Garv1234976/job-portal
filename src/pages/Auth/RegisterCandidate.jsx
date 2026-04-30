@@ -17,28 +17,28 @@ function RegisterCandidate() {
 
   const [master, setMaster] = useState({});
 
- useEffect(() => {
-  api.get("/get-master-data").then((res) => {
-    const raw = res.data.data || [];
+  useEffect(() => {
+    api.get("/get-master-data").then((res) => {
+      const raw = res.data.data || [];
 
-    const grouped = raw.reduce((acc, item) => {
-      if (!acc[item.type]) acc[item.type] = [];
+      const grouped = raw.reduce((acc, item) => {
+        if (!acc[item.type]) acc[item.type] = [];
 
-      // SAME AS CREATE JOB
-      if (item.type === "education") {
-        if (item.parent_id === null) {
+        // SAME AS CREATE JOB
+        if (item.type === "education") {
+          if (item.parent_id === null) {
+            acc[item.type].push(item);
+          }
+        } else {
           acc[item.type].push(item);
         }
-      } else {
-        acc[item.type].push(item);
-      }
 
-      return acc;
-    }, {});
+        return acc;
+      }, {});
 
-    setMaster(grouped);
-  });
-}, []);
+      setMaster(grouped);
+    });
+  }, []);
 
   const [form, setForm] = useState({
     name: "",
@@ -51,7 +51,7 @@ function RegisterCandidate() {
     aadhar_number: "",
     permanent_address: "",
     current_address: "",
-    qualification: "",
+    qualification: [],
     languages_writing: [],
     languages_speaking: [],
     type: "",
@@ -71,7 +71,10 @@ function RegisterCandidate() {
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    setForm({
+      ...form,
+      qualification: [selected?.name],
+    });
     setErrors({ ...errors, [e.target.name]: "" });
   };
 
@@ -113,7 +116,7 @@ function RegisterCandidate() {
     if (!form.gender) newErrors.gender = "Gender required";
     if (!form.dob) newErrors.dob = "DOB required";
 
-    if (!form.qualification) newErrors.qualification = "Select qualification";
+   if (!form.qualification || form.qualification.length === 0);
 
     if (form.languages_speaking.length === 0)
       newErrors.languages_speaking = "Select language";
@@ -380,10 +383,9 @@ function RegisterCandidate() {
                         const parent = master.education?.find(
                           (i) => i.id == qualificationParent,
                         );
-
                         setForm({
                           ...form,
-                          qualification: `${parent?.name} - ${degree}`,
+                          qualification: [parent?.name, degree],
                         });
                       }}
                     >
