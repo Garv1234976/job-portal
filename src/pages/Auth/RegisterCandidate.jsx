@@ -116,7 +116,7 @@ function RegisterCandidate() {
     if (!form.gender) newErrors.gender = "Gender required";
     if (!form.dob) newErrors.dob = "DOB required";
 
-   if (!form.qualification || form.qualification.length === 0);
+    if (!form.qualification || form.qualification.length === 0);
 
     if (form.languages_speaking.length === 0)
       newErrors.languages_speaking = "Select language";
@@ -341,23 +341,23 @@ function RegisterCandidate() {
                   value={qualificationParent}
                   onChange={(e) => {
                     const value = e.target.value;
-                    setQualificationParent(value);
 
                     const selected = master.education?.find(
                       (i) => i.id == value,
                     );
 
+                    setQualificationParent(value);
                     setQualificationChild(selected?.children || []);
 
                     if (!selected?.children?.length) {
                       setForm({
                         ...form,
-                        qualification: selected?.name,
+                        qualification: selected ? [selected.name] : [],
                       });
                     } else {
                       setForm({
                         ...form,
-                        qualification: "",
+                        qualification: [],
                       });
                     }
                   }}
