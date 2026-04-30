@@ -18,7 +18,7 @@ function RegisterCandidate() {
   const [master, setMaster] = useState({});
 
   useEffect(() => {
-    API.get("/get-master-data").then((res) => {
+    api.get("/get-master-data").then((res) => {
       const raw = res.data.data || [];
 
       const grouped = {};
