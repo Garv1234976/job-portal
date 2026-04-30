@@ -62,7 +62,6 @@ function Profile() {
     }
   };
 
-  //  PHOTO UPLOAD FIXED
   const handlePhotoUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -79,18 +78,24 @@ function Profile() {
     fetchProfile();
   };
 
-  //  SAVE
+  // ✅ UPDATED SAVE (ARRAY SAFE)
   const handleSave = async () => {
     const formData = new FormData();
 
     Object.keys(form).forEach((key) => {
+
+      // ✅ ARRAY HANDLING (qualification + skills)
       if (Array.isArray(form[key])) {
         form[key].forEach((item, i) => {
           formData.append(`${key}[${i}]`, item);
         });
-      } else {
-        formData.append(key, form[key]);
       }
+
+      // ✅ NORMAL FIELDS
+      else {
+        formData.append(key, form[key] || "");
+      }
+
     });
 
     await API.post("/update-profile", formData);
@@ -121,7 +126,6 @@ function Profile() {
 
                 <div className="d-flex gap-3 align-items-center">
 
-                  {/* FIXED PHOTO CLICK */}
                   <div
                     style={{ position: "relative" }}
                     onClick={() =>
@@ -141,7 +145,6 @@ function Profile() {
                         objectFit: "cover",
                         cursor: "pointer",
                       }}
-                      loading="lazy"
                     />
 
                     <div
@@ -152,7 +155,6 @@ function Profile() {
                         background: "#fff",
                         borderRadius: "50%",
                         padding: 6,
-                        cursor: "pointer",
                       }}
                     >
                       <FaEdit />
@@ -174,7 +176,6 @@ function Profile() {
                   </div>
                 </div>
 
-                {/* FIXED EDIT BUTTON */}
                 <button
                   className="btn btn-primary"
                   onClick={() => {
@@ -200,15 +201,15 @@ function Profile() {
                   className="btn btn-light btn-sm border"
                   onClick={() => {
                     setEditSection("skills");
-                    setForm({ skills: profile.skills });
+                    setForm({ skills: profile.skills || [] });
                   }}
                 >
                   <FaEdit />
                 </button>
               </div>
 
-               <div className="d-flex flex-wrap gap-2">
-                {profile.skills.map((s, i) => (
+              <div className="d-flex flex-wrap gap-2">
+                {(profile.skills || []).map((s, i) => (
                   <span key={i} className="badge bg-primary">
                     {s}
                   </span>
@@ -224,15 +225,15 @@ function Profile() {
                   className="btn btn-light btn-sm border"
                   onClick={() => {
                     setEditSection("qualification");
-                    setForm({ qualification: profile.qualification });
+                    setForm({ qualification: profile.qualification || [] });
                   }}
                 >
                   <FaEdit />
                 </button>
               </div>
 
-               <div className="d-flex flex-wrap gap-2">
-                {profile.qualification.map((q, i) => (
+              <div className="d-flex flex-wrap gap-2">
+                {(profile.qualification || []).map((q, i) => (
                   <span key={i} className="badge bg-success">
                     {q}
                   </span>
@@ -244,7 +245,7 @@ function Profile() {
         </div>
       </div>
 
-      {/*  FIXED MODAL */}
+      {/* MODAL */}
       {editSection && (
         <div className="modal d-block" style={{ background: "#00000080" }}>
           <div className="modal-dialog">
@@ -252,7 +253,7 @@ function Profile() {
 
               <h5>Edit {editSection}</h5>
 
-              {/*  BASIC FIX */}
+              {/* BASIC */}
               {editSection === "basic" && (
                 <>
                   <label>Name</label>
@@ -287,32 +288,39 @@ function Profile() {
                 </>
               )}
 
-              {/* SKILLS MULTI */}
+              {/* SKILLS */}
               {editSection === "skills" && (
                 <Select
                   isMulti
                   options={skillOptions}
-                  value={form.skills.map((s) => ({ value: s, label: s }))}
+                  value={(form.skills || []).map((s) => ({
+                    value: s,
+                    label: s,
+                  }))}
                   onChange={(selected) =>
                     setForm({
-                      skills: selected.map((i) => i.value),
+                      ...form,
+                      skills: selected ? selected.map((i) => i.value) : [],
                     })
                   }
                 />
               )}
 
-              {/* QUALIFICATION MULTI */}
+              {/* QUALIFICATION */}
               {editSection === "qualification" && (
                 <Select
                   isMulti
                   options={qualificationOptions}
-                  value={form.qualification.map((q) => ({
+                  value={(form.qualification || []).map((q) => ({
                     value: q,
                     label: q,
                   }))}
                   onChange={(selected) =>
                     setForm({
-                      qualification: selected.map((i) => i.value),
+                      ...form,
+                      qualification: selected
+                        ? selected.map((i) => i.value)
+                        : [],
                     })
                   }
                 />
