@@ -15,7 +15,6 @@ function Profile() {
   const [editSection, setEditSection] = useState(null);
   const [form, setForm] = useState({});
 
-  // dynamic qualification states
   const [master, setMaster] = useState({});
   const [qualificationParent, setQualificationParent] = useState("");
   const [qualificationChild, setQualificationChild] = useState([]);
@@ -30,13 +29,6 @@ function Profile() {
       return [];
     }
   };
-
-  const skillOptions = [
-    { value: "PHP", label: "PHP" },
-    { value: "Laravel", label: "Laravel" },
-    { value: "React", label: "React" },
-    { value: "Vue", label: "Vue" },
-  ];
 
   useEffect(() => {
     fetchProfile();
@@ -60,6 +52,7 @@ function Profile() {
     }
   };
 
+  // ✅ FIXED FUNCTION (MAIN ISSUE)
   const fetchMaster = async () => {
     try {
       const res = await API.get("/get-master-data");
@@ -71,12 +64,19 @@ function Profile() {
         if (!grouped[item.type]) grouped[item.type] = [];
 
         if (item.type === "education" && item.parent_id === null) {
+          // 🔥 FIX: attach children correctly
+          const children = raw.filter(
+            (i) => i.parent_id == item.id
+          );
+
           grouped[item.type].push({
             ...item,
-            children: raw.filter((i) => i.parent_id === item.id),
+            children: children || [],
           });
         }
       });
+
+      console.log("MASTER EDUCATION:", grouped.education); // debug
 
       setMaster(grouped);
     } catch (err) {
@@ -168,26 +168,6 @@ function Profile() {
               </div>
             </div>
 
-            {/* SKILLS */}
-            <div className="card p-3 mb-3">
-              <div className="d-flex justify-content-between">
-                <h5>Skills</h5>
-                <button
-                  className="btn btn-light"
-                  onClick={() => {
-                    setEditSection("skills");
-                    setForm({ skills: profile.skills || [] });
-                  }}
-                >
-                  <FaEdit />
-                </button>
-              </div>
-
-              {(profile.skills || []).map((s, i) => (
-                <span key={i} className="badge bg-primary me-2">{s}</span>
-              ))}
-            </div>
-
             {/* QUALIFICATION */}
             <div className="card p-3 mb-3">
               <div className="d-flex justify-content-between">
@@ -220,7 +200,6 @@ function Profile() {
 
               <h5>Edit {editSection}</h5>
 
-              {/* QUALIFICATION FIXED */}
               {editSection === "qualification" && (
                 <>
                   <label>Qualification Level</label>
@@ -234,6 +213,9 @@ function Profile() {
                       const selected = master.education?.find(
                         (i) => i.id == value
                       );
+
+                      console.log("SELECTED:", selected);
+                      console.log("CHILDREN:", selected?.children);
 
                       const children = selected?.children || [];
                       setQualificationChild(children);
@@ -257,7 +239,7 @@ function Profile() {
                     ))}
                   </select>
 
-                  {/* ALWAYS SHOW DEGREE */}
+                  {/* DEGREE */}
                   <label>Degree</label>
                   <select
                     className="form-control mb-2"
@@ -287,7 +269,7 @@ function Profile() {
                     ))}
                   </select>
 
-                  {/* MULTI SELECT VIEW */}
+                  {/* SELECTED */}
                   <div className="d-flex flex-wrap gap-2 mt-2">
                     {(form.qualification || []).map((q, i) => (
                       <span
@@ -305,8 +287,6 @@ function Profile() {
                       </span>
                     ))}
                   </div>
-
-                  <small>Click to remove</small>
                 </>
               )}
 
