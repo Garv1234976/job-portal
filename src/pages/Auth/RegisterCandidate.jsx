@@ -134,10 +134,11 @@ function RegisterCandidate() {
 
     try {
       setLoading(true);
+
       const formData = new FormData();
 
-      for (let key in form) {
-        // ✅ QUALIFICATION ARRAY (FIXED)
+      Object.keys(form).forEach((key) => {
+        // ✅ QUALIFICATION ARRAY
         if (key === "qualification") {
           if (Array.isArray(form.qualification)) {
             form.qualification.forEach((item, index) => {
@@ -152,34 +153,44 @@ function RegisterCandidate() {
           key === "languages_writing" ||
           key === "languages_speaking"
         ) {
-          form[key].forEach((item, index) => {
-            formData.append(`${key}[${index}]`, item);
-          });
+          if (Array.isArray(form[key])) {
+            form[key].forEach((item, index) => {
+              formData.append(`${key}[${index}]`, item);
+            });
+          }
         }
 
         // ✅ EXPERIENCE DETAILS ARRAY
         else if (key === "experience_details") {
-          form.experience_details.forEach((exp, index) => {
-            formData.append(
-              `experience_details[${index}][job_profile]`,
-              exp.job_profile,
-            );
-            formData.append(`experience_details[${index}][years]`, exp.years);
-          });
-        }
-
-        // ✅ FILE UPLOAD
-        else if (key === "cv") {
-          if (form.cv) {
-            formData.append("cv", form.cv);
+          if (Array.isArray(form.experience_details)) {
+            form.experience_details.forEach((exp, index) => {
+              formData.append(
+                `experience_details[${index}][job_profile]`,
+                exp.job_profile || "",
+              );
+              formData.append(
+                `experience_details[${index}][years]`,
+                exp.years || "",
+              );
+            });
           }
         }
 
-        // ✅ NORMAL FIELDS
-        else {
-          formData.append(key, form[key] || "");
+        // ✅ FILE UPLOAD (FIXED)
+        else if (key === "cv") {
+          if (form.cv instanceof File) {
+            formData.append("cv", form.cv);
+          }
+          // ❌ DO NOT append if empty
         }
-      }
+
+        // ✅ NORMAL FIELDS (ONLY IF NOT EMPTY)
+        else {
+          if (form[key] !== null && form[key] !== "") {
+            formData.append(key, form[key]);
+          }
+        }
+      });
 
       const res = await api.post("/register/candidate", formData, {
         headers: { "Content-Type": "multipart/form-data" },
