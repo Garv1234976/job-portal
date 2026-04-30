@@ -373,15 +373,16 @@ function RegisterCandidate() {
                     setQualificationParent(value);
                     setQualificationChild(selected?.children || []);
 
-                    if (!selected?.children?.length) {
+                    // ✅ If no degree → add directly (MULTIPLE)
+                    if (!selected?.children?.length && selected) {
+                      const newValue = selected.name;
+
                       setForm({
                         ...form,
-                        qualification: selected ? [selected.name] : [],
-                      });
-                    } else {
-                      setForm({
-                        ...form,
-                        qualification: [],
+                        qualification: [
+                          ...(form.qualification || []),
+                          newValue,
+                        ],
                       });
                     }
                   }}
@@ -395,22 +396,34 @@ function RegisterCandidate() {
                   ))}
                 </select>
 
+                {/* DEGREE */}
                 {qualificationChild.length > 0 && (
                   <>
                     <label>Degree</label>
 
                     <select
-                      className="form-control"
+                      className="form-control mb-2"
                       onChange={(e) => {
                         const degree = e.target.value;
 
                         const parent = master.education?.find(
                           (i) => i.id == qualificationParent,
                         );
-                        setForm({
-                          ...form,
-                          qualification: [parent?.name, degree],
-                        });
+
+                        if (!parent || !degree) return;
+
+                        const newValue = `${parent.name} - ${degree}`;
+
+                        // ✅ ADD MULTIPLE
+                        if (!form.qualification?.includes(newValue)) {
+                          setForm({
+                            ...form,
+                            qualification: [
+                              ...(form.qualification || []),
+                              newValue,
+                            ],
+                          });
+                        }
                       }}
                     >
                       <option value="">Select Degree</option>
@@ -424,6 +437,30 @@ function RegisterCandidate() {
                   </>
                 )}
 
+                {/* ✅ SHOW MULTIPLE SELECTED */}
+                <div className="d-flex flex-wrap gap-2 mt-2">
+                  {(form.qualification || []).map((q, i) => (
+                    <span
+                      key={i}
+                      className="badge bg-success"
+                      style={{ cursor: "pointer" }}
+                      onClick={() => {
+                        const updated = form.qualification.filter(
+                          (_, index) => index !== i,
+                        );
+
+                        setForm({
+                          ...form,
+                          qualification: updated,
+                        });
+                      }}
+                    >
+                      {q} ❌
+                    </span>
+                  ))}
+                </div>
+
+                <small className="text-muted">Click to remove</small>
                 {/* Languages Writing */}
                 <div className="mb-3">
                   <label className="form-label">
