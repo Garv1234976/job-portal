@@ -18,7 +18,7 @@ function RegisterCandidate() {
   const [master, setMaster] = useState({});
 
   useEffect(() => {
-    api.get("/get-master-data").then((res) => {
+    API.get("/get-master-data").then((res) => {
       const raw = res.data.data || [];
 
       const grouped = {};
@@ -26,14 +26,22 @@ function RegisterCandidate() {
       raw.forEach((item) => {
         if (!grouped[item.type]) grouped[item.type] = [];
 
-        // ONLY parent education
+        // ONLY EDUCATION PARENTS
         if (item.type === "education" && item.parent_id === null) {
           grouped[item.type].push({
             ...item,
+            // 🔥 ATTACH CHILDREN HERE
             children: raw.filter((i) => i.parent_id === item.id),
           });
         }
+
+        // OTHER TYPES NORMAL
+        if (item.type !== "education") {
+          grouped[item.type].push(item);
+        }
       });
+
+      console.log("MASTER:", grouped); // 🔍 CHECK THIS
 
       setMaster(grouped);
     });
