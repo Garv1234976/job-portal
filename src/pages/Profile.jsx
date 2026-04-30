@@ -14,7 +14,6 @@ function Profile() {
   const [loading, setLoading] = useState(true);
   const [editSection, setEditSection] = useState(null);
   const [form, setForm] = useState({});
-
   const [master, setMaster] = useState({});
 
   const safeArray = (data) => {
@@ -28,22 +27,16 @@ function Profile() {
     }
   };
 
-  const skillOptions = [
-    { value: "PHP", label: "PHP" },
-    { value: "Laravel", label: "Laravel" },
-    { value: "React", label: "React" },
-    { value: "Vue", label: "Vue" },
-  ];
+  // ✅ Dynamic Skills
+  const skillOptions = (master.skills || []).map((item) => ({
+    value: item.name,
+    label: item.name,
+  }));
 
-  // ✅ Dynamic qualification
+  // ✅ Dynamic Qualification
   const qualificationOptions = (master.education || []).flatMap((parent) => {
     if (!parent.children || parent.children.length === 0) {
-      return [
-        {
-          value: parent.name,
-          label: parent.name,
-        },
-      ];
+      return [{ value: parent.name, label: parent.name }];
     }
 
     return parent.children.map((child) => ({
@@ -91,6 +84,8 @@ function Profile() {
             ...item,
             children,
           });
+        } else if (item.type === "skills") {
+          grouped[item.type].push(item);
         }
       });
 
@@ -170,13 +165,7 @@ function Profile() {
                           : "/assets/img/default.png"
                       }
                       className="rounded-circle"
-                      style={{
-                        width: 90,
-                        height: 90,
-                        objectFit: "cover",
-                        cursor: "pointer",
-                      }}
-                      loading="lazy"
+                      style={{ width: 90, height: 90, objectFit: "cover" }}
                     />
 
                     <div
@@ -187,7 +176,6 @@ function Profile() {
                         background: "#fff",
                         borderRadius: "50%",
                         padding: 6,
-                        cursor: "pointer",
                       }}
                     >
                       <FaEdit />
@@ -197,7 +185,6 @@ function Profile() {
                       type="file"
                       id="photoInput"
                       hidden
-                      accept="image/*"
                       onChange={handlePhotoUpload}
                     />
                   </div>
@@ -243,9 +230,7 @@ function Profile() {
 
               <div className="d-flex flex-wrap gap-2">
                 {profile.skills.map((s, i) => (
-                  <span key={i} className="badge bg-primary">
-                    {s}
-                  </span>
+                  <span key={i} className="badge bg-primary">{s}</span>
                 ))}
               </div>
             </div>
@@ -267,9 +252,7 @@ function Profile() {
 
               <div className="d-flex flex-wrap gap-2">
                 {profile.qualification.map((q, i) => (
-                  <span key={i} className="badge bg-success">
-                    {q}
-                  </span>
+                  <span key={i} className="badge bg-success">{q}</span>
                 ))}
               </div>
             </div>
@@ -286,11 +269,50 @@ function Profile() {
 
               <h5>Edit {editSection}</h5>
 
+              {/* ✅ BASIC */}
+              {editSection === "basic" && (
+                <>
+                  <input
+                    className="form-control mb-2"
+                    placeholder="Full Name"
+                    value={form.full_name || ""}
+                    onChange={(e) =>
+                      setForm({ ...form, full_name: e.target.value })
+                    }
+                  />
+
+                  <input
+                    className="form-control mb-2"
+                    placeholder="Phone"
+                    value={form.phone || ""}
+                    onChange={(e) =>
+                      setForm({ ...form, phone: e.target.value })
+                    }
+                  />
+
+                  <input
+                    className="form-control"
+                    placeholder="Location"
+                    value={form.preferred_location || ""}
+                    onChange={(e) =>
+                      setForm({
+                        ...form,
+                        preferred_location: e.target.value,
+                      })
+                    }
+                  />
+                </>
+              )}
+
+              {/* SKILLS */}
               {editSection === "skills" && (
                 <Select
                   isMulti
                   options={skillOptions}
-                  value={(form.skills || []).map((s) => ({ value: s, label: s }))}
+                  value={(form.skills || []).map((s) => ({
+                    value: s,
+                    label: s,
+                  }))}
                   onChange={(selected) =>
                     setForm({
                       ...form,
@@ -300,7 +322,7 @@ function Profile() {
                 />
               )}
 
-              {/* ✅ FIXED QUALIFICATION */}
+              {/* QUALIFICATION */}
               {editSection === "qualification" && (
                 <Select
                   isMulti
