@@ -33,12 +33,18 @@ function Profile() {
     label: item.name,
   }));
 
-  //  Dynamic Qualification
   const qualificationOptions = (master.education || []).flatMap((parent) => {
+    // If no degree
     if (!parent.children || parent.children.length === 0) {
-      return [{ value: parent.name, label: parent.name }];
+      return [
+        {
+          value: parent.name,
+          label: parent.name,
+        },
+      ];
     }
 
+    // With degree
     return parent.children.map((child) => ({
       value: `${parent.name} - ${child.name}`,
       label: `${parent.name} → ${child.name}`,
@@ -86,21 +92,12 @@ function Profile() {
             ...item,
             children, // 👈 keep degree mapping
           });
-        }
-
-        // ✅ SKILLS (HANDLE ALL TYPES → skills / skill / key_skills)
-        else if (
-          item.type === "skills" ||
-          item.type === "skill" ||
-          item.type === "key_skills"
-        ) {
-          // 🔥 normalize into ONE KEY → skills
+        } else if (item.type === "key_skills") {
           if (!grouped.skills) grouped.skills = [];
-
           grouped.skills.push(item);
         }
 
-        // ✅ OTHER TYPES (KEEP YOUR DATA SAFE)
+        //  OTHER TYPES (KEEP YOUR DATA SAFE)
         else if (item.type !== "education") {
           grouped[item.type].push(item);
         }
