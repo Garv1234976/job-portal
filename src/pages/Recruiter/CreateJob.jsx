@@ -701,8 +701,9 @@ export default function CreateJob() {
 
                   {/* Extra */}
                   <div className="col-md-3">
-                    <label>Overtime</label>
+                    <label>Overtime in Hours</label>
                     <input
+                      type="number"
                       className="form-control"
                       name="overtime"
                       onChange={handleChange}
