@@ -554,12 +554,22 @@ export default function EditJob() {
                   </div>
 
                   <div className="col-md-3">
-                    <label>Overtime</label>
+                    <label>Overtime in Hours</label>
                     <input
+                      type="number"
                       className="form-control"
                       name="overtime"
                       value={form.overtime || ""}
-                      onChange={handleChange}
+                      min="0"
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        if (value === "" || Number(value) >= 0) {
+                          setForm({
+                            ...form,
+                            overtime: value,
+                          });  
+                        }
+                      }}
                     />
                   </div>
 
