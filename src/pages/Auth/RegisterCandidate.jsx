@@ -44,7 +44,6 @@ function RegisterCandidate() {
     name: "",
     email: "",
     phone: "",
-    password: "",
     alt_phone: "",
     gender: "",
     dob: "",
