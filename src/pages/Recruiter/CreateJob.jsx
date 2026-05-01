@@ -706,6 +706,7 @@ export default function CreateJob() {
                       type="number"
                       className="form-control"
                       name="overtime"
+                      min="0"
                       onChange={handleChange}
                     />
                   </div>
