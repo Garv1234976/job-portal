@@ -27,13 +27,13 @@ function Profile() {
     }
   };
 
-  // ✅ Dynamic Skills
+  //  Dynamic Skills
   const skillOptions = (master.skills || []).map((item) => ({
     value: item.name,
     label: item.name,
   }));
 
-  // ✅ Dynamic Qualification
+  //  Dynamic Qualification
   const qualificationOptions = (master.education || []).flatMap((parent) => {
     if (!parent.children || parent.children.length === 0) {
       return [{ value: parent.name, label: parent.name }];
@@ -84,8 +84,13 @@ function Profile() {
             ...item,
             children,
           });
-        } else if (item.type === "skills") {
-          grouped[item.type].push(item);
+        } else if (
+          item.type === "skills" ||
+          item.type === "skill" ||
+          item.type === "key_skills"
+        ) {
+          if (!grouped.skills) grouped.skills = [];
+          grouped.skills.push(item);
         }
       });
 
@@ -139,19 +144,15 @@ function Profile() {
 
       <div className="container-fluid mt-4 mb-5">
         <div className="row">
-
           <div className="col-md-3 col-lg-2">
             <CandidateSidebar />
           </div>
 
           <div className="col-md-9 col-lg-10">
-
             {/* HEADER */}
             <div className="card p-4 mb-4 rounded-4 shadow-sm">
               <div className="d-flex justify-content-between align-items-center">
-
                 <div className="d-flex gap-3 align-items-center">
-
                   <div
                     style={{ position: "relative" }}
                     onClick={() =>
@@ -191,8 +192,12 @@ function Profile() {
 
                   <div>
                     <h4>{profile.full_name}</h4>
-                    <p><FaMapMarkerAlt /> {profile.preferred_location}</p>
-                    <p><FaPhone /> {profile.phone}</p>
+                    <p>
+                      <FaMapMarkerAlt /> {profile.preferred_location}
+                    </p>
+                    <p>
+                      <FaPhone /> {profile.phone}
+                    </p>
                   </div>
                 </div>
 
@@ -209,7 +214,6 @@ function Profile() {
                 >
                   Edit Profile
                 </button>
-
               </div>
             </div>
 
@@ -230,7 +234,9 @@ function Profile() {
 
               <div className="d-flex flex-wrap gap-2">
                 {profile.skills.map((s, i) => (
-                  <span key={i} className="badge bg-primary">{s}</span>
+                  <span key={i} className="badge bg-primary">
+                    {s}
+                  </span>
                 ))}
               </div>
             </div>
@@ -252,11 +258,12 @@ function Profile() {
 
               <div className="d-flex flex-wrap gap-2">
                 {profile.qualification.map((q, i) => (
-                  <span key={i} className="badge bg-success">{q}</span>
+                  <span key={i} className="badge bg-success">
+                    {q}
+                  </span>
                 ))}
               </div>
             </div>
-
           </div>
         </div>
       </div>
@@ -266,7 +273,6 @@ function Profile() {
         <div className="modal d-block" style={{ background: "#00000080" }}>
           <div className="modal-dialog">
             <div className="modal-content p-3">
-
               <h5>Edit {editSection}</h5>
 
               {/* ✅ BASIC */}
@@ -354,7 +360,6 @@ function Profile() {
                   Save
                 </button>
               </div>
-
             </div>
           </div>
         </div>
