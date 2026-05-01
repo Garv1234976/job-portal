@@ -297,6 +297,7 @@ export default function CreateJob() {
                         className="form-control"
                         name="age_min"
                         placeholder="Min Age"
+                        min="0"
                         onChange={handleChange}
                       />
 
@@ -304,6 +305,7 @@ export default function CreateJob() {
                         type="number"
                         className="form-control"
                         name="age_max"
+                        min="0"
                         placeholder="Max Age"
                         onChange={handleChange}
                       />

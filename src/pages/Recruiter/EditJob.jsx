@@ -507,6 +507,7 @@ export default function EditJob() {
                         type="number"
                         className="form-control"
                         name="age_min"
+                        min="0"
                         value={form.age_min || ""}
                         onChange={handleChange}
                       />
@@ -514,6 +515,7 @@ export default function EditJob() {
                         type="number"
                         className="form-control"
                         name="age_max"
+                        min="0"
                         value={form.age_max || ""}
                         onChange={handleChange}
                       />
