@@ -554,7 +554,7 @@ export default function EditJob() {
                   </div>
 
                   <div className="col-md-3">
-                    <label>Overtime in Hours</label>
+                    <label>Overtime in Hours</label>   
                     <input
                       type="number"
                       className="form-control"
