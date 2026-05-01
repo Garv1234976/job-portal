@@ -49,6 +49,33 @@ export default function Applications() {
     );
   };
 
+  const downloadSelectedResumes = () => {
+    if (selected.length === 0) {
+      return Swal.fire("Warning", "Select at least one candidate", "warning");
+    }
+
+    const selectedApps = applications.filter((app) =>
+      selected.includes(app.id),
+    );
+
+    selectedApps.forEach((app) => {
+      let resumeUrl = app.resume_url?.startsWith("http")
+        ? app.resume_url
+        : app.resume_url
+          ? `${BASE_URL}/${app.resume_url}`
+          : null;
+
+      if (resumeUrl) {
+        const link = document.createElement("a");
+        link.href = resumeUrl;
+        link.setAttribute("download", "");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    });
+  };
+
   const handleSelectAll = () => {
     if (selected.length === applications.length) {
       setSelected([]);
@@ -239,6 +266,13 @@ export default function Applications() {
                     onClick={() => bulkUpdate("rejected")}
                   >
                     Reject Selected
+                  </button>
+
+                  <button
+                    className="btn btn-primary btn-sm"
+                    onClick={downloadSelectedResumes}
+                  >
+                    Download Selected Resumes
                   </button>
                 </div>
               )}
