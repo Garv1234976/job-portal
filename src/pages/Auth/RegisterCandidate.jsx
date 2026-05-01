@@ -114,7 +114,26 @@ function RegisterCandidate() {
 
     if (!form.shift) newErrors.shift = "Select shift";
     if (!form.gender) newErrors.gender = "Gender required";
-    if (!form.dob) newErrors.dob = "DOB required";
+    if (!form.dob) {
+      newErrors.dob = "DOB required";
+    } else {
+      const today = new Date();
+      const dob = new Date(form.dob);
+
+      let age = today.getFullYear() - dob.getFullYear();
+      const monthDiff = today.getMonth() - dob.getMonth();
+
+      if (
+        monthDiff < 0 ||
+        (monthDiff === 0 && today.getDate() < dob.getDate())
+      ) {
+        age--;
+      }
+
+      if (age < 18) {
+        newErrors.dob = "You must be at least 18 years old";
+      }
+    }
 
     if (!form.qualification || form.qualification.length === 0);
 
