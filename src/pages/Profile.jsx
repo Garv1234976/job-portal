@@ -75,24 +75,38 @@ function Profile() {
       const grouped = {};
 
       raw.forEach((item) => {
+        // ✅ INIT TYPE ARRAY
         if (!grouped[item.type]) grouped[item.type] = [];
 
+        // ✅ EDUCATION (PARENT + CHILDREN)
         if (item.type === "education" && item.parent_id === null) {
           const children = raw.filter((i) => i.parent_id == item.id);
 
           grouped[item.type].push({
             ...item,
-            children,
+            children, // 👈 keep degree mapping
           });
-        } else if (
+        }
+
+        // ✅ SKILLS (HANDLE ALL TYPES → skills / skill / key_skills)
+        else if (
           item.type === "skills" ||
           item.type === "skill" ||
           item.type === "key_skills"
         ) {
+          // 🔥 normalize into ONE KEY → skills
           if (!grouped.skills) grouped.skills = [];
+
           grouped.skills.push(item);
         }
+
+        // ✅ OTHER TYPES (KEEP YOUR DATA SAFE)
+        else if (item.type !== "education") {
+          grouped[item.type].push(item);
+        }
       });
+
+      console.log("MASTER GROUPED:", grouped); // debug
 
       setMaster(grouped);
     } catch (err) {
