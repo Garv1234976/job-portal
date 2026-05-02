@@ -53,8 +53,17 @@ export default function RecruiterSidebar() {
       action: handlePostJob,
     },
     { name: "My Jobs", icon: "fa-briefcase", path: "/recruiter/jobs" },
-    { name: "Closed Jobs", icon: "fa-times-circle", path: "/recruiter/closed-jobs" },
+    {
+      name: "Closed Jobs",
+      icon: "fa-times-circle",
+      path: "/recruiter/closed-jobs",
+    },
     { name: "Plans", icon: "fa-credit-card", path: "/recruiter/plans" },
+    {
+      name: "My Resumes",
+      icon: "fa-file",
+      path: "/recruiter/my-resumes",
+    },
   ];
 
   const isActive = (path) => {
@@ -64,7 +73,6 @@ export default function RecruiterSidebar() {
 
   return (
     <div className="sidebar-container">
-
       {/* HEADER */}
       <div className="sidebar-header">
         <h5>Recruiter Panel</h5>

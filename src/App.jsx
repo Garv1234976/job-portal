@@ -50,6 +50,7 @@ import AdminDashboard from "./pages/Admin/Dashboard";
 import Categories from "./pages/Admin/Categories";
 import AdminSettings from "./pages/Admin/AdminSettings";
 import AdminMasterData from "./pages/Admin/MasterData";
+import MyResumes from "./pages/Recruiter/MyResumes";
 
 function App() {
   return (
@@ -223,6 +224,15 @@ function App() {
           element={
             <ProtectedRoute roleRequired="recruiter">
               <EditJob />
+            </ProtectedRoute>
+          }
+        />
+
+          <Route
+          path="/recruiter/my-resumes"
+          element={
+            <ProtectedRoute roleRequired="recruiter">
+              <MyResumes />
             </ProtectedRoute>
           }
         />
