@@ -16,25 +16,27 @@ export default function MyResumes() {
       .then((res) => {
         console.log("API Response:", res.data);
 
-        //  FIX: correct data mapping
-        setResumes(res.data || []);
+        // ✅ FIXED: correct data mapping
+        const files = res.data?.data || [];
+
+        // ✅ FIXED: ensure full URL (VERY IMPORTANT)
+        const formatted = files.map((file) => ({
+          ...file,
+          url: file.url?.startsWith("http")
+            ? file.url
+            : `${window.location.origin}/${file.url}`,
+        }));
+
+        setResumes(formatted);
       })
       .catch(() => setResumes([]))
       .finally(() => setLoading(false));
   }, []);
 
-  //  Safe URL handler (VERY IMPORTANT)
-  const getFullUrl = (url) => {
-    if (!url) return "#";
-    return url.startsWith("http")
-      ? url
-      : `${window.location.origin}/${url}`;
-  };
-
-  // Handle View click
+  // ✅ Handle View (NO React routing issue)
   const handleView = (url) => {
-    const fullUrl = getFullUrl(url);
-    window.open(fullUrl, "_blank"); // avoids React router issue
+    if (!url) return;
+    window.open(url, "_blank");
   };
 
   return (
@@ -71,7 +73,9 @@ export default function MyResumes() {
               ) : (
                 <div className="row">
                   {resumes.map((file, i) => {
-                    const isPDF = file.name?.toLowerCase().endsWith(".pdf");
+                    const isPDF = file.name
+                      ?.toLowerCase()
+                      .endsWith(".pdf");
 
                     return (
                       <div className="col-md-4 mb-4" key={i}>
@@ -82,7 +86,9 @@ export default function MyResumes() {
                             <div className="mb-3">
                               <i
                                 className={`fa ${
-                                  isPDF ? "fa-file-pdf-o text-danger" : "fa-file-word-o text-primary"
+                                  isPDF
+                                    ? "fa-file-pdf-o text-danger"
+                                    : "fa-file-word-o text-primary"
                                 }`}
                                 style={{ fontSize: "42px" }}
                               ></i>
@@ -98,7 +104,7 @@ export default function MyResumes() {
                               {file.time || "—"}
                             </small>
 
-                            {/* VIEW BUTTON ONLY */}
+                            {/* VIEW BUTTON */}
                             <div className="mt-auto pt-3">
                               <button
                                 onClick={() => handleView(file.url)}
