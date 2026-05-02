@@ -2,6 +2,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import API from "../services/api";
 import Swal from "sweetalert2";
+import { logoutUser } from "../utils/logout";
 
 //  React Icons
 import {
@@ -21,6 +22,18 @@ function Navbar() {
 
   const token = localStorage.getItem("token");
   const role = localStorage.getItem("role") || "";
+
+  const handleLogout = () => {
+    Swal.fire({
+      title: "Logout?",
+      icon: "warning",
+      showCancelButton: true,
+    }).then((res) => {
+      if (res.isConfirmed) {
+        logoutUser(navigate);
+      }
+    });
+  };
 
   // FIXED API CALL (safe handling)
   useEffect(() => {
@@ -192,7 +205,7 @@ function Navbar() {
                   <div className="dropdown-divider"></div>
 
                   <button
-                    onClick={() => navigate("/logout")}
+                    onClick={() => logoutUser(navigate)}
                     className="dropdown-item text-danger"
                   >
                     <FaSignOutAlt /> Logout
@@ -203,7 +216,7 @@ function Navbar() {
           </div>
 
           {/*  POST JOB BUTTON */}
-         {token && role?.toLowerCase() === "recruiter" ? (
+          {token && role?.toLowerCase() === "recruiter" ? (
             <button
               onClick={handlePostJob}
               disabled={loading}
@@ -212,7 +225,7 @@ function Navbar() {
             >
               <FaPlus /> Post Job
             </button>
-          ) : !token ?  (
+          ) : !token ? (
             //  RESTORED ORIGINAL DROPDOWN (FIXED)
             <div className="d-flex align-items-center gap-3 ms-lg-3">
               <div className="dropdown">
@@ -241,7 +254,7 @@ function Navbar() {
                 </div>
               </div>
             </div>
-        ) : null}
+          ) : null}
         </div>
       </div>
     </nav>
