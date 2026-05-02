@@ -7,7 +7,7 @@ export const logoutUser = async(navigate) => {
     localStorage.removeItem("token");
     localStorage.removeItem("role");
 
-    navigate("/login");
+    navigate("/recruiter/login");
 
     // optional but recommended
     window.location.reload();
