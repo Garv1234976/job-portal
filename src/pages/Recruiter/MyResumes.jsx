@@ -14,8 +14,8 @@ export default function MyResumes() {
   useEffect(() => {
     API.get("/my-resumes")
       .then((res) => {
-        console.log('res',res);
-        setResumes(res.data.data || []);
+        console.log('res',res.data);
+        setResumes(res.data || []);
       })
       .catch(() => setResumes([]))
       .finally(() => setLoading(false));
