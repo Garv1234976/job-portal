@@ -49,34 +49,47 @@ export default function Applications() {
     );
   };
 
-const downloadSelectedResumes = () => {
-  if (selected.length === 0) {
-    return Swal.fire("Warning", "Select at least one candidate", "warning");
-  }
-
-  const selectedApps = applications.filter((app) =>
-    selected.includes(app.id)
-  );
-
-  selectedApps.forEach((app, index) => {
-    let resumeUrl = app.resume_url?.startsWith("http")
-      ? app.resume_url
-      : app.resume_url
-        ? `${BASE_URL}/${app.resume_url}`
-        : null;
-
-    if (resumeUrl) {
-      setTimeout(() => {
-        const link = document.createElement("a");
-        link.href = resumeUrl;
-        link.setAttribute("download", "");
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      }, index * 800); // delay between downloads
+  const downloadSelectedResumes = async () => {
+    if (selected.length === 0) {
+      return Swal.fire("Warning", "Select at least one candidate", "warning");
     }
-  });
-};
+
+    const urls = applications
+      .filter((app) => selected.includes(app.id))
+      .map((app) =>
+        app.resume_url?.startsWith("http")
+          ? app.resume_url
+          : app.resume_url
+            ? `${BASE_URL}/${app.resume_url}`
+            : null,
+      )
+      .filter(Boolean);
+
+    try {
+      await API.post("/download-resumes", { urls });
+
+      Swal.fire("Success", "Resumes saved to server folder", "success");
+    } catch (err) {
+      Swal.fire("Error", "Failed to save resumes", "error");
+    }
+  };
+
+  const handleDownload = async (resumeUrl) => {
+    try {
+      await API.post("/download-resumes", {
+        urls: [resumeUrl],
+      });
+
+      const link = document.createElement("a");
+      link.href = resumeUrl;
+      link.setAttribute("target", "_blank");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (err) {
+      Swal.fire("Error", "Failed to download resume", "error");
+    }
+  };
 
   const handleSelectAll = () => {
     if (selected.length === applications.length) {
@@ -349,16 +362,14 @@ const downloadSelectedResumes = () => {
                             )}
                           </td>
 
-                          {/* RESUME */}
                           <td>
                             {resumeUrl ? (
-                              <a
-                                href={resumeUrl}
-                                target="_blank"
+                              <button
                                 className="btn btn-success btn-sm"
+                                onClick={() => handleDownload(resumeUrl)}
                               >
                                 Download
-                              </a>
+                              </button>
                             ) : (
                               "No Resume"
                             )}
