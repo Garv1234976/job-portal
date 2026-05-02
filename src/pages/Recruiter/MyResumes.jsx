@@ -11,7 +11,6 @@ export default function MyResumes() {
 
   const navigate = useNavigate();
 
-  // ✅ FORCE DOMAIN (VERY IMPORTANT)
   const BASE_URL = "https://server.budes.online";
 
   useEffect(() => {
@@ -21,9 +20,8 @@ export default function MyResumes() {
 
         const files = res.data?.data || [];
 
-        // ✅ FIX: ensure correct full URL (no // issue)
         const formatted = files.map((file) => {
-          let cleanPath = file.url?.replace(/^\/+/, ""); // remove starting /
+          const cleanPath = file.url?.replace(/^\/+/, "");
 
           return {
             ...file,
@@ -39,22 +37,23 @@ export default function MyResumes() {
       .finally(() => setLoading(false));
   }, []);
 
-  // ✅ VIEW HANDLER (NO REACT ROUTING ISSUE)
+  // ✅ FINAL VIEW HANDLER
   const handleView = (url, name) => {
     if (!url) return;
 
     const isPDF = name?.toLowerCase().endsWith(".pdf");
 
     if (isPDF) {
-      // open directly
+      // PDF → open in new tab
       window.open(url, "_blank");
     } else {
-      // DOCX → open via Google Viewer (BEST UX)
-      const viewer = `https://docs.google.com/gview?url=${encodeURIComponent(
-        url
-      )}&embedded=true`;
-
-      window.open(viewer, "_blank");
+      // DOCX → download (best practice)
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = name;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     }
   };
 
