@@ -11,21 +11,27 @@ export default function MyResumes() {
 
   const navigate = useNavigate();
 
+  // ✅ FORCE DOMAIN (VERY IMPORTANT)
+  const BASE_URL = "https://server.budes.online";
+
   useEffect(() => {
     API.get("/my-resumes")
       .then((res) => {
         console.log("API Response:", res.data);
 
-        // ✅ FIXED: correct data mapping
         const files = res.data?.data || [];
 
-        // ✅ FIXED: ensure full URL (VERY IMPORTANT)
-        const formatted = files.map((file) => ({
-          ...file,
-          url: file.url?.startsWith("http")
-            ? file.url
-            : `${window.location.origin}/${file.url}`,
-        }));
+        // ✅ FIX: ensure correct full URL (no // issue)
+        const formatted = files.map((file) => {
+          let cleanPath = file.url?.replace(/^\/+/, ""); // remove starting /
+
+          return {
+            ...file,
+            url: file.url?.startsWith("http")
+              ? file.url
+              : `${BASE_URL}/${cleanPath}`,
+          };
+        });
 
         setResumes(formatted);
       })
@@ -33,10 +39,23 @@ export default function MyResumes() {
       .finally(() => setLoading(false));
   }, []);
 
-  // ✅ Handle View (NO React routing issue)
-  const handleView = (url) => {
+  // ✅ VIEW HANDLER (NO REACT ROUTING ISSUE)
+  const handleView = (url, name) => {
     if (!url) return;
-    window.open(url, "_blank");
+
+    const isPDF = name?.toLowerCase().endsWith(".pdf");
+
+    if (isPDF) {
+      // open directly
+      window.open(url, "_blank");
+    } else {
+      // DOCX → open via Google Viewer (BEST UX)
+      const viewer = `https://docs.google.com/gview?url=${encodeURIComponent(
+        url
+      )}&embedded=true`;
+
+      window.open(viewer, "_blank");
+    }
   };
 
   return (
@@ -107,7 +126,9 @@ export default function MyResumes() {
                             {/* VIEW BUTTON */}
                             <div className="mt-auto pt-3">
                               <button
-                                onClick={() => handleView(file.url)}
+                                onClick={() =>
+                                  handleView(file.url, file.name)
+                                }
                                 className="btn btn-outline-primary w-100"
                               >
                                 👁 View Resume
